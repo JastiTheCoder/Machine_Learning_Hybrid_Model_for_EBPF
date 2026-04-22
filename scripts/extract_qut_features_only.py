@@ -1,8 +1,8 @@
 """
-Extract and save 36 QUT-DV25 features from parsed data only.
+Extract and save 36 QUT-DV25 features without training models.
 
-This avoids retraining other models and writes:
-processed/qut36_features/{X,y}_{train,val,test}.npy + feature_names.json
+Reads parsed QUT data from data/processed/{benign,malicious}_parsed.json
+and writes arrays to processed/qut_features.
 """
 
 import json
@@ -12,14 +12,11 @@ from pathlib import Path
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.features.qut_feature_extractor import (
-    QUT_FEATURE_NAMES,
-    extract_qut_features_from_parsed_data,
-)
+from src.features.qut_feature_extractor import extract_qut_features_from_parsed_data
 
 
 def load_parsed_data(data_dir: Path):
@@ -28,6 +25,7 @@ def load_parsed_data(data_dir: Path):
 
     with open(benign_path, "r", encoding="utf-8") as f:
         benign_data = json.load(f)
+
     with open(malicious_path, "r", encoding="utf-8") as f:
         malicious_data = json.load(f)
 
@@ -36,7 +34,7 @@ def load_parsed_data(data_dir: Path):
 
 def main() -> None:
     data_dir = PROJECT_ROOT / "data"
-    out_dir = PROJECT_ROOT / "processed" / "qut36_features"
+    out_dir = PROJECT_ROOT / "processed" / "qut_features"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     benign_data, malicious_data = load_parsed_data(data_dir)
@@ -62,9 +60,8 @@ def main() -> None:
     with open(out_dir / "feature_names.json", "w", encoding="utf-8") as f:
         json.dump(feature_names, f, indent=2)
 
-    print("Saved 36-feature arrays to:", out_dir)
-    print("Feature count:", len(feature_names))
-    print("Train/Val/Test:", X_train.shape, X_val.shape, X_test.shape)
+    print("Saved QUT features to:", out_dir)
+    print("Train:", X_train.shape, "Val:", X_val.shape, "Test:", X_test.shape)
 
 
 if __name__ == "__main__":

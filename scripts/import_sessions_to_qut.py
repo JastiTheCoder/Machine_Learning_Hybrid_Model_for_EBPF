@@ -10,12 +10,14 @@ import argparse
 import csv
 import json
 import os
+import shutil
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Tuple
 
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedShuffleSplit, train_test_split
 
 # Ensure project root is on sys.path for src imports.
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -26,6 +28,15 @@ from src.features.qut_feature_extractor import QUT_FEATURE_NAMES
 from src.utils.helpers import ensure_dir, load_config
 
 
+def _tcp_field(tcp: Dict, snake_key: str, pascal_key: str) -> float:
+    """Read TCP counter from session JSON (snake_case or legacy PascalCase)."""
+    if snake_key in tcp:
+        return float(tcp[snake_key])
+    if pascal_key in tcp:
+        return float(tcp[pascal_key])
+    return 0.0
+
+
 def derive_label(record: Dict, filename: str) -> int:
     """Determine label from JSON label field or filename/package_name."""
     label = record.get("label", None)
@@ -33,7 +44,21 @@ def derive_label(record: Dict, filename: str) -> int:
         return label
     package_name = record.get("package_name", "")
     lower_name = f"{filename} {package_name}".lower()
+    if "benign-test" in lower_name or "lodash" in lower_name:
+        return 0
     if "suspicious" in lower_name or "malicious" in lower_name:
+        return 1
+    # npm test packages that simulate attacks (label often omitted in exports)
+    attack_markers = (
+        "stealer",
+        "grabber",
+        "reverse-shell",
+        "shell-test",
+        "cryptominer",
+        "exfil",
+        "ransom",
+    )
+    if any(m in lower_name for m in attack_markers):
         return 1
     return 0
 
@@ -66,12 +91,12 @@ def extract_feature_vector(record: Dict) -> List[float]:
         float(opensnoop.get("sys_dir_access", 0)),
         float(opensnoop.get("etc_dir_access", 0)),
         float(opensnoop.get("other_dir_access", 0)),
-        # TCP (5)
-        float(tcp.get("state_transitions", 0)),
-        float(tcp.get("local_ips", 0)),
-        float(tcp.get("remote_ips", 0)),
-        float(tcp.get("local_ports", 0)),
-        float(tcp.get("remote_ports", 0)),
+        # TCP (5) — older session JSON used PascalCase keys (e.g. lodash runs)
+        _tcp_field(tcp, "state_transitions", "StateTransitions"),
+        _tcp_field(tcp, "local_ips", "LocalIPs"),
+        _tcp_field(tcp, "remote_ips", "RemoteIPs"),
+        _tcp_field(tcp, "local_ports", "LocalPorts"),
+        _tcp_field(tcp, "remote_ports", "RemotePorts"),
         # Syscalls (6)
         float(syscalls.get("io_ops", 0)),
         float(syscalls.get("file_ops", 0)),
@@ -118,6 +143,37 @@ def load_sessions(sessions_dir: Path) -> Tuple[np.ndarray, np.ndarray, List[str]
     X = np.asarray(X_rows, dtype=np.float32)
     y = np.asarray(y_rows, dtype=np.int64)
     return X, y, names
+
+
+def load_qut_train_subsample(
+    qut_dir: Path, max_rows: int, random_state: int
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Load QUT X_train/y_train and return at most max_rows rows, stratified by
+    label when possible so both classes stay represented.
+    """
+    x_path = qut_dir / "X_train.npy"
+    y_path = qut_dir / "y_train.npy"
+    if not x_path.is_file() or not y_path.is_file():
+        raise FileNotFoundError(f"Need {x_path} and {y_path} for --blend-qut-dir")
+    xt = np.load(x_path)
+    yt = np.load(y_path)
+    n = len(yt)
+    if n == 0:
+        raise RuntimeError("QUT blend arrays are empty.")
+    take = min(int(max_rows), n)
+    if take == n:
+        return xt.astype(np.float32, copy=False), yt.astype(np.int64, copy=False)
+    try:
+        sss = StratifiedShuffleSplit(
+            n_splits=1, train_size=take, random_state=random_state
+        )
+        tr, _ = next(sss.split(xt, yt))
+        return xt[tr].astype(np.float32, copy=False), yt[tr].astype(np.int64, copy=False)
+    except ValueError:
+        rng = np.random.default_rng(random_state)
+        idx = rng.choice(n, size=take, replace=False)
+        return xt[idx].astype(np.float32, copy=False), yt[idx].astype(np.int64, copy=False)
 
 
 def write_qut_csv(sessions_dir: Path, csv_path: Path) -> None:
@@ -183,6 +239,33 @@ def main() -> None:
         default="configs/config.yaml",
         help="Path to config file (for split ratios)",
     )
+    parser.add_argument(
+        "--blend-qut-dir",
+        type=str,
+        default="",
+        help=(
+            "Optional folder containing X_train.npy and y_train.npy (QUT). "
+            "A subsample is merged with session JSON features before train/val split. "
+            "This overwrites processed/qut_features; run "
+            "scripts/regenerate_qut_features_streaming.py to restore QUT-only arrays."
+        ),
+    )
+    parser.add_argument(
+        "--blend-qut-max",
+        type=int,
+        default=80,
+        help="Max QUT rows to take when --blend-qut-dir is set (default 80).",
+    )
+    parser.add_argument(
+        "--backup-qut-dir",
+        type=str,
+        default="",
+        help=(
+            "If set, copies existing processed/qut_features into this folder "
+            "under qut_features_backup_YYYYMMDD_HHMMSS before writing new .npy "
+            "files (only when X_train.npy already exists)."
+        ),
+    )
     args = parser.parse_args()
 
     project_root = PROJECT_ROOT
@@ -218,6 +301,21 @@ def main() -> None:
         print("Saved holdout 39-column CSV to:", holdout_csv_path)
 
     X, y, _ = load_sessions(sessions_dir)
+
+    blend_dir_raw = (args.blend_qut_dir or "").strip()
+    if blend_dir_raw:
+        blend_dir = Path(blend_dir_raw)
+        if not blend_dir.is_absolute():
+            blend_dir = project_root / blend_dir
+        x_q, y_q = load_qut_train_subsample(
+            blend_dir, int(args.blend_qut_max), random_state=42
+        )
+        X = np.vstack([X.astype(np.float32), x_q])
+        y = np.concatenate([y.astype(np.int64), y_q])
+        print(
+            f"Blended {x_q.shape[0]} QUT rows from {blend_dir} "
+            f"(max {args.blend_qut_max}). Total rows before split: {X.shape[0]}"
+        )
 
     # Split into train/val/test with stratification (or use holdout for test)
     if holdout_dir is None:
@@ -263,6 +361,17 @@ def main() -> None:
         X_test, y_test, _ = load_sessions(holdout_dir)
 
     out_dir = project_root / "processed" / "qut_features"
+    backup_raw = (args.backup_qut_dir or "").strip()
+    if backup_raw and out_dir.is_dir() and (out_dir / "X_train.npy").is_file():
+        backup_parent = Path(backup_raw)
+        if not backup_parent.is_absolute():
+            backup_parent = project_root / backup_parent
+        backup_parent.mkdir(parents=True, exist_ok=True)
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_target = backup_parent / f"qut_features_backup_{stamp}"
+        shutil.copytree(out_dir, backup_target)
+        print("Backed up existing qut_features to:", backup_target)
+
     ensure_dir(out_dir)
 
     np.save(out_dir / "X_train.npy", X_train)
