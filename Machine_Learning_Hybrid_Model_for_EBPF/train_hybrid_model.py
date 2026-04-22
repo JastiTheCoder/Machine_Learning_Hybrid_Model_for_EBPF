@@ -15,7 +15,6 @@ Why Hybrid Approach?
 import os
 import sys
 import json
-import argparse
 import numpy as np
 from pathlib import Path
 from datetime import datetime
@@ -439,17 +438,6 @@ def load_parsed_data(data_dir: Path):
 
 def main():
     """Main function to train and evaluate hybrid model."""
-    parser = argparse.ArgumentParser(
-        description="Train/evaluate hybrid XGBoost+LSTM model on QUT features"
-    )
-    parser.add_argument(
-        "--holdout-dir",
-        type=str,
-        default="",
-        help="Optional holdout directory with X_test.npy and y_test.npy",
-    )
-    args = parser.parse_args()
-
     print("\n" + "="*70)
     print("HYBRID XGBOOST + LSTM ENSEMBLE MODEL")
     print("Malware Detection using 36 QUT-DV25 Features")
@@ -467,17 +455,10 @@ def main():
         logger.info("\n[STEP 1] Loading pre-extracted QUT features...")
         X_train = np.load(qut_features_dir / "X_train.npy")
         X_val = np.load(qut_features_dir / "X_val.npy")
+        X_test = np.load(qut_features_dir / "X_test.npy")
         y_train = np.load(qut_features_dir / "y_train.npy")
         y_val = np.load(qut_features_dir / "y_val.npy")
-        if args.holdout_dir:
-            holdout_dir = Path(args.holdout_dir)
-            if not holdout_dir.is_absolute():
-                holdout_dir = project_root / holdout_dir
-            X_test = np.load(holdout_dir / "X_test.npy")
-            y_test = np.load(holdout_dir / "y_test.npy")
-        else:
-            X_test = np.load(qut_features_dir / "X_test.npy")
-            y_test = np.load(qut_features_dir / "y_test.npy")
+        y_test = np.load(qut_features_dir / "y_test.npy")
         
         with open(qut_features_dir / "feature_names.json", 'r') as f:
             feature_names = json.load(f)
@@ -522,11 +503,7 @@ def main():
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred)
-    if len(np.unique(y_test)) < 2:
-        auc = float("nan")
-        logger.warning("ROC AUC undefined: only one class present in y_test")
-    else:
-        auc = roc_auc_score(y_test, y_pred_proba)
+    auc = roc_auc_score(y_test, y_pred_proba)
     
     # Also get individual model performances for comparison
     # XGBoost standalone
@@ -537,10 +514,7 @@ def main():
     xgb_precision = precision_score(y_test, xgb_pred)
     xgb_recall = recall_score(y_test, xgb_pred)
     xgb_f1 = f1_score(y_test, xgb_pred)
-    if len(np.unique(y_test)) < 2:
-        xgb_auc = float("nan")
-    else:
-        xgb_auc = roc_auc_score(y_test, xgb_proba)
+    xgb_auc = roc_auc_score(y_test, xgb_proba)
     
     # Results
     results = {
@@ -598,22 +572,13 @@ def main():
     
     # Confusion Matrix
     print("\nConfusion Matrix (Hybrid Model):")
-    cm = confusion_matrix(y_test, y_pred, labels=[0, 1])
+    cm = confusion_matrix(y_test, y_pred)
     print(f"                    Predicted")
     print(f"                    Benign  Malicious")
     print(f"Actual Benign         {int(cm[0,0]):4d}      {int(cm[0,1]):4d}")
     print(f"Actual Malicious      {int(cm[1,0]):4d}      {int(cm[1,1]):4d}")
-
-    print(
-        "\n"
-        + classification_report(
-            y_test,
-            y_pred,
-            target_names=["Benign", "Malicious"],
-            labels=[0, 1],
-            zero_division=0,
-        )
-    )
+    
+    print("\n" + classification_report(y_test, y_pred, target_names=['Benign', 'Malicious']))
     
     # Save results
     with open(output_dir / "hybrid_results.json", 'w') as f:

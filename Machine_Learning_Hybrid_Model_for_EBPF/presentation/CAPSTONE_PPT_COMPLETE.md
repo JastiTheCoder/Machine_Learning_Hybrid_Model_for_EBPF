@@ -731,35 +731,6 @@ Accuracy: 96.67%
 
 ---
 
-## Real-World Validation (eBPF Sessions)
-
-**Goal:** Test the QUT-trained hybrid model on real eBPF session data.
-
-### Validation Setup:
-- Training data: QUT-DV25 (36 features)
-- Validation data: eBPF session JSONs (10 sessions)
-- Labels: filename/package-name heuristic ("suspicious" => malicious)
-- Class balance: 9 benign, 1 malicious
-
-### eBPF Validation Results:
-| Metric | Value |
-|--------|-------|
-| **Accuracy** | 90% |
-| **Precision** | 0.00 |
-| **Recall** | 0.00 |
-| **F1 Score** | 0.00 |
-| **ROC AUC** | 0.11 |
-
-### Interpretation:
-- Model correctly classified all benign samples.
-- The single malicious sample was missed (false negative).
-- Accuracy looks high because the validation set is highly imbalanced.
-
-### Takeaway:
-**We need more malicious eBPF sessions and true labels** to measure real-world performance and reduce false negatives.
-
----
-
 # SLIDE 10: REFERENCES
 
 ## Academic Papers
