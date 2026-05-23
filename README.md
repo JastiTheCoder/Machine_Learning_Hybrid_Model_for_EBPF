@@ -54,3 +54,19 @@ python src/models/train_lstm.py
 # 4. Evaluate
 python src/models/evaluate.py
 ```
+
+## Results
+
+| Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
+|---|---:|---:|---:|---:|---:|
+| XGBoost | add-value | add-value | add-value | add-value | add-value |
+| BiLSTM | add-value | add-value | add-value | add-value | add-value |
+| Ensemble | add-value | add-value | add-value | add-value | add-value |
+
+Note: Results are based on the processed QUT-DV25 feature set and should be interpreted as academic/project validation rather than production-grade malware detection.
+
+## Limitations
+
+- Current validation is based on a limited academic dataset and may not generalize to all real-world PyPI packages.
+- Deep temporal behavior modeling is still an area for future improvement.
+- More real-world package execution traces are required for stronger production-level validation.
