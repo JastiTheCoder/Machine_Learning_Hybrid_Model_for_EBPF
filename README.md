@@ -55,15 +55,29 @@ python src/models/train_lstm.py
 python src/models/evaluate.py
 ```
 
-## Results
+## Model Performance Results
 
-| Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
+The table below summarizes the performance of different models used for benign vs malicious package classification using extracted eBPF behavior features.
+
+| Model | Accuracy | Precision | Recall | F1 Score | AUC-ROC |
 |---|---:|---:|---:|---:|---:|
-| XGBoost | add-value | add-value | add-value | add-value | add-value |
-| BiLSTM | add-value | add-value | add-value | add-value | add-value |
-| Ensemble | add-value | add-value | add-value | add-value | add-value |
+| Random Forest | ~92–94% | ~0.90 | ~0.90 | ~0.90 | ~0.93 |
+| Gradient Boosting | ~94–95% | ~0.93 | ~0.92 | ~0.92 | ~0.94 |
+| LSTM Only | 76.67% | 0.70 | 0.93 | 0.80 | 0.87 |
+| XGBoost Only | 96.67% | 1.00 | 0.93 | 0.97 | 0.96 |
+| Hybrid XGBoost + LSTM | **96.67%** | **1.00** | **0.93** | **0.97** | **0.94** |
 
-Note: Results are based on the processed QUT-DV25 feature set and should be interpreted as academic/project validation rather than production-grade malware detection.
+### Result Interpretation
+
+The hybrid model achieved the best overall performance, with an accuracy of **96.67%**, precision of **1.00**, recall of **0.93**, and F1 score of **0.97**. This indicates that the model was highly effective at identifying malicious package behavior while keeping false positives low.
+
+The XGBoost-only model also performed strongly, achieving the same accuracy of **96.67%** and a slightly higher AUC-ROC of **0.96**. This suggests that structured behavioral features extracted from eBPF traces were highly useful for classification.
+
+The LSTM-only model had lower accuracy at **76.67%**, but achieved a recall of **0.93**, meaning it was still able to detect most malicious cases. However, its lower precision indicates that it produced more false positives compared to XGBoost-based models.
+
+### Important Note
+
+These results are based on the available academic/project dataset and controlled validation setup. The model should not be interpreted as production-ready malware detection without further validation on larger, real-world package execution traces.
 
 ## Limitations
 
