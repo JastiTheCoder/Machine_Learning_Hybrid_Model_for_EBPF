@@ -129,24 +129,28 @@ func BuildRecord(sess *session.Session, installFeatures features.InstallFeatures
 		return record
 	}
 
-	record.SessionID = sess.ID
-	record.PackageName = sess.PackageName
-	record.ProcessTree = sess.ProcessTree
-	record.Timestamp = sessionTimestamp(sess)
-	record.Syscalls = buildSyscallFeatures(sess.SyscallCounts)
-	record.TimedOut = sess.TimedOut
+	// Read every field through one snapshot rather than reaching into the
+	// session directly. The collectors are usually still writing to this
+	// session when the output worker gets here (Detector.RouteToSession calls
+	// session.AddX with no detector lock held), and SyscallCounts and the TCP
+	// aggregator's sets are maps -- an unsynchronised read of those is
+	// "fatal error: concurrent map read and map write", which kills the process
+	// and loses every in-flight session. See AUDIT.md C2 and
+	// docs/fix-c2-buildrecord-race/.
+	snap := sess.Snapshot()
 
-	if sess.FiletopAgg != nil {
-		record.Filetop = sess.FiletopAgg.Snapshot()
-	}
-	if sess.DirCounts != nil {
-		record.Opensnoop = sess.DirCounts.ToMap()
-	}
-	if sess.TCPAgg != nil {
-		record.TCP = sess.TCPAgg.Counts()
-	}
-	if sess.NGramCtr != nil {
-		record.Patterns = sess.NGramCtr.Snapshot()
+	record.SessionID = snap.ID
+	record.PackageName = snap.PackageName
+	record.ProcessTree = snap.ProcessTree
+	record.Timestamp = snapshotTimestamp(snap)
+	record.Syscalls = buildSyscallFeatures(snap.SyscallCounts)
+	record.TimedOut = snap.TimedOut
+	record.Filetop = snap.Filetop
+	record.TCP = snap.TCP
+	record.Patterns = snap.Patterns
+
+	if snap.Opensnoop != nil {
+		record.Opensnoop = snap.Opensnoop
 	}
 
 	return record
@@ -238,12 +242,12 @@ func Validate(record SessionRecord) []string {
 	return warnings
 }
 
-func sessionTimestamp(sess *session.Session) time.Time {
-	if !sess.EndTime.IsZero() {
-		return sess.EndTime
+func snapshotTimestamp(snap session.Snapshot) time.Time {
+	if !snap.EndTime.IsZero() {
+		return snap.EndTime
 	}
 
-	return sess.StartTime
+	return snap.StartTime
 }
 
 func buildSyscallFeatures(counts map[features.SyscallCategory]int) features.SyscallFeatures {

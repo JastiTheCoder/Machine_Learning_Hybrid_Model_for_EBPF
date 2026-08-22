@@ -1,0 +1,347 @@
+==================
+WARNING: DATA RACE
+Read at 0x00c0000d09a8 by goroutine 17:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.BuildRecord()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:134 +0x465
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func2()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:458 +0x168
+
+Previous write at 0x00c0000d09a8 by goroutine 12:
+  github.com/aniruddha/npm-ebpf-monitor/internal/session.(*Session).AddProcess()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/session/session.go:81 +0x27e
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func1()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:441 +0x25e
+
+Goroutine 17 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:455 +0x39c
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+
+Goroutine 12 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:432 +0xa7
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+==================
+==================
+WARNING: DATA RACE
+Read at 0x00c0000c58c0 by goroutine 17:
+  runtime.mapaccess1_faststr()
+      /usr/lib/go/src/internal/runtime/maps/runtime_faststr.go:101 +0x0
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.buildSyscallFeatures()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:255 +0x589
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.BuildRecord()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:136 +0x526
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func2()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:458 +0x168
+
+Previous write at 0x00c0000c58c0 by goroutine 9:
+  runtime.mapassign_faststr()
+      /usr/lib/go/src/internal/runtime/maps/runtime_faststr.go:263 +0x0
+  github.com/aniruddha/npm-ebpf-monitor/internal/session.(*Session).AddSyscall()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/session/session.go:97 +0x339
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func1()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:442 +0x27d
+
+Goroutine 17 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:455 +0x39c
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+
+Goroutine 9 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:432 +0xa7
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+==================
+==================
+WARNING: DATA RACE
+Read at 0x00c0000d09d8 by goroutine 17:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.buildSyscallFeatures()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:256 +0x5d6
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.BuildRecord()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:136 +0x526
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func2()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:458 +0x168
+
+Previous write at 0x00c0000d09d8 by goroutine 9:
+  github.com/aniruddha/npm-ebpf-monitor/internal/session.(*Session).AddSyscall()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/session/session.go:97 +0x345
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func1()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:442 +0x27d
+
+Goroutine 17 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:455 +0x39c
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+
+Goroutine 9 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:432 +0xa7
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+==================
+==================
+WARNING: DATA RACE
+Read at 0x00c0000d09f0 by goroutine 17:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.buildSyscallFeatures()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:261 +0x716
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.BuildRecord()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:136 +0x526
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func2()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:458 +0x168
+
+Previous write at 0x00c0000d09f0 by goroutine 9:
+  github.com/aniruddha/npm-ebpf-monitor/internal/session.(*Session).AddSyscall()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/session/session.go:97 +0x345
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func1()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:442 +0x27d
+
+Goroutine 17 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:455 +0x39c
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+
+Goroutine 9 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:432 +0xa7
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c000024430 by goroutine 9:
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*DirCounts).Add()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/dir_counter.go:51 +0x52f
+  github.com/aniruddha/npm-ebpf-monitor/internal/session.(*Session).AddFile()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/session/session.go:114 +0x3bb
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func1()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:443 +0x2d0
+
+Previous read at 0x00c000024430 by goroutine 17:
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*DirCounts).ToMap()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/dir_counter.go:68 +0xb57
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.BuildRecord()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:143 +0x8a6
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func2()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:458 +0x168
+
+Goroutine 9 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:432 +0xa7
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+
+Goroutine 17 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:455 +0x39c
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+==================
+==================
+WARNING: DATA RACE
+Read at 0x00c0000c5890 by goroutine 17:
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*TCPAggregator).Counts()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/tcp_aggregator.go:124 +0xd6e
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.BuildRecord()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:146 +0xbef
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func2()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:458 +0x168
+
+Previous write at 0x00c0000c5890 by goroutine 9:
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*TCPAggregator).Add()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/tcp_aggregator.go:110 +0x204
+  github.com/aniruddha/npm-ebpf-monitor/internal/session.(*Session).AddTCP()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/session/session.go:126 +0x3b0
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func1()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:444 +0x311
+
+Goroutine 17 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:455 +0x39c
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+
+Goroutine 9 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:432 +0xa7
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c0000c57d0 by goroutine 9:
+  runtime.mapassign_faststr()
+      /usr/lib/go/src/internal/runtime/maps/runtime_faststr.go:263 +0x0
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*TCPAggregator).Add()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/tcp_aggregator.go:111 +0x257
+  github.com/aniruddha/npm-ebpf-monitor/internal/session.(*Session).AddTCP()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/session/session.go:126 +0x3b0
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func1()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:444 +0x311
+
+Previous read at 0x00c0000c57d0 by goroutine 17:
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*TCPAggregator).Counts()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/tcp_aggregator.go:125 +0xc5b
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.BuildRecord()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:146 +0xbef
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func2()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:458 +0x168
+
+Goroutine 9 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:432 +0xa7
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+
+Goroutine 17 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:455 +0x39c
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c0000c5800 by goroutine 9:
+  runtime.mapassign_faststr()
+      /usr/lib/go/src/internal/runtime/maps/runtime_faststr.go:263 +0x0
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*TCPAggregator).Add()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/tcp_aggregator.go:112 +0x2ab
+  github.com/aniruddha/npm-ebpf-monitor/internal/session.(*Session).AddTCP()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/session/session.go:126 +0x3b0
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func1()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:444 +0x311
+
+Previous read at 0x00c0000c5800 by goroutine 17:
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*TCPAggregator).Counts()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/tcp_aggregator.go:126 +0xca5
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.BuildRecord()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:146 +0xbef
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func2()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:458 +0x168
+
+Goroutine 9 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:432 +0xa7
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+
+Goroutine 17 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:455 +0x39c
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c0000c5830 by goroutine 9:
+  runtime.mapassign()
+      /usr/lib/go/src/internal/runtime/maps/runtime.go:206 +0x0
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*TCPAggregator).Add()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/tcp_aggregator.go:113 +0x2e6
+  github.com/aniruddha/npm-ebpf-monitor/internal/session.(*Session).AddTCP()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/session/session.go:126 +0x3b0
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func1()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:444 +0x311
+
+Previous read at 0x00c0000c5830 by goroutine 17:
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*TCPAggregator).Counts()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/tcp_aggregator.go:127 +0xcee
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.BuildRecord()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:146 +0xbef
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func2()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:458 +0x168
+
+Goroutine 9 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:432 +0xa7
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+
+Goroutine 17 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:455 +0x39c
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c0000c5860 by goroutine 9:
+  runtime.mapassign()
+      /usr/lib/go/src/internal/runtime/maps/runtime.go:206 +0x0
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*TCPAggregator).Add()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/tcp_aggregator.go:114 +0x324
+  github.com/aniruddha/npm-ebpf-monitor/internal/session.(*Session).AddTCP()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/session/session.go:126 +0x3b0
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func1()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:444 +0x311
+
+Previous read at 0x00c0000c5860 by goroutine 17:
+  github.com/aniruddha/npm-ebpf-monitor/internal/features.(*TCPAggregator).Counts()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/features/tcp_aggregator.go:128 +0xd37
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.BuildRecord()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer.go:146 +0xbef
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo.func2()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:458 +0x168
+
+Goroutine 9 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:432 +0xa7
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+
+Goroutine 17 (running) created at:
+  github.com/aniruddha/npm-ebpf-monitor/internal/output.TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo()
+      /home/ani/capstone/src/npm-ebpf-monitor/internal/output/json_writer_test.go:455 +0x39c
+  testing.tRunner()
+      /usr/lib/go/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/lib/go/src/testing/testing.go:2101 +0x38
+==================
+--- FAIL: TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo (0.06s)
+    testing.go:1712: race detected during execution of test
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/output	0.071s
+FAIL

@@ -3,6 +3,7 @@ package session
 import (
 	"bytes"
 	"fmt"
+	"maps"
 	"sync"
 	"time"
 
@@ -212,4 +213,75 @@ func decodeComm(comm [16]byte) string {
 	}
 
 	return string(comm[:end])
+}
+
+// Snapshot is a point-in-time copy of everything a consumer needs to build an
+// output record from a Session.
+//
+// It exists so readers never touch Session's fields directly. Session's mutex
+// is unexported and every mutator takes it; a reader that reaches in without it
+// races those writers, and because SyscallCounts and the TCP aggregator's sets
+// are Go maps, that race is not merely inconsistent data -- it is
+// "fatal error: concurrent map read and map write", an unrecoverable crash that
+// loses every in-flight session (AUDIT.md C2).
+type Snapshot struct {
+	ID          string
+	PackageName string
+	Cwd         string
+	ProcessTree string
+	TimedOut    bool
+	StartTime   time.Time
+	EndTime     time.Time
+
+	SyscallCounts map[features.SyscallCategory]int
+	Filetop       features.FiletopCounts
+	Opensnoop     map[string]int
+	TCP           features.TCPCounts
+	Patterns      features.PatternCounts
+}
+
+// Snapshot returns a consistent point-in-time copy of the session's collected
+// features.
+//
+// Every field is read under a single acquisition of s.mu, so the returned value
+// reflects one coherent instant rather than fields sampled at different times.
+// Maps are cloned rather than shared, so later writes to the session cannot
+// mutate a snapshot a caller is still reading.
+func (s *Session) Snapshot() Snapshot {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	snap := Snapshot{
+		ID:          s.ID,
+		PackageName: s.PackageName,
+		Cwd:         s.Cwd,
+		ProcessTree: s.ProcessTree,
+		TimedOut:    s.TimedOut,
+		StartTime:   s.StartTime,
+		EndTime:     s.EndTime,
+
+		SyscallCounts: maps.Clone(s.SyscallCounts),
+		Opensnoop:     (&features.DirCounts{}).ToMap(),
+	}
+
+	if snap.SyscallCounts == nil {
+		snap.SyscallCounts = make(map[features.SyscallCategory]int)
+	}
+
+	// These aggregators have no mutex of their own (except FiletopAggregator)
+	// and rely entirely on s.mu, which is held here.
+	if s.FiletopAgg != nil {
+		snap.Filetop = s.FiletopAgg.Snapshot()
+	}
+	if s.DirCounts != nil {
+		snap.Opensnoop = s.DirCounts.ToMap()
+	}
+	if s.TCPAgg != nil {
+		snap.TCP = s.TCPAgg.Counts()
+	}
+	if s.NGramCtr != nil {
+		snap.Patterns = s.NGramCtr.Snapshot()
+	}
+
+	return snap
 }

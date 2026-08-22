@@ -1,6 +1,7 @@
 package output
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -8,9 +9,12 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync"
+	"syscall"
 	"testing"
 	"time"
 
+	"github.com/aniruddha/npm-ebpf-monitor/internal/collector"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/features"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/session"
 )
@@ -392,5 +396,220 @@ func TestToCSVRowUsesTheAssignedLabel(t *testing.T) {
 				t.Errorf("severity_score column = %q, want %q", got, want)
 			}
 		})
+	}
+}
+
+// TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo asserts that building
+// an output record from a session does not race the collectors still writing to
+// it.
+//
+// This is AUDIT.md C2. The race is reachable in production, not theoretical:
+// Detector.RouteToSession fetches the *Session under d.mu.RLock(), releases the
+// lock, then calls fn(session) -- so session.AddSyscall runs with no detector
+// lock held. If the session's timeout fires in that window, the session is sent
+// to the completed channel and cmd/monitor's output worker calls BuildRecord on
+// the very same pointer from a different goroutine.
+//
+// The consequence is worse than inconsistent output: Session.SyscallCounts and
+// TCPAggregator's four sets are Go maps, and a concurrent map read/write is
+// "fatal error: concurrent map read and map write" -- an unrecoverable crash
+// that loses every in-flight session in the capture run.
+//
+// The oracle here is the race detector: run under `go test -race`. Without it
+// this test may pass by luck, so it is meaningless unless -race is on.
+func TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo(t *testing.T) {
+	sess := session.NewSession(303, "crypto-miner-test-1.0.0.tgz")
+
+	const writers = 8
+	const iterations = 200
+
+	stop := make(chan struct{})
+	var wg sync.WaitGroup
+
+	// Writers: the same calls the detector makes for real collector events.
+	for w := 0; w < writers; w++ {
+		w := w
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			pid := uint32(1000 + w)
+			for i := 0; i < iterations; i++ {
+				select {
+				case <-stop:
+					return
+				default:
+				}
+				sess.AddProcess(collector.ProcessEvent{Pid: pid, Comm: commOf("node")})
+				sess.AddSyscall(collector.SyscallEvent{Pid: pid, SyscallID: uint32(257 + i%4)})
+				sess.AddFile(collector.FileEvent{Pid: pid, Flags: uint32(syscall.O_WRONLY)})
+				sess.AddTCP(collector.TCPEvent{
+					Pid: pid, Sport: uint16(40000 + i%50), Dport: uint16(4444 + i%3),
+				})
+				sess.AddBytes(collector.BytesEvent{Pid: pid, Direction: 1, Bytes: 128})
+			}
+		}()
+	}
+
+	// Reader: the output worker's call, running concurrently.
+	var last SessionRecord
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for i := 0; i < iterations; i++ {
+			last = BuildRecord(sess, features.InstallFeatures{})
+		}
+	}()
+
+	wg.Wait()
+	close(stop)
+
+	// Sanity: the reader must actually have observed collected data, otherwise
+	// a BuildRecord that returned an empty record would "pass" this test.
+	if last.SessionID != sess.ID {
+		t.Errorf("BuildRecord produced SessionID %q, want %q", last.SessionID, sess.ID)
+	}
+	final := BuildRecord(sess, features.InstallFeatures{})
+	if final.Syscalls.FileOps+final.Syscalls.IoOps+final.Syscalls.NetworkOps+
+		final.Syscalls.ProcessOps+final.Syscalls.TimeOps+final.Syscalls.SecurityOps+
+		final.Syscalls.UnknownOps == 0 {
+		t.Error("final record recorded no syscalls; the writers did not run")
+	}
+}
+
+// commOf builds the fixed-width comm field the collector event structs use.
+func commOf(name string) [16]byte {
+	var out [16]byte
+	copy(out[:], name)
+	return out
+}
+
+// argSlots encodes argv the way the BPF program does: fixed 51-byte slots
+// inside a 256-byte buffer, which the detector joins back into a command line.
+func argSlots(parts ...string) [256]byte {
+	var out [256]byte
+	for i, part := range parts {
+		offset := i * 51
+		if offset >= len(out) {
+			break
+		}
+		copy(out[offset:offset+51], part)
+	}
+	return out
+}
+
+// BPF process event types, mirroring the values the kernel program emits.
+const (
+	evExec uint8 = 0
+	evFork uint8 = 1
+	evExit uint8 = 2
+)
+
+// TestBuildRecordOnCompletedSessionWhileCollectorsStillWrite exercises the real
+// Detector -> Completed() -> BuildRecord path end to end, driving the detector
+// through its exported API.
+//
+// IMPORTANT -- what this test does NOT do: it does not reproduce the C2 data
+// race, and it must not be relied on as the regression test for it. That was
+// verified rather than assumed: with the fix reverted so BuildRecord reads the
+// session's fields directly again, this test still passes with zero races
+// (see docs/fix-c2-buildrecord-race/evidence/slice3-teeth-check.txt).
+//
+// The reason is structural. Completing a session calls unregisterSession, which
+// removes its PIDs from d.pidToSession, so RouteToSession returns early and the
+// writers stop touching the session almost immediately. The genuine race window
+// is the few instructions between RouteToSession's d.mu.RUnlock() and its
+// fn(session) call, which cannot be hit reliably from outside the package.
+//
+// TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo is the test with teeth
+// for C2; that one goes from 10 data races to 0. This one is kept because it is
+// still worth having: it is the only test that drives a record all the way from
+// raw collector events through the detector to a finished SessionRecord.
+func TestBuildRecordOnCompletedSessionWhileCollectorsStillWrite(t *testing.T) {
+	detector := session.NewDetector(0)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	detectorDone := make(chan struct{})
+	go func() {
+		defer close(detectorDone)
+		detector.Run(ctx)
+	}()
+
+	submitCtx := context.Background()
+	const npmPID = uint32(100)
+	const childPID = uint32(101)
+
+	// Create the session with an npm install exec, then a child process.
+	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+		Pid:       npmPID,
+		Comm:      commOf("bash"),
+		Args:      argSlots("npm", "install", "crypto-miner-test-1.0.0.tgz"),
+		EventType: evExec,
+	})
+	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+		Pid: childPID, Ppid: npmPID, Comm: commOf("node"), EventType: evFork,
+	})
+
+	// Collector events keep flowing for the session's PIDs, exactly as they do
+	// while a real install is winding down.
+	stop := make(chan struct{})
+	var writers sync.WaitGroup
+	for w := 0; w < 4; w++ {
+		writers.Add(1)
+		go func() {
+			defer writers.Done()
+			for i := 0; ; i++ {
+				select {
+				case <-stop:
+					return
+				default:
+				}
+				detector.SubmitSyscall(submitCtx, collector.SyscallEvent{
+					Pid: childPID, SyscallID: uint32(257 + i%4),
+				})
+				detector.SubmitFile(submitCtx, collector.FileEvent{
+					Pid: childPID, Flags: uint32(syscall.O_WRONLY),
+				})
+				detector.SubmitTCP(submitCtx, collector.TCPEvent{
+					Pid: childPID, Sport: uint16(40000 + i%50), Dport: 4444,
+				})
+			}
+		}()
+	}
+
+	// Complete the session while those writers are still running.
+	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+		Pid: childPID, Ppid: npmPID, EventType: evExit,
+	})
+	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+		Pid: npmPID, EventType: evExit,
+	})
+
+	var record SessionRecord
+	select {
+	case completed := <-detector.Completed():
+		if completed == nil {
+			t.Fatal("completed channel yielded a nil session")
+		}
+		// The output worker's exact call, while collectors are still writing.
+		record = BuildRecord(completed, features.InstallFeatures{})
+	case <-time.After(10 * time.Second):
+		close(stop)
+		writers.Wait()
+		t.Fatal("session did not complete within 10s")
+	}
+
+	close(stop)
+	writers.Wait()
+	cancel()
+	<-detectorDone
+
+	if record.PackageName != "crypto-miner-test-1.0.0.tgz" {
+		t.Errorf("record PackageName = %q, want %q",
+			record.PackageName, "crypto-miner-test-1.0.0.tgz")
+	}
+	if record.SessionID == "" {
+		t.Error("record SessionID is empty")
 	}
 }

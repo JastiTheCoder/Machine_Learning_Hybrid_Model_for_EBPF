@@ -1,0 +1,5 @@
+--- PASS: TestSnapshotIsIndependentOfLaterMutation (0.00s)
+--- PASS: TestSnapshotCopiesSessionIdentity (0.00s)
+--- PASS: TestSnapshotIsRaceFreeUnderConcurrentWriters (0.03s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	1.051s

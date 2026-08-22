@@ -1,0 +1,3 @@
+--- PASS: TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo (0.05s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	1.058s

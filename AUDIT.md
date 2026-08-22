@@ -66,7 +66,7 @@ would have caught this immediately; no such test exists (see [Test coverage](#te
 
 ---
 
-### C2. `BuildRecord` reads session state with no locking — can crash the process or corrupt output
+### C2. `BuildRecord` reads session state with no locking — can crash the process or corrupt output — FIXED
 
 `internal/output/json_writer.go:114-146` (`BuildRecord`) reads `sess.SyscallCounts`,
 `sess.DirCounts.ToMap()`, `sess.TCPAgg.Counts()`, `sess.NGramCtr.Snapshot()`,
@@ -94,6 +94,21 @@ writes` — an unrecoverable process crash that loses every in-flight session fo
 capture run. At best it silently corrupts a written feature vector. Not exercised by
 any test — `TestConcurrency` in `session_test.go` only tests concurrent writers
 against each other, never a concurrent `BuildRecord`-style read.
+
+**FIXED.** Confirmed with the race detector before fixing: a test driving collector
+writes against `BuildRecord` reported **10 distinct data races**, including the crash
+vector itself — `runtime.mapassign_faststr` in `Session.AddSyscall` racing
+`runtime.mapaccess1_faststr` in `buildSyscallFeatures`. The fix adds
+`Session.Snapshot()`, which takes `s.mu` once and returns a value struct with cloned
+maps; `BuildRecord` consumes that instead of reaching into the session, so every field
+comes from one coherent instant and nothing aliases live state. `Session.mu` stays
+unexported. After: 0 races. Details:
+[`docs/fix-c2-buildrecord-race/`](docs/fix-c2-buildrecord-race/).
+
+One honest caveat recorded there: the end-to-end Detector seam could **not** reproduce
+this race (verified by reverting the fix and watching the test still pass), because
+`unregisterSession` removes the session's PIDs the moment it completes. The regression
+test with teeth is at the `BuildRecord` boundary.
 
 ---
 

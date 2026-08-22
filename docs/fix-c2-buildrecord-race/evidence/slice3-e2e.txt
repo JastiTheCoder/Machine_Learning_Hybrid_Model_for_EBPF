@@ -1,0 +1,4 @@
+=== RUN   TestBuildRecordOnCompletedSessionWhileCollectorsStillWrite
+--- PASS: TestBuildRecordOnCompletedSessionWhileCollectorsStillWrite (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	1.014s

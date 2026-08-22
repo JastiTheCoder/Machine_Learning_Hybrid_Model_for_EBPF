@@ -1,0 +1,1 @@
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	1.008s

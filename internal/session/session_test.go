@@ -263,3 +263,155 @@ func fixedComm(comm string) [16]byte {
 	copy(out[:], comm)
 	return out
 }
+
+// TestSnapshotIsIndependentOfLaterMutation asserts that Snapshot returns a
+// point-in-time value that later writes to the Session cannot alter.
+//
+// This is the defining property of a snapshot, and the one that a naive
+// implementation gets wrong: SyscallCounts is a map, so returning it directly
+// hands the caller a live reference into the Session. The reader would then see
+// counts change under it mid-read -- and, because the writers mutate that same
+// map from another goroutine, Go would abort the process with
+// "fatal error: concurrent map read and map write" (AUDIT.md C2).
+//
+// Asserting independence rather than equality also keeps the test honest: it
+// cannot pass by construction, because it compares the snapshot against values
+// captured before a mutation that provably happened.
+func TestSnapshotIsIndependentOfLaterMutation(t *testing.T) {
+	session := NewSession(303, "pkg")
+
+	session.AddProcess(collector.ProcessEvent{Pid: 1001, Comm: fixedComm("node")})
+	for _, id := range []uint32{257, 262, 5, 41} {
+		session.AddSyscall(collector.SyscallEvent{Pid: 1001, SyscallID: id})
+	}
+
+	snap := session.Snapshot()
+
+	// Values captured at snapshot time.
+	treeAtSnapshot := snap.ProcessTree
+	syscallsAtSnapshot := totalSyscalls(snap.SyscallCounts)
+
+	if syscallsAtSnapshot != 4 {
+		t.Fatalf("snapshot recorded %d syscalls, want 4", syscallsAtSnapshot)
+	}
+	if !strings.Contains(treeAtSnapshot, "node(1001)") {
+		t.Fatalf("snapshot process tree = %q, want it to contain %q", treeAtSnapshot, "node(1001)")
+	}
+
+	// Mutate the session after the snapshot was taken.
+	session.AddProcess(collector.ProcessEvent{Pid: 2002, Comm: fixedComm("sh")})
+	for _, id := range []uint32{257, 262} {
+		session.AddSyscall(collector.SyscallEvent{Pid: 2002, SyscallID: id})
+	}
+
+	if got := totalSyscalls(snap.SyscallCounts); got != syscallsAtSnapshot {
+		t.Errorf("snapshot syscall total changed from %d to %d after later writes; "+
+			"the snapshot aliases live session state", syscallsAtSnapshot, got)
+	}
+	if snap.ProcessTree != treeAtSnapshot {
+		t.Errorf("snapshot process tree changed after later writes")
+	}
+	if strings.Contains(snap.ProcessTree, "sh(2002)") {
+		t.Errorf("snapshot process tree picked up a process added after the snapshot")
+	}
+
+	// A fresh snapshot must see the new writes -- otherwise the test above
+	// could pass simply because Snapshot returns stale or empty data.
+	fresh := session.Snapshot()
+	if got := totalSyscalls(fresh.SyscallCounts); got != 6 {
+		t.Errorf("fresh snapshot recorded %d syscalls, want 6", got)
+	}
+	if !strings.Contains(fresh.ProcessTree, "sh(2002)") {
+		t.Errorf("fresh snapshot process tree = %q, want it to contain %q",
+			fresh.ProcessTree, "sh(2002)")
+	}
+}
+
+// TestSnapshotCopiesSessionIdentity asserts the scalar metadata BuildRecord
+// depends on survives the snapshot.
+func TestSnapshotCopiesSessionIdentity(t *testing.T) {
+	session := NewSession(4242, "left-pad")
+	session.Complete()
+
+	snap := session.Snapshot()
+
+	if snap.ID != session.ID {
+		t.Errorf("snapshot ID = %q, want %q", snap.ID, session.ID)
+	}
+	if snap.PackageName != "left-pad" {
+		t.Errorf("snapshot PackageName = %q, want %q", snap.PackageName, "left-pad")
+	}
+	if snap.EndTime.IsZero() {
+		t.Error("snapshot EndTime is zero after Complete(); BuildRecord uses it for the timestamp")
+	}
+	if snap.StartTime.IsZero() {
+		t.Error("snapshot StartTime is zero")
+	}
+}
+
+// totalSyscalls sums every category, so the assertion does not depend on how
+// Categorise maps a particular syscall number.
+func totalSyscalls(counts map[features.SyscallCategory]int) int {
+	total := 0
+	for _, n := range counts {
+		total += n
+	}
+	return total
+}
+
+// TestSnapshotIsRaceFreeUnderConcurrentWriters pins the concurrency guarantee
+// of the new Snapshot boundary directly, rather than only through BuildRecord.
+//
+// This is a guard, not a TDD red: Snapshot takes s.mu from the moment it was
+// written, so it passes immediately. It is kept because Snapshot's whole reason
+// to exist is this guarantee -- if a future change reorders it, drops the lock,
+// or returns a live map instead of a clone, this fails where a correctness-only
+// test would not. The oracle is `go test -race`.
+func TestSnapshotIsRaceFreeUnderConcurrentWriters(t *testing.T) {
+	session := NewSession(303, "pkg")
+
+	stop := make(chan struct{})
+	var wg sync.WaitGroup
+
+	for w := 0; w < 6; w++ {
+		w := w
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			pid := uint32(1000 + w)
+			for i := 0; i < 300; i++ {
+				select {
+				case <-stop:
+					return
+				default:
+				}
+				session.AddProcess(collector.ProcessEvent{Pid: pid, Comm: fixedComm("node")})
+				session.AddSyscall(collector.SyscallEvent{Pid: pid, SyscallID: uint32(257 + i%4)})
+				session.AddFile(collector.FileEvent{Pid: pid, Flags: uint32(syscall.O_WRONLY)})
+				session.AddTCP(collector.TCPEvent{Pid: pid, Sport: uint16(40000 + i%50), Dport: 4444})
+			}
+		}()
+	}
+
+	var last Snapshot
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for i := 0; i < 300; i++ {
+			last = session.Snapshot()
+			// Reading the cloned map must be safe even as writers continue.
+			_ = totalSyscalls(last.SyscallCounts)
+		}
+	}()
+
+	wg.Wait()
+	close(stop)
+
+	if last.ID != session.ID {
+		t.Errorf("snapshot ID = %q, want %q", last.ID, session.ID)
+	}
+	final := session.Snapshot()
+	if totalSyscalls(final.SyscallCounts) == 0 {
+		t.Error("final snapshot recorded no syscalls; the writers did not run")
+	}
+}

@@ -1,0 +1,6 @@
+# github.com/aniruddha/npm-ebpf-monitor/internal/session [github.com/aniruddha/npm-ebpf-monitor/internal/session.test]
+internal/session/session_test.go:288:18: session.Snapshot undefined (type *Session has no field or method Snapshot)
+internal/session/session_test.go:320:19: session.Snapshot undefined (type *Session has no field or method Snapshot)
+internal/session/session_test.go:336:18: session.Snapshot undefined (type *Session has no field or method Snapshot)
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/session [build failed]
+FAIL
