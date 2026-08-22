@@ -62,8 +62,11 @@ func (a *FiletopAggregator) Add(event collector.FileEvent) {
 		a.allPIDs = make(map[uint32]bool)
 	}
 
+	// A read-write open requests both capabilities, so an O_RDWR opener is
+	// counted as a reader *and* a writer.  O_CREAT implies the process is
+	// producing a file even when the access mode itself is read-only.
 	mode := event.Flags & syscall.O_ACCMODE
-	if mode == syscall.O_RDONLY {
+	if mode == syscall.O_RDONLY || mode == syscall.O_RDWR {
 		a.readPIDs[event.Pid] = true
 	}
 	if mode == syscall.O_WRONLY || mode == syscall.O_RDWR || (event.Flags&syscall.O_CREAT != 0) {

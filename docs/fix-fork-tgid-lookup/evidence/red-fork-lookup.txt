@@ -1,0 +1,6 @@
+=== RUN   TestProcessCollectorReportsForkFromNonLeaderThreadOfTrackedProcess
+    process_collector_test.go:285: no FORK event for child pid 713570 within 5s (forked from a non-leader thread of tracked tgid 713568)
+--- FAIL: TestProcessCollectorReportsForkFromNonLeaderThreadOfTrackedProcess (5.84s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/collector	5.848s
+FAIL

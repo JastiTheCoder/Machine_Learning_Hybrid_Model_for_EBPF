@@ -1,0 +1,17 @@
+  [benign]    npm-1776924376_benign-test-1.0.0.tgz.json
+  [benign]    npm-1776924400_ci-secret-grabber-test-1.0.0.tgz.json
+  [benign]    npm-1776924424_crypto-miner-test-1.0.0.tgz.json
+  [benign]    npm-1776924448_env-stealer-test-1.0.0.tgz.json
+  [benign]    npm-1776924471_reverse-shell-test-1.0.0.tgz.json
+  [malicious] npm-1776924493_suspicious-test-1.0.0.tgz.json
+  [benign]    npm-1776938447_benign-test-1.0.0.tgz.json
+  [benign]    npm-1776938470_ci-secret-grabber-test-1.0.0.tgz.json
+  [benign]    npm-1776938494_crypto-miner-test-1.0.0.tgz.json
+  [benign]    npm-1776938517_env-stealer-test-1.0.0.tgz.json
+  [benign]    npm-1776938540_reverse-shell-test-1.0.0.tgz.json
+  [malicious] npm-1776938562_suspicious-test-1.0.0.tgz.json
+  [benign]    npm-1776939185_benign-test-1.0.0.tgz.json
+
+PRE-FIX RESULT: 11 benign, 2 malicious (13 total)
+GROUND TRUTH:   3 benign, 10 malicious (13 total)
+MISLABELLED:    8 malicious samples labelled benign

@@ -1,0 +1,30 @@
+########## STEP 1: export BEFORE labelling (unlabelled corpus) ##########
+2026/08/22 21:50:27 EXCLUDED npm-1776938562_suspicious-test-1.0.0.tgz.json: session "npm-1776938562" (package "suspicious-test-1.0.0.tgz") has no label; run the labeler before exporting
+2026/08/22 21:50:27 EXCLUDED npm-1776939185_benign-test-1.0.0.tgz.json: session "npm-1776939185" (package "benign-test-1.0.0.tgz") has no label; run the labeler before exporting
+Wrote 0 rows to /home/ani/.claude/jobs/d9878835/tmp/pipe/before.csv.
+
+EXCLUDED: 13 session(s) were not exported because they have no label. Run the labeler over the sessions directory, then export again.
+exit status 1
+rows in before.csv (excl header): 0
+
+########## STEP 2: label ##########
+  [benign]    npm-1776939185_benign-test-1.0.0.tgz.json            benign
+
+Dataset: 3 benign, 10 malicious (13 total)
+
+########## STEP 3: validate ##########
+  Malicious files have other_dir_access > 0 ✓
+
+─── Rule 3: Benign median etc_dir_access < malicious median ───
+  Benign median etc_dir_access < malicious median etc_dir_access ✓
+    benign median=0, malicious median=13
+
+Dataset: 3 benign, 10 malicious (13 total)
+
+─── Rule 4: All files have a declared ground-truth label ───
+  All files have a declared ground-truth label ✓
+
+PASS
+
+########## STEP 4: export AFTER labelling ##########
+Wrote 13 rows to /home/ani/.claude/jobs/d9878835/tmp/pipe/after.csv.

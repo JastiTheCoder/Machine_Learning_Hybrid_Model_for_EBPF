@@ -1,0 +1,14 @@
+package_name,label,read_processes,write_processes,read_data_transfer_kb,write_data_transfer_kb,file_access_processes,total_dependencies,direct_dependencies,indirect_dependencies,root_dir_access,temp_dir_access,home_dir_access,user_dir_access,sys_dir_access,etc_dir_access,other_dir_access,state_transitions,local_ips,remote_ips,local_ports,remote_ports,io_ops,file_ops,network_ops,time_ops,security_ops,process_ops,p1_file_metadata,p2_read_data,p3_write_data,p4_socket_create,p5_process_create,p6_memory_map,p7_fd_manage,p8_ipc,p9_file_lock,p10_error_handle,severity_score
+benign-test-1.0.0.tgz,0,3,0,7,1,3,1,1,0,0,33,24,865,18,28,19,13,1,6,2,1,2150,2016,78,0,116,39,4,0,0,0,0,0,0,0,0,8,0
+ci-secret-grabber-test-1.0.0.tgz,1,3,0,9,1,3,1,1,0,0,30,32,865,19,30,19,26,1,6,3,2,2199,2051,113,0,105,38,5,0,0,0,0,0,0,0,0,9,1
+crypto-miner-test-1.0.0.tgz,1,3,0,3,0,3,1,1,0,0,31,24,865,38,27,19,19,2,7,2,4,2200,2069,84,0,116,38,4,0,0,0,0,2,0,0,0,11,1
+env-stealer-test-1.0.0.tgz,1,3,0,11,2,3,1,1,0,0,30,24,865,19,32,22,26,1,6,3,2,2177,2051,117,0,104,39,5,0,0,0,0,0,0,0,0,10,1
+reverse-shell-test-1.0.0.tgz,1,7,0,3,0,7,1,1,0,0,31,24,865,25,38,37,4,1,1,1,2,2224,2191,59,0,121,123,17,0,0,0,0,0,0,0,0,11,1
+suspicious-test-1.0.0.tgz,1,3,0,3,0,3,1,1,0,0,30,24,865,18,30,19,18,1,7,3,2,2146,2020,87,0,104,39,5,0,0,0,0,1,0,0,0,8,1
+benign-test-1.0.0.tgz,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ci-secret-grabber-test-1.0.0.tgz,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+crypto-miner-test-1.0.0.tgz,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+env-stealer-test-1.0.0.tgz,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+reverse-shell-test-1.0.0.tgz,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+suspicious-test-1.0.0.tgz,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+benign-test-1.0.0.tgz,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

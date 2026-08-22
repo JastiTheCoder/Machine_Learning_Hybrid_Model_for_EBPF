@@ -1,0 +1,6 @@
+=== RUN   TestFileCollectorReportsOpenFlagsFromRealOpenat
+    file_collector_test.go:118: no O_WRONLY|O_CREAT file event observed for this process within 5s; open flags are not reaching userspace
+--- FAIL: TestFileCollectorReportsOpenFlagsFromRealOpenat (5.55s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/collector	5.566s
+FAIL

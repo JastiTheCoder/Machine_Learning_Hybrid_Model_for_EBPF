@@ -1,0 +1,4 @@
+=== RUN   TestProcessCollectorReportsForkOfTrackedProcess
+--- PASS: TestProcessCollectorReportsForkOfTrackedProcess (0.94s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	0.943s

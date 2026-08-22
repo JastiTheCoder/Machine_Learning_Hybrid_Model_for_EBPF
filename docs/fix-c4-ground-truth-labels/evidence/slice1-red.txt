@@ -1,0 +1,4 @@
+# github.com/aniruddha/npm-ebpf-monitor/internal/dataset [github.com/aniruddha/npm-ebpf-monitor/internal/dataset.test]
+internal/dataset/labels_test.go:62:16: undefined: Lookup
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/dataset [build failed]
+FAIL

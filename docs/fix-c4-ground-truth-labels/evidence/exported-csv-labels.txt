@@ -1,0 +1,18 @@
+=== after.csv: package_name,label,severity_score per row ===
+benign-test-1.0.0.tgz  label=0  severity=0
+benign-test-1.0.0.tgz  label=0  severity=0
+benign-test-1.0.0.tgz  label=0  severity=0
+ci-secret-grabber-test-1.0.0.tgz  label=1  severity=1
+ci-secret-grabber-test-1.0.0.tgz  label=1  severity=1
+crypto-miner-test-1.0.0.tgz  label=1  severity=1
+crypto-miner-test-1.0.0.tgz  label=1  severity=1
+env-stealer-test-1.0.0.tgz  label=1  severity=1
+env-stealer-test-1.0.0.tgz  label=1  severity=1
+reverse-shell-test-1.0.0.tgz  label=1  severity=1
+reverse-shell-test-1.0.0.tgz  label=1  severity=1
+suspicious-test-1.0.0.tgz  label=1  severity=1
+suspicious-test-1.0.0.tgz  label=1  severity=1
+
+=== label distribution in the exported CSV ===
+      3 0
+     10 1

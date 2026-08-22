@@ -79,6 +79,12 @@ var csvHeader = []string{
 	"severity_score",
 }
 
+// exportSummary counts the outcome of an export run.
+type exportSummary struct {
+	rows    int
+	skipped int
+}
+
 func main() {
 	dir := flag.String("dir", "", "Path to the sessions directory containing JSON files (required)")
 	out := flag.String("out", "sessions.csv", "Output CSV file path")
@@ -90,58 +96,88 @@ func main() {
 		os.Exit(1)
 	}
 
-	entries, err := os.ReadDir(*dir)
+	sum, err := exportDirectory(*dir, *out)
 	if err != nil {
-		log.Fatalf("cannot read directory %q: %v", *dir, err)
+		log.Fatalf("export failed: %v", err)
 	}
 
-	// Create (or truncate) the output CSV file.
-	outFile, err := os.Create(*out)
+	fmt.Printf("Wrote %d rows to %s.\n", sum.rows, *out)
+
+	if sum.skipped > 0 {
+		fmt.Fprintf(os.Stderr,
+			"\nEXCLUDED: %d session(s) were not exported because they have no label. "+
+				"Run the labeler over the sessions directory, then export again.\n", sum.skipped)
+		os.Exit(1)
+	}
+}
+
+// exportDirectory writes every labelled session JSON in dir to a CSV at
+// outPath, returning how many rows it wrote and how many sessions it refused.
+//
+// A session with no label is skipped, never defaulted. Defaulting it -- which
+// is what this tool used to do -- put genuinely malicious samples into the
+// training set labelled benign, with no warning (AUDIT.md C4).
+func exportDirectory(dir, outPath string) (exportSummary, error) {
+	entries, err := os.ReadDir(dir)
 	if err != nil {
-		log.Fatalf("cannot create output file %q: %v", *out, err)
+		return exportSummary{}, fmt.Errorf("cannot read directory %q: %w", dir, err)
+	}
+
+	outFile, err := os.Create(outPath)
+	if err != nil {
+		return exportSummary{}, fmt.Errorf("cannot create output file %q: %w", outPath, err)
 	}
 	defer outFile.Close()
 
 	w := csv.NewWriter(outFile)
 
-	// Write header row.
 	if err := w.Write(csvHeader); err != nil {
-		log.Fatalf("cannot write CSV header: %v", err)
+		return exportSummary{}, fmt.Errorf("cannot write CSV header: %w", err)
 	}
 
-	var rows int
+	var sum exportSummary
 
 	for _, entry := range entries {
 		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".json") {
 			continue
 		}
 
-		path := filepath.Join(*dir, entry.Name())
+		path := filepath.Join(dir, entry.Name())
 
 		data, err := os.ReadFile(path)
 		if err != nil {
 			log.Printf("SKIP %s: read error: %v", entry.Name(), err)
+			sum.skipped++
 			continue
 		}
 
 		var record output.SessionRecord
 		if err := json.Unmarshal(data, &record); err != nil {
 			log.Printf("SKIP %s: unmarshal error: %v", entry.Name(), err)
+			sum.skipped++
 			continue
 		}
 
-		if err := w.Write(record.ToCSVRow()); err != nil {
+		row, err := record.ToCSVRow()
+		if err != nil {
+			log.Printf("EXCLUDED %s: %v", entry.Name(), err)
+			sum.skipped++
+			continue
+		}
+
+		if err := w.Write(row); err != nil {
 			log.Printf("SKIP %s: csv write error: %v", entry.Name(), err)
+			sum.skipped++
 			continue
 		}
 
-		rows++
+		sum.rows++
 	}
 
 	w.Flush()
 	if err := w.Error(); err != nil {
-		log.Fatalf("csv flush error: %v", err)
+		return sum, fmt.Errorf("csv flush error: %w", err)
 	}
 
-	fmt.Printf("Wrote %d rows to %s.\n", rows, *out)
+	return sum, nil
 }

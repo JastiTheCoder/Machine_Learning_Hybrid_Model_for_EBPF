@@ -1,0 +1,4 @@
+=== RUN   TestLabelDirectoryLabelsEveryCorpusFixtureCorrectly
+--- PASS: TestLabelDirectoryLabelsEveryCorpusFixtureCorrectly (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/labeler	0.009s

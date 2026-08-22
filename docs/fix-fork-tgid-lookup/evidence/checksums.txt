@@ -1,0 +1,11 @@
+Before this task:
+  filemonitor    8f46c9151f2fc1b3ebf9547fd036f132  (unchanged by this task)
+  processtracer  5454e806b602c206b53cc8eb33d42ab1
+  syscalltracer  90a34777dcc0d27de0ecc0d569a4094f  (unchanged by this task)
+  tcpmonitor     e46012aa39434bb08a43e012e2324478  (unchanged by this task)
+
+After this task:
+8f46c9151f2fc1b3ebf9547fd036f132  filemonitor_x86_bpfel.o
+a23faa2530a9f5a21b4dde073636c348  processtracer_x86_bpfel.o
+90a34777dcc0d27de0ecc0d569a4094f  syscalltracer_x86_bpfel.o
+e46012aa39434bb08a43e012e2324478  tcpmonitor_x86_bpfel.o

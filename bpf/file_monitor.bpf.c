@@ -38,6 +38,7 @@
 /* ── pending_open: transient state stored between enter and exit ──── */
 struct pending_open {
     __u32 pid;
+    __u32 flags;          /* openat() flags captured at enter time */
     __u8  dir_category;
     __u8  pad[3];
 };
@@ -217,6 +218,7 @@ int tracepoint__syscalls__sys_enter_openat(struct trace_event_raw_sys_enter *ctx
 
     struct pending_open po = {};
     po.pid          = tgid;
+    po.flags        = (__u32)ctx->args[2];
     po.dir_category = classify_dir(fname, len);
 
     bpf_map_update_elem(&pending_opens, &pid_tgid, &po, BPF_ANY);
@@ -254,7 +256,10 @@ int tracepoint__syscalls__sys_exit_openat(struct trace_event_raw_sys_exit *ctx)
     /* We don't have the filename here, so zero it out.  The consumer
      * can correlate with pid + timestamp if needed. */
     __builtin_memset(evt->filename, 0, sizeof(evt->filename));
-    evt->flags = 0;
+
+    /* Open flags come from the enter probe: sys_exit_openat's context only
+     * carries the return value, so args[2] is unavailable at this point. */
+    evt->flags = po->flags;
 
     bpf_ringbuf_submit(evt, 0);
     bpf_map_delete_elem(&pending_opens, &pid_tgid);

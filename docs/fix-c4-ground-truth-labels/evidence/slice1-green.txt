@@ -1,0 +1,16 @@
+=== RUN   TestLookupResolvesGroundTruthForEachCorpusFixture
+=== RUN   TestLookupResolvesGroundTruthForEachCorpusFixture/benign_fixture
+=== RUN   TestLookupResolvesGroundTruthForEachCorpusFixture/generic_suspicious_fixture
+=== RUN   TestLookupResolvesGroundTruthForEachCorpusFixture/cryptominer_fixture
+=== RUN   TestLookupResolvesGroundTruthForEachCorpusFixture/environment_stealer_fixture
+=== RUN   TestLookupResolvesGroundTruthForEachCorpusFixture/CI_secret_grabber_fixture
+=== RUN   TestLookupResolvesGroundTruthForEachCorpusFixture/reverse_shell_fixture
+--- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/benign_fixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/generic_suspicious_fixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/cryptominer_fixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/environment_stealer_fixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/CI_secret_grabber_fixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/reverse_shell_fixture (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/dataset	0.003s

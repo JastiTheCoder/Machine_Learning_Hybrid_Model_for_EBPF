@@ -1,0 +1,73 @@
+=== cmd/monitor/main.go : outputStats + exitCodeForOutput + worker ===
+// outputStats records what the output worker managed to persist, so that
+// shutdown can report it and set the exit status accordingly.
+type outputStats struct {
+	written int
+	failed  int
+}
+
+// exitCodeForOutput returns the process exit status implied by the output
+// worker's results. Any lost session is a failed run: a capture is usually
+// driven by a script, and an incomplete corpus that exits zero is worse than
+// one that stops loudly.
+func exitCodeForOutput(stats outputStats) int {
+	if stats.failed > 0 {
+		return 1
+	}
+	return 0
+}
+
+func runOutputWorker(completed <-chan *session.Session, writer *output.JSONWriter, verbose bool) outputStats {
+	var stats outputStats
+
+	for completed := range completed {
+		installFeatures, err := loadInstallFeatures(completed)
+		if err != nil {
+			log.Printf("extract install features for session %s: %v", completed.ID, err)
+		} else if verbose && completed.Cwd == "" {
+			log.Printf("session %s has no cwd; install metadata unavailable", completed.ID)
+		}
+
+		record := output.BuildRecord(completed, installFeatures)
+		for _, warning := range output.Validate(record) {
+			log.Printf("%s", warning)
+		}
+
+		path, err := writer.Write(record)
+		if err != nil {
+			// Keep going: aborting a long capture over one bad write would
+			// discard the sessions that are still to come. The count is what
+			// makes the loss visible at shutdown.
+			stats.failed++
+			log.Printf("write session %s: %v", completed.ID, err)
+			continue
+		}
+
+		stats.written++
+		if verbose {
+			log.Printf("wrote session record: %s", path)
+		}
+	}
+
+	return stats
+}
+
+=== cmd/monitor/main.go : call site ===
+148-	var outStats outputStats
+149-	startTrackedGoroutine(&wg, func() {
+150:		outStats = runOutputWorker(detector.Completed(), writer, *verbose)
+151-	})
+152-
+153-	fmt.Println("npm-ebpf-monitor active. Watching for npm install...")
+
+=== cmd/monitor/main.go : shutdown ===
+167:	if outStats.failed > 0 {
+168-		log.Printf("LOST %d of %d session(s): they were collected but could not be written",
+169-			outStats.failed, outStats.written+outStats.failed)
+170-	} else {
+171-		fmt.Printf("Wrote %d session record(s).\n", outStats.written)
+172-	}
+173-
+174-	os.Exit(exitCodeForOutput(outStats))
+175-}
+176-

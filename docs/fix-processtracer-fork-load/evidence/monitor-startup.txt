@@ -1,0 +1,4 @@
+2026/08/22 18:20:06 loaded process, syscall, file, and TCP collectors
+npm-ebpf-monitor active. Watching for npm install...
+2026/08/22 18:20:57 write session npm-1787403056: open /tmp/claude-1000/-home-ani-capstone/dfd1d771-62b0-4a8f-a1e6-29a41f02cf9c/scratchpad/final/out/npm-1787403056_./localdep.json: no such file or directory
+2026/08/22 18:23:11 write session npm-1787403191: open /tmp/claude-1000/-home-ani-capstone/dfd1d771-62b0-4a8f-a1e6-29a41f02cf9c/scratchpad/final/out/npm-1787403191_./localdep.json: no such file or directory

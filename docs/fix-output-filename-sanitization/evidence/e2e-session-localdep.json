@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "session_id": "npm-1787404508",
+  "package_name": "./localdep",
+  "timestamp": "2026-08-22T18:45:08.425870244+05:30",
+  "label": null,
+  "filetop": {
+    "read_processes": 1,
+    "write_processes": 1,
+    "read_data_transfer_kb": 0,
+    "write_data_transfer_kb": 0,
+    "file_access_processes": 1
+  },
+  "install": {
+    "total_dependencies": 2,
+    "direct_dependencies": 1,
+    "indirect_dependencies": 1
+  },
+  "opensnoop": {
+    "etc_dir_access": 9,
+    "home_dir_access": 33,
+    "other_dir_access": 2,
+    "root_dir_access": 0,
+    "sys_dir_access": 18,
+    "temp_dir_access": 569,
+    "user_dir_access": 877
+  },
+  "tcp": {
+    "state_transitions": 0,
+    "local_ips": 0,
+    "remote_ips": 0,
+    "local_ports": 0,
+    "remote_ports": 0
+  },
+  "syscalls": {
+    "io_ops": 3740,
+    "file_ops": 2951,
+    "network_ops": 4,
+    "time_ops": 0,
+    "security_ops": 77,
+    "process_ops": 6,
+    "unknown_ops": 7857
+  },
+  "patterns": {
+    "p1_file_metadata": 2,
+    "p2_read_data": 0,
+    "p3_write_data": 0,
+    "p4_socket_create": 0,
+    "p5_process_create": 0,
+    "p6_memory_map": 0,
+    "p7_fd_manage": 0,
+    "p8_ipc": 0,
+    "p9_file_lock": 0,
+    "p10_error_handle": 10
+  },
+  "process_tree": "npm(693005)",
+  "timed_out": false
+}

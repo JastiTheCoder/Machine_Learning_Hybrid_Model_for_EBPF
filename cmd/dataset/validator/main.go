@@ -20,6 +20,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aniruddha/npm-ebpf-monitor/internal/dataset"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/output"
 )
 
@@ -45,6 +46,7 @@ func main() {
 	}
 
 	var results []fileResult
+	var unlabelled []string
 
 	for _, entry := range entries {
 		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".json") {
@@ -65,8 +67,13 @@ func main() {
 			continue
 		}
 
-		// Determine label from the JSON label field or from name/package_name.
-		label := derivedLabel(entry.Name(), rec)
+		// Determine label from the JSON label field or the declared ground truth.
+		label, err := derivedLabel(entry.Name(), rec)
+		if err != nil {
+			log.Printf("UNLABELLED %s: %v", entry.Name(), err)
+			unlabelled = append(unlabelled, entry.Name())
+			continue
+		}
 
 		results = append(results, fileResult{name: entry.Name(), record: rec, label: label})
 	}
@@ -157,7 +164,25 @@ func main() {
 
 	fmt.Printf("\nDataset: %d benign, %d malicious (%d total)\n", benignCount, maliciousCount, len(results))
 
-	if rule1Pass && rule2Pass && rule3Pass {
+	// -------------------------------------------------------------------------
+	// Rule 4: Every file must have a resolvable ground-truth label.
+	//
+	// A session whose package has no declared label cannot be exported for
+	// training -- there is no honest value to give it. Reporting it here is
+	// what keeps an undeclared package from quietly reaching the dataset.
+	// -------------------------------------------------------------------------
+	fmt.Println("\n─── Rule 4: All files have a declared ground-truth label ───")
+	rule4Pass := len(unlabelled) == 0
+	if rule4Pass {
+		fmt.Println("  All files have a declared ground-truth label ✓")
+	} else {
+		for _, name := range unlabelled {
+			fmt.Printf("  FAIL: %s has no declared ground-truth label\n", name)
+		}
+		fmt.Printf("  Declare these packages in internal/dataset/labels.go before exporting.\n")
+	}
+
+	if rule1Pass && rule2Pass && rule3Pass && rule4Pass {
 		fmt.Println("\nPASS")
 		os.Exit(0)
 	} else {
@@ -167,18 +192,34 @@ func main() {
 }
 
 // derivedLabel returns the label stored in the record if set; otherwise it
-// falls back to inspecting the filename and package_name for "suspicious".
-func derivedLabel(filename string, rec output.SessionRecord) int {
+// resolves the package's declared ground truth from internal/dataset.
+//
+// It previously fell back to a "suspicious" substring match duplicated from the
+// labeler, which meant both tools independently agreed that a crypto miner, an
+// env stealer, a CI secret grabber and a reverse shell were all benign
+// (AUDIT.md C4). Routing both through the same table is what keeps them from
+// drifting apart again; refusing an undeclared package is what stops the
+// fallback from inventing a label.
+func derivedLabel(filename string, rec output.SessionRecord) (int, error) {
 	if rec.Label != nil {
-		return *rec.Label
+		return *rec.Label, nil
 	}
-	if strings.Contains(strings.ToLower(filename), "suspicious") {
-		return 1
+
+	spec := rec.PackageName
+	if strings.TrimSpace(spec) == "" {
+		// Filenames are "<session-id>_<package spec>.json".
+		name := strings.TrimSuffix(filename, ".json")
+		if i := strings.Index(name, "_"); i >= 0 {
+			name = name[i+1:]
+		}
+		spec = name
 	}
-	if strings.Contains(strings.ToLower(rec.PackageName), "suspicious") {
-		return 1
+
+	truth, err := dataset.Lookup(spec)
+	if err != nil {
+		return 0, err
 	}
-	return 0
+	return truth.Label, nil
 }
 
 // allFeaturesZero returns true if every one of the 36 QUT-DV25 numeric
@@ -199,8 +240,16 @@ func allFeaturesZero(r output.SessionRecord) bool {
 		return false
 	}
 	// Opensnoop (7 fields)
-	for _, v := range r.Opensnoop {
-		if v != 0 {
+	for _, key := range []string{
+		"root_dir_access",
+		"temp_dir_access",
+		"home_dir_access",
+		"user_dir_access",
+		"sys_dir_access",
+		"etc_dir_access",
+		"other_dir_access",
+	} {
+		if r.Opensnoop[key] != 0 {
 			return false
 		}
 	}

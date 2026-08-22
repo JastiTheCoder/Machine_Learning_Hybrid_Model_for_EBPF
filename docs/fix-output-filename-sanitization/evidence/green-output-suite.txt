@@ -1,0 +1,52 @@
+=== RUN   TestJSONWriter_WriteSuccess
+--- PASS: TestJSONWriter_WriteSuccess (0.00s)
+=== RUN   TestSessionRecord_ToCSVRow_LegacyUserlibAlias
+--- PASS: TestSessionRecord_ToCSVRow_LegacyUserlibAlias (0.00s)
+=== RUN   TestBuildRecord_NilSafety
+--- PASS: TestBuildRecord_NilSafety (0.00s)
+=== RUN   TestValidate
+--- PASS: TestValidate (0.00s)
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/relative_path_spec
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/parent_path_spec
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/nested_path_spec
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/scoped_package
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/file_url_spec
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/git_url_spec
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/bare_parent
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/empty
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/overlong
+--- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/relative_path_spec (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/parent_path_spec (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/nested_path_spec (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/scoped_package (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/file_url_spec (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/git_url_spec (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/bare_parent (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/empty (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/overlong (0.00s)
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/lodash
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/benign-test-1.0.0.tgz
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/suspicious-test-1.0.0.tgz
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/ci-secret-grabber-test-1.0.0.tgz
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/crypto-miner-test-1.0.0.tgz
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/env-stealer-test-1.0.0.tgz
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/reverse-shell-test-1.0.0.tgz
+--- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/lodash (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/benign-test-1.0.0.tgz (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/suspicious-test-1.0.0.tgz (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/ci-secret-grabber-test-1.0.0.tgz (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/crypto-miner-test-1.0.0.tgz (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/env-stealer-test-1.0.0.tgz (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/reverse-shell-test-1.0.0.tgz (0.00s)
+=== RUN   TestValidateRecord_AllPresent
+--- PASS: TestValidateRecord_AllPresent (0.00s)
+=== RUN   TestValidateRecord_MissingField
+--- PASS: TestValidateRecord_MissingField (0.00s)
+=== RUN   TestValidateRecord_ZeroValue
+--- PASS: TestValidateRecord_ZeroValue (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	0.005s

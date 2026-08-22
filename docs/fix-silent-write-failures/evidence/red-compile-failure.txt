@@ -1,0 +1,11 @@
+# github.com/aniruddha/npm-ebpf-monitor/cmd/monitor [github.com/aniruddha/npm-ebpf-monitor/cmd/monitor.test]
+cmd/monitor/main_test.go:165:13: runOutputWorker(feedSessions(tt.sessions), tt.writer(t), false) (no value) used as value
+cmd/monitor/main_test.go:165:29: cannot use feedSessions(tt.sessions) (value of type <-chan *session.Session) as *session.Detector value in argument to runOutputWorker
+cmd/monitor/main_test.go:186:9: undefined: outputStats
+cmd/monitor/main_test.go:189:52: undefined: outputStats
+cmd/monitor/main_test.go:190:39: undefined: outputStats
+cmd/monitor/main_test.go:191:37: undefined: outputStats
+cmd/monitor/main_test.go:192:36: undefined: outputStats
+cmd/monitor/main_test.go:197:14: undefined: exitCodeForOutput
+FAIL	github.com/aniruddha/npm-ebpf-monitor/cmd/monitor [build failed]
+FAIL

@@ -1,0 +1,16 @@
+--- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/benign_fixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/generic_suspicious_fixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/cryptominer_fixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/environment_stealer_fixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/CI_secret_grabber_fixture (0.00s)
+    --- PASS: TestLookupResolvesGroundTruthForEachCorpusFixture/reverse_shell_fixture (0.00s)
+--- PASS: TestLookupRejectsUndeclaredPackages (0.00s)
+    --- PASS: TestLookupRejectsUndeclaredPackages/real_registry_package (0.00s)
+    --- PASS: TestLookupRejectsUndeclaredPackages/versioned_registry_package (0.00s)
+    --- PASS: TestLookupRejectsUndeclaredPackages/undeclared_fixture (0.00s)
+    --- PASS: TestLookupRejectsUndeclaredPackages/empty_spec (0.00s)
+    --- PASS: TestLookupRejectsUndeclaredPackages/near_miss_on_a_declared_name (0.00s)
+--- PASS: TestLookupErrorNamesTheOffendingPackage (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/dataset	0.005s

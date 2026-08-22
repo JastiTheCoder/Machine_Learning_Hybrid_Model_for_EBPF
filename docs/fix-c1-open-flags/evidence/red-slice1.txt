@@ -1,0 +1,6 @@
+=== RUN   TestFiletopAggregatorCountsReadWriteOpensAsBoth
+    filetop_aggregator_test.go:103: O_RDWR open: ReadProcesses = 0, want 1
+--- FAIL: TestFiletopAggregatorCountsReadWriteOpensAsBoth (0.00s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/features	0.006s
+FAIL

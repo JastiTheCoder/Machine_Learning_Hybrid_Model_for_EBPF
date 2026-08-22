@@ -1,0 +1,23 @@
+=== RUN   TestFiletopAggregatorDeduplicatesReadProcesses
+--- PASS: TestFiletopAggregatorDeduplicatesReadProcesses (0.00s)
+=== RUN   TestFiletopAggregatorParsesWriteFlags
+--- PASS: TestFiletopAggregatorParsesWriteFlags (0.00s)
+=== RUN   TestFiletopAggregatorTracksUniqueFileAccessProcesses
+--- PASS: TestFiletopAggregatorTracksUniqueFileAccessProcesses (0.00s)
+=== RUN   TestFiletopAggregatorDataTransferMath
+--- PASS: TestFiletopAggregatorDataTransferMath (0.00s)
+=== RUN   TestFiletopAggregatorCountsReadWriteOpensAsBoth
+--- PASS: TestFiletopAggregatorCountsReadWriteOpensAsBoth (0.00s)
+=== RUN   TestFiletopAggregatorCountsWritersDuringRealNpmInstall
+    filetop_npm_e2e_test.go:204: file events captured: 1473 (with non-zero flags: 1469)
+    filetop_npm_e2e_test.go:205: PRE-FIX  (flags always 0): read_processes=1 write_processes=0 file_access_processes=1
+    filetop_npm_e2e_test.go:207: POST-FIX (real flags):     read_processes=1 write_processes=1 file_access_processes=1
+--- PASS: TestFiletopAggregatorCountsWritersDuringRealNpmInstall (2.68s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/features	2.695s
+=== RUN   TestFileEventLayoutMatchesBPFStruct
+--- PASS: TestFileEventLayoutMatchesBPFStruct (0.00s)
+=== RUN   TestFileCollectorReportsOpenFlagsFromRealOpenat
+--- PASS: TestFileCollectorReportsOpenFlagsFromRealOpenat (0.52s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	0.528s

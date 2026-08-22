@@ -1,0 +1,24 @@
+=== RUN   TestLoadInstallFeaturesUsesSessionCwd
+--- PASS: TestLoadInstallFeaturesUsesSessionCwd (0.00s)
+=== RUN   TestLoadInstallFeaturesMissingCwd
+--- PASS: TestLoadInstallFeaturesMissingCwd (0.00s)
+=== RUN   TestRunOutputWorkerReportsWriteOutcomes
+=== RUN   TestRunOutputWorkerReportsWriteOutcomes/all_writes_succeed
+=== RUN   TestRunOutputWorkerReportsWriteOutcomes/all_writes_fail
+=== RUN   TestRunOutputWorkerReportsWriteOutcomes/no_sessions_at_all
+--- PASS: TestRunOutputWorkerReportsWriteOutcomes (0.00s)
+    --- PASS: TestRunOutputWorkerReportsWriteOutcomes/all_writes_succeed (0.00s)
+    --- PASS: TestRunOutputWorkerReportsWriteOutcomes/all_writes_fail (0.00s)
+    --- PASS: TestRunOutputWorkerReportsWriteOutcomes/no_sessions_at_all (0.00s)
+=== RUN   TestExitCodeForOutputFailsWhenSessionsWereLost
+=== RUN   TestExitCodeForOutputFailsWhenSessionsWereLost/nothing_written,_nothing_failed
+=== RUN   TestExitCodeForOutputFailsWhenSessionsWereLost/everything_written
+=== RUN   TestExitCodeForOutputFailsWhenSessionsWereLost/one_session_lost
+=== RUN   TestExitCodeForOutputFailsWhenSessionsWereLost/everything_lost
+--- PASS: TestExitCodeForOutputFailsWhenSessionsWereLost (0.00s)
+    --- PASS: TestExitCodeForOutputFailsWhenSessionsWereLost/nothing_written,_nothing_failed (0.00s)
+    --- PASS: TestExitCodeForOutputFailsWhenSessionsWereLost/everything_written (0.00s)
+    --- PASS: TestExitCodeForOutputFailsWhenSessionsWereLost/one_session_lost (0.00s)
+    --- PASS: TestExitCodeForOutputFailsWhenSessionsWereLost/everything_lost (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/monitor	0.006s

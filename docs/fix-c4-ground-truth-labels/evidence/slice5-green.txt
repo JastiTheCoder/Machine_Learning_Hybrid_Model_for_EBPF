@@ -1,0 +1,11 @@
+--- PASS: TestDerivedLabelPrefersTheStoredLabel (0.00s)
+--- PASS: TestDerivedLabelFallsBackToDeclaredGroundTruth (0.00s)
+    --- PASS: TestDerivedLabelFallsBackToDeclaredGroundTruth/benign_fixture (0.00s)
+    --- PASS: TestDerivedLabelFallsBackToDeclaredGroundTruth/cryptominer_fixture (0.00s)
+    --- PASS: TestDerivedLabelFallsBackToDeclaredGroundTruth/env_stealer_fixture (0.00s)
+    --- PASS: TestDerivedLabelFallsBackToDeclaredGroundTruth/CI_secret_grabber_fixture (0.00s)
+    --- PASS: TestDerivedLabelFallsBackToDeclaredGroundTruth/reverse_shell_fixture (0.00s)
+    --- PASS: TestDerivedLabelFallsBackToDeclaredGroundTruth/generic_suspicious_fixture (0.00s)
+--- PASS: TestDerivedLabelRejectsUndeclaredPackage (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/validator	0.007s

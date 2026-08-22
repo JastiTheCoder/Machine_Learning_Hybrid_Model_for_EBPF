@@ -1,0 +1,4 @@
+--- PASS: TestExportDirectoryWritesTheAssignedLabel (0.00s)
+--- PASS: TestExportDirectoryRefusesUnlabelledSessions (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/exporter	0.008s

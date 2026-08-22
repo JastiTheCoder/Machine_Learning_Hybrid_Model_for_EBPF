@@ -1,0 +1,5 @@
+# github.com/aniruddha/npm-ebpf-monitor/internal/output [github.com/aniruddha/npm-ebpf-monitor/internal/output.test]
+internal/output/json_writer_test.go:342:14: assignment mismatch: 2 variables but record.ToCSVRow returns 1 value
+internal/output/json_writer_test.go:374:16: assignment mismatch: 2 variables but record.ToCSVRow returns 1 value
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/output [build failed]
+FAIL

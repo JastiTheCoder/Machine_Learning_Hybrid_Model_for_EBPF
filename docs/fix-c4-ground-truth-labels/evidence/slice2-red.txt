@@ -1,0 +1,23 @@
+=== RUN   TestLookupRejectsUndeclaredPackages
+=== RUN   TestLookupRejectsUndeclaredPackages/real_registry_package
+    labels_test.go:107: Lookup("lodash") = {Label:0 Category:}, nil; want an error for an undeclared package
+=== RUN   TestLookupRejectsUndeclaredPackages/versioned_registry_package
+    labels_test.go:107: Lookup("express-4.18.2.tgz") = {Label:0 Category:}, nil; want an error for an undeclared package
+=== RUN   TestLookupRejectsUndeclaredPackages/undeclared_fixture
+    labels_test.go:107: Lookup("keylogger-test-1.0.0.tgz") = {Label:0 Category:}, nil; want an error for an undeclared package
+=== RUN   TestLookupRejectsUndeclaredPackages/empty_spec
+    labels_test.go:107: Lookup("") = {Label:0 Category:}, nil; want an error for an undeclared package
+=== RUN   TestLookupRejectsUndeclaredPackages/near_miss_on_a_declared_name
+    labels_test.go:107: Lookup("crypto-miner-tes-1.0.0.tgz") = {Label:0 Category:}, nil; want an error for an undeclared package
+--- FAIL: TestLookupRejectsUndeclaredPackages (0.00s)
+    --- FAIL: TestLookupRejectsUndeclaredPackages/real_registry_package (0.00s)
+    --- FAIL: TestLookupRejectsUndeclaredPackages/versioned_registry_package (0.00s)
+    --- FAIL: TestLookupRejectsUndeclaredPackages/undeclared_fixture (0.00s)
+    --- FAIL: TestLookupRejectsUndeclaredPackages/empty_spec (0.00s)
+    --- FAIL: TestLookupRejectsUndeclaredPackages/near_miss_on_a_declared_name (0.00s)
+=== RUN   TestLookupErrorNamesTheOffendingPackage
+    labels_test.go:125: Lookup returned nil error for an undeclared package
+--- FAIL: TestLookupErrorNamesTheOffendingPackage (0.00s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/dataset	0.004s
+FAIL

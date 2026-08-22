@@ -1,0 +1,30 @@
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/relative_path_spec
+    json_writer_test.go:253: Write(package="./localdep") = open /tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati1565009429/001/npm-1787403056_./localdep.json: no such file or directory, want nil
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/parent_path_spec
+    json_writer_test.go:253: Write(package="../escapee") = open /tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent2904961010/001/npm-1787403056_../escapee.json: no such file or directory, want nil
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/nested_path_spec
+    json_writer_test.go:253: Write(package="./a/b/c") = open /tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested1256225841/001/npm-1787403056_./a/b/c.json: no such file or directory, want nil
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/scoped_package
+    json_writer_test.go:253: Write(package="@scope/pkg") = open /tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped112310082/001/npm-1787403056_@scope/pkg.json: no such file or directory, want nil
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/file_url_spec
+    json_writer_test.go:253: Write(package="file:../thing") = open /tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u958830379/001/npm-1787403056_file:../thing.json: no such file or directory, want nil
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/git_url_spec
+    json_writer_test.go:253: Write(package="git+https://example.com/x.git") = open /tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur2393152221/001/npm-1787403056_git+https:/example.com/x.git.json: no such file or directory, want nil
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/bare_parent
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/empty
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/overlong
+    json_writer_test.go:253: Write(package="verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongname") = open /tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1715872729/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongname.json: file name too long, want nil
+--- FAIL: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames (0.00s)
+    --- FAIL: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/relative_path_spec (0.00s)
+    --- FAIL: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/parent_path_spec (0.00s)
+    --- FAIL: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/nested_path_spec (0.00s)
+    --- FAIL: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/scoped_package (0.00s)
+    --- FAIL: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/file_url_spec (0.00s)
+    --- FAIL: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/git_url_spec (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/bare_parent (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/empty (0.00s)
+    --- FAIL: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/overlong (0.00s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/output	0.005s
+FAIL

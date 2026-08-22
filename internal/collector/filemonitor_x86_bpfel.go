@@ -14,6 +14,7 @@ import (
 
 type FileMonitorPendingOpen struct {
 	Pid         uint32
+	Flags       uint32
 	DirCategory uint8
 	Pad         [3]uint8
 }

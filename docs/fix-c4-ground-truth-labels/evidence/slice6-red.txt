@@ -1,0 +1,5 @@
+# github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/exporter [github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/exporter.test]
+cmd/dataset/exporter/main_test.go:72:14: undefined: exportDirectory
+cmd/dataset/exporter/main_test.go:122:14: undefined: exportDirectory
+FAIL	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/exporter [build failed]
+FAIL

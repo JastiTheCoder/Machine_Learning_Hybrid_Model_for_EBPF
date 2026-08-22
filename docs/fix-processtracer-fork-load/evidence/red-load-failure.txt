@@ -1,0 +1,9 @@
+=== RUN   TestNewProcessCollectorLoadsAndAttaches
+    process_collector_test.go:105: NewProcessCollector() = load ProcessTracer objects: field TracepointSchedSchedProcessFork: program tracepoint__sched__sched_process_fork: load program: invalid argument: invalid func unknown#195896080 (77 line(s) omitted), want nil
+--- FAIL: TestNewProcessCollectorLoadsAndAttaches (0.10s)
+=== RUN   TestProcessCollectorReportsForkOfTrackedProcess
+    process_collector_test.go:122: NewProcessCollector: load ProcessTracer objects: field TracepointSchedSchedProcessFork: program tracepoint__sched__sched_process_fork: load program: invalid argument: invalid func unknown#195896080 (77 line(s) omitted)
+--- FAIL: TestProcessCollectorReportsForkOfTrackedProcess (0.00s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/collector	0.106s
+FAIL

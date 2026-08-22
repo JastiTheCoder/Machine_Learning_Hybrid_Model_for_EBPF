@@ -1,0 +1,9 @@
+=== RUN   TestFiletopAggregatorCountsWritersDuringRealNpmInstall
+    filetop_npm_e2e_test.go:204: file events captured: 1473 (with non-zero flags: 0)
+    filetop_npm_e2e_test.go:205: PRE-FIX  (flags always 0): read_processes=1 write_processes=0 file_access_processes=1
+    filetop_npm_e2e_test.go:207: POST-FIX (real flags):     read_processes=1 write_processes=0 file_access_processes=1
+    filetop_npm_e2e_test.go:217: post-fix WriteProcesses = 0; npm install writes files, so this must be > 0
+--- FAIL: TestFiletopAggregatorCountsWritersDuringRealNpmInstall (2.71s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/features	2.725s
+FAIL

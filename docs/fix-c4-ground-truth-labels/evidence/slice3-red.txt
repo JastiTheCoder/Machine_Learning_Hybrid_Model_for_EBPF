@@ -1,0 +1,4 @@
+# github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/labeler [github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/labeler.test]
+cmd/dataset/labeler/main_test.go:92:14: undefined: labelDirectory
+FAIL	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/labeler [build failed]
+FAIL

@@ -1,0 +1,6 @@
+# github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/validator [github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/validator.test]
+cmd/dataset/validator/main_test.go:23:14: assignment mismatch: 2 variables but derivedLabel returns 1 value
+cmd/dataset/validator/main_test.go:57:16: assignment mismatch: 2 variables but derivedLabel returns 1 value
+cmd/dataset/validator/main_test.go:73:14: assignment mismatch: 2 variables but derivedLabel returns 1 value
+FAIL	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/validator [build failed]
+FAIL

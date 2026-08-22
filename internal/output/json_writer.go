@@ -7,26 +7,30 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/aniruddha/npm-ebpf-monitor/internal/features"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/session"
 )
 
+const CurrentSchemaVersion = "1.0.0"
+
 // SessionRecord is the persisted JSON representation of one monitored session.
 type SessionRecord struct {
-	SessionID   string                   `json:"session_id"`
-	PackageName string                   `json:"package_name"`
-	Timestamp   time.Time                `json:"timestamp"`
-	Label       *int                     `json:"label"`
-	Filetop     features.FiletopCounts   `json:"filetop"`
-	Install     features.InstallFeatures `json:"install"`
-	Opensnoop   map[string]int           `json:"opensnoop"`
-	TCP         features.TCPCounts       `json:"tcp"`
-	Syscalls    features.SyscallFeatures `json:"syscalls"`
-	Patterns    features.PatternCounts   `json:"patterns"`
-	ProcessTree string                   `json:"process_tree"`
-	TimedOut    bool                     `json:"timed_out"`
+	SchemaVersion string                   `json:"schema_version"`
+	SessionID     string                   `json:"session_id"`
+	PackageName   string                   `json:"package_name"`
+	Timestamp     time.Time                `json:"timestamp"`
+	Label         *int                     `json:"label"`
+	Filetop       features.FiletopCounts   `json:"filetop"`
+	Install       features.InstallFeatures `json:"install"`
+	Opensnoop     map[string]int           `json:"opensnoop"`
+	TCP           features.TCPCounts       `json:"tcp"`
+	Syscalls      features.SyscallFeatures `json:"syscalls"`
+	Patterns      features.PatternCounts   `json:"patterns"`
+	ProcessTree   string                   `json:"process_tree"`
+	TimedOut      bool                     `json:"timed_out"`
 }
 
 // ToCSVRow returns a slice of strings representing this record as a CSV row.
@@ -42,16 +46,19 @@ type SessionRecord struct {
 //	p1_file_metadata, p2_read_data, p3_write_data, p4_socket_create, p5_process_create,
 //	p6_memory_map, p7_fd_manage, p8_ipc, p9_file_lock, p10_error_handle,
 //	severity_score
-func (s *SessionRecord) ToCSVRow() []string {
-	labelStr := "0"
-	if s.Label != nil {
-		labelStr = strconv.Itoa(*s.Label)
+func (s *SessionRecord) ToCSVRow() ([]string, error) {
+	// An unassigned label is refused rather than defaulted. Defaulting it to
+	// "0" is what let genuinely malicious sessions reach the training set
+	// labelled benign (AUDIT.md C4): once written, a missing label and a
+	// benign label are indistinguishable, so the mistake leaves no diagnostic
+	// trail. Refusing keeps the dataset honest at the cost of a loud failure.
+	if s.Label == nil {
+		return nil, fmt.Errorf("session %q (package %q) has no label; run the labeler "+
+			"before exporting", s.SessionID, s.PackageName)
 	}
+	labelStr := strconv.Itoa(*s.Label)
 
-	opensnoop := s.Opensnoop
-	if opensnoop == nil {
-		opensnoop = (&features.DirCounts{}).ToMap()
-	}
+	opensnoop := normalizeOpensnoop(s.Opensnoop)
 	osGet := func(key string) string {
 		return strconv.Itoa(opensnoop[key])
 	}
@@ -107,14 +114,15 @@ func (s *SessionRecord) ToCSVRow() []string {
 		strconv.Itoa(s.Patterns.P10),
 		// severity metadata
 		severityScore,
-	}
+	}, nil
 }
 
 // BuildRecord converts a collected session into the JSON output format.
 func BuildRecord(sess *session.Session, installFeatures features.InstallFeatures) SessionRecord {
 	record := SessionRecord{
-		Install:   installFeatures,
-		Opensnoop: (&features.DirCounts{}).ToMap(),
+		SchemaVersion: CurrentSchemaVersion,
+		Install:       installFeatures,
+		Opensnoop:     (&features.DirCounts{}).ToMap(),
 	}
 
 	if sess == nil {
@@ -160,12 +168,17 @@ func (w *JSONWriter) Write(record SessionRecord) (string, error) {
 		return "", err
 	}
 
+	if record.SchemaVersion == "" {
+		record.SchemaVersion = CurrentSchemaVersion
+	}
+
 	payload, err := json.MarshalIndent(record, "", "  ")
 	if err != nil {
 		return "", err
 	}
 
-	path := filepath.Join(w.outputDir, fmt.Sprintf("%s_%s.json", record.SessionID, record.PackageName))
+	filename := fmt.Sprintf("%s_%s.json", sanitizeFilenamePart(record.SessionID), sanitizeFilenamePart(record.PackageName))
+	path := filepath.Join(w.outputDir, filename)
 	if err := os.WriteFile(path, payload, 0o644); err != nil {
 		return "", err
 	}
@@ -186,6 +199,23 @@ func (w *JSONWriter) Write(record SessionRecord) (string, error) {
 	}
 
 	return absPath, nil
+}
+
+func normalizeOpensnoop(in map[string]int) map[string]int {
+	base := (&features.DirCounts{}).ToMap()
+	if in == nil {
+		return base
+	}
+
+	for k, v := range in {
+		base[k] = v
+	}
+
+	if v, ok := in["userlib_dir_access"]; ok {
+		base["user_dir_access"] = v
+	}
+
+	return base
 }
 
 // Validate returns warnings for critical missing or zeroed fields.
@@ -230,4 +260,51 @@ func buildSyscallFeatures(counts map[features.SyscallCategory]int) features.Sysc
 		ProcessOps:  counts[features.CategoryProcess],
 		UnknownOps:  counts[features.CategoryUnknown],
 	}
+}
+
+// maxFilenamePart caps each component of a session filename. Most filesystems
+// limit a single name to 255 bytes; two capped parts plus the separator and the
+// ".json" suffix stay comfortably inside that.
+const maxFilenamePart = 100
+
+// sanitizeFilenamePart makes an arbitrary string safe to embed in a filename.
+//
+// npm package specs are not identifiers: "npm install ./local-dep",
+// "@scope/pkg", "file:../thing" and "git+https://host/x.git" are all valid, and
+// every one of them contains characters that change the meaning of a path.
+// Interpolated raw, they made os.WriteFile target a directory that does not
+// exist (losing the session, since the monitor only logs the error) or, for a
+// leading "..", resolve outside the output directory entirely.
+//
+// Characters outside the safe set collapse to "-", and leading/trailing "." and
+// "-" are trimmed so the result can never be "", ".", ".." or a hidden file.
+// Names already made of safe characters -- which is every package in the
+// project's corpus -- are returned unchanged, so existing filenames and the
+// substring matching the dataset labeller relies on are preserved.
+func sanitizeFilenamePart(part string) string {
+	var b strings.Builder
+	b.Grow(len(part))
+
+	for _, r := range part {
+		switch {
+		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9':
+			b.WriteRune(r)
+		case r == '.' || r == '_' || r == '@' || r == '-':
+			b.WriteRune(r)
+		default:
+			// Collapse a run of unsafe characters into a single separator.
+			if !strings.HasSuffix(b.String(), "-") {
+				b.WriteByte('-')
+			}
+		}
+	}
+
+	safe := strings.Trim(b.String(), ".-")
+	if len(safe) > maxFilenamePart {
+		safe = strings.Trim(safe[:maxFilenamePart], ".-")
+	}
+	if safe == "" {
+		return "unnamed"
+	}
+	return safe
 }

@@ -1,0 +1,6 @@
+2026/08/22 21:09:09 write session npm-1787400000: mkdir <tmp>/blocker: not a directory
+2026/08/22 21:09:09 write session npm-1787400001: mkdir <tmp>/blocker: not a directory
+2026/08/22 21:09:09 write session npm-1787400002: mkdir <tmp>/blocker: not a directory
+--- PASS: TestRunOutputWorkerReportsWriteOutcomes (0.00s)
+    --- PASS: TestRunOutputWorkerReportsWriteOutcomes/all_writes_fail (0.00s)
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/monitor	0.009s

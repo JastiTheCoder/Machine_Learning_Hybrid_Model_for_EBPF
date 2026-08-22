@@ -88,3 +88,21 @@ func TestFiletopAggregatorDataTransferMath(t *testing.T) {
 		t.Fatalf("FileAccessProcesses = %d, want 0", got.FileAccessProcesses)
 	}
 }
+
+// TestFiletopAggregatorCountsReadWriteOpensAsBoth asserts that a process which
+// opens a file O_RDWR is reported as both a reader and a writer.  A read-write
+// open is, by definition, both capabilities being requested on the file, so
+// read_processes and write_processes must each include that PID.
+func TestFiletopAggregatorCountsReadWriteOpensAsBoth(t *testing.T) {
+	agg := NewFiletopAggregator()
+
+	agg.Add(collector.FileEvent{Pid: 400, Flags: uint32(syscall.O_RDWR)})
+
+	got := agg.Snapshot()
+	if got.ReadProcesses != 1 {
+		t.Errorf("O_RDWR open: ReadProcesses = %d, want 1", got.ReadProcesses)
+	}
+	if got.WriteProcesses != 1 {
+		t.Errorf("O_RDWR open: WriteProcesses = %d, want 1", got.WriteProcesses)
+	}
+}

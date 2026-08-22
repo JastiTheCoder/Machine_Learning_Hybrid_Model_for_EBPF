@@ -203,9 +203,33 @@ int tracepoint__syscalls__sys_enter_execve(struct trace_event_raw_sys_enter *ctx
 SEC("tp/sched/sched_process_fork")
 int tracepoint__sched__sched_process_fork(struct trace_event_raw_sched_process_fork *ctx)
 {
-    __u32 parent_pid = (__u32)ctx->parent_pid;
-    __u32 child_pid  = (__u32)ctx->child_pid;
+    __u32 child_pid = (__u32)ctx->child_pid;
     struct process_event *evt;
+
+    /* tracked_pids is keyed by thread-group id everywhere else in this
+     * program and in every sibling BPF file (syscall_tracer.bpf.c,
+     * file_monitor.bpf.c, tcp_monitor.bpf.c all do is_tracked(tgid) with tgid
+     * from bpf_get_current_pid_tgid()>>32; the exit handler below only fires
+     * on tgid == tid and documents "tracked_pids stores tgids, not
+     * individual thread ids").
+     *
+     * ctx->parent_pid is NOT that: it is the calling *task's* pid, i.e. its
+     * thread id, per trace_sched_process_fork's __entry->parent_pid =
+     * parent->pid in the kernel. For a single-threaded process this happens
+     * to equal its tgid, so the mismatch is invisible in the common case.
+     * But this tracepoint fires with current == the forking task for every
+     * clone(), including one issued from a non-leader thread of a tracked
+     * multithreaded process -- and a malicious install script forking from a
+     * worker thread to spawn a child is exactly the kind of thing this
+     * monitor exists to catch. In that case ctx->parent_pid is a tid that
+     * was never inserted into tracked_pids, the lookup misses, and the fork
+     * event -- and the child's whole subtree -- is silently dropped.
+     *
+     * bpf_get_current_pid_tgid()>>32 gives the correct tgid regardless of
+     * which thread issued the syscall, matching how every other consumer of
+     * this map already does the same lookup. */
+    __u64 pid_tgid   = bpf_get_current_pid_tgid();
+    __u32 parent_pid = (__u32)(pid_tgid >> 32);
 
     /* Only propagate tracking to children of already-tracked processes. */
     if (!is_tracked(parent_pid))
@@ -221,7 +245,19 @@ int tracepoint__sched__sched_process_fork(struct trace_event_raw_sched_process_f
     evt->timestamp_ns = bpf_ktime_get_ns();
     evt->is_npm_related = 1;
     evt->event_type = 1;
-    bpf_probe_read_kernel_str(evt->comm, sizeof(evt->comm), ctx->child_comm);
+    /* Read comm from the current task rather than ctx->child_comm.
+     *
+     * This tracepoint fires inside copy_process() with current == the forking
+     * task, and the child's comm is a copy of the parent's until it execs, so
+     * both report the same string here.
+     *
+     * ctx->child_comm cannot be used portably: newer kernels declare
+     * parent_comm/child_comm as __string() fields, which are stored as
+     * __data_loc u32 descriptors rather than inline char[16] arrays.  CO-RE
+     * cannot relocate a char[16] access onto that layout, so libbpf poisons
+     * the instruction and the verifier rejects the program at load time.
+     * The sibling exec and exit handlers already use this helper. */
+    bpf_get_current_comm(&evt->comm, sizeof(evt->comm));
 
     __u32 save_child_pid = child_pid;
     __u32 save_parent_pid = parent_pid;

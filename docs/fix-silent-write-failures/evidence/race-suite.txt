@@ -1,0 +1,9 @@
+?   	github.com/aniruddha/npm-ebpf-monitor	[no test files]
+?   	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/exporter	[no test files]
+?   	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/labeler	[no test files]
+?   	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/validator	[no test files]
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/monitor	1.038s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	1.020s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/features	1.031s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	1.072s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	1.252s

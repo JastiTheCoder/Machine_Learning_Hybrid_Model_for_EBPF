@@ -1,0 +1,354 @@
+=== RUN   TestDiagLoadProcessTracer
+    zz_diag_test.go:20: PROGRAM "tracepoint__syscalls__sys_enter_execve" type=TracePoint attach="syscalls/sys_enter_execve" insns=254
+    zz_diag_test.go:20: PROGRAM "tracepoint__sched__sched_process_fork" type=TracePoint attach="sched/sched_process_fork" insns=80
+    zz_diag_test.go:20: PROGRAM "tracepoint__sched__sched_process_exit" type=TracePoint attach="sched/sched_process_exit" insns=80
+    zz_diag_test.go:29: VERIFIER:
+        load program: invalid argument:
+        	func#0 @0
+        	topo_order[0] = tracepoint__sched__sched_process_fork
+        	subprog#0: analyzing (depth 0)...
+        	  4: (bf) r2 = r10	r2: _ -> fp0+0
+        	  5: (07) r2 += -4	r2: fp0+0 -> fp0-4
+        	  8: (85) call bpf_map_lookup_elem#1	r2: fp0-4 -> _
+        	 73: (bf) r2 = r10	r2: _ -> fp0+0
+        	 74: (07) r2 += -8	r2: fp0+0 -> fp0-8
+        	 75: (bf) r3 = r10	r3: _ -> fp0+0
+        	 76: (07) r3 += -12	r3: fp0+0 -> fp0-12
+        	 80: (85) call bpf_map_update_elem#2	r2: fp0-8 -> _	r3: fp0-12 -> _
+        	  4: (bf) r2 = r10	r2: _ -> fp0+0
+        	  5: (07) r2 += -4	r2: fp0+0 -> fp0-4
+        	  8: (85) call bpf_map_lookup_elem#1	r2: fp0-4 -> _
+        	 73: (bf) r2 = r10	r2: _ -> fp0+0
+        	 74: (07) r2 += -8	r2: fp0+0 -> fp0-8
+        	 75: (bf) r3 = r10	r3: _ -> fp0+0
+        	 76: (07) r3 += -12	r3: fp0+0 -> fp0-12
+        	 80: (85) call bpf_map_update_elem#2	r2: fp0-8 -> _	r3: fp0-12 -> _
+        	subprog#0 tracepoint__sched__sched_process_fork:
+        	  0: (bf) r6 = r1
+        	  1: (61) r9 = *(u32 *)(r6 +20)
+        	  2: (61) r8 = *(u32 *)(r6 +12)
+        	  3: (63) *(u32 *)(r10 -4) = r8
+        	  4: (bf) r2 = r10
+        	  5: (07) r2 += -4
+        	  6: (18) r1 = 0xffff8cdf2240e000
+        	  8: (85) call bpf_map_lookup_elem#1 // r2=fp0-4
+        	  9: (15) if r0 == 0x0 goto pc+71
+        	 10: (b7) r7 = 0
+        	 11: (18) r1 = 0xffff8cdf47d09600
+        	 13: (b7) r2 = 296
+        	 14: (b7) r3 = 0
+        	 15: (85) call bpf_ringbuf_reserve#131
+        	 16: (15) if r0 == 0x0 goto pc+64
+        	 17: (7b) *(u64 *)(r0 +288) = r7
+        	 18: (7b) *(u64 *)(r0 +280) = r7
+        	 19: (7b) *(u64 *)(r0 +272) = r7
+        	 20: (7b) *(u64 *)(r0 +264) = r7
+        	 21: (7b) *(u64 *)(r0 +256) = r7
+        	 22: (7b) *(u64 *)(r0 +248) = r7
+        	 23: (7b) *(u64 *)(r0 +240) = r7
+        	 24: (7b) *(u64 *)(r0 +232) = r7
+        	 25: (7b) *(u64 *)(r0 +224) = r7
+        	 26: (7b) *(u64 *)(r0 +216) = r7
+        	 27: (7b) *(u64 *)(r0 +208) = r7
+        	 28: (7b) *(u64 *)(r0 +200) = r7
+        	 29: (7b) *(u64 *)(r0 +192) = r7
+        	 30: (7b) *(u64 *)(r0 +184) = r7
+        	 31: (7b) *(u64 *)(r0 +176) = r7
+        	 32: (7b) *(u64 *)(r0 +168) = r7
+        	 33: (7b) *(u64 *)(r0 +160) = r7
+        	 34: (7b) *(u64 *)(r0 +152) = r7
+        	 35: (7b) *(u64 *)(r0 +144) = r7
+        	 36: (7b) *(u64 *)(r0 +136) = r7
+        	 37: (7b) *(u64 *)(r0 +128) = r7
+        	 38: (7b) *(u64 *)(r0 +120) = r7
+        	 39: (7b) *(u64 *)(r0 +112) = r7
+        	 40: (7b) *(u64 *)(r0 +104) = r7
+        	 41: (7b) *(u64 *)(r0 +96) = r7
+        	 42: (7b) *(u64 *)(r0 +88) = r7
+        	 43: (7b) *(u64 *)(r0 +80) = r7
+        	 44: (7b) *(u64 *)(r0 +72) = r7
+        	 45: (7b) *(u64 *)(r0 +64) = r7
+        	 46: (7b) *(u64 *)(r0 +56) = r7
+        	 47: (7b) *(u64 *)(r0 +48) = r7
+        	 48: (7b) *(u64 *)(r0 +40) = r7
+        	 49: (7b) *(u64 *)(r0 +32) = r7
+        	 50: (7b) *(u64 *)(r0 +24) = r7
+        	 51: (7b) *(u64 *)(r0 +16) = r7
+        	 52: (7b) *(u64 *)(r0 +8) = r7
+        	 53: (63) *(u32 *)(r0 +4) = r8
+        	 54: (63) *(u32 *)(r0 +0) = r9
+        	 55: (bf) r7 = r0
+        	 56: (85) call bpf_ktime_get_ns#5
+        	 57: (b7) r1 = 1
+        	 58: (73) *(u8 *)(r7 +292) = r1
+        	 59: (63) *(u32 *)(r7 +288) = r1
+        	 60: (7b) *(u64 *)(r7 +280) = r0
+        	 61: (85) call unknown#195896080
+        	 62: (0f) r6 += r1
+        	 63: (bf) r1 = r7
+        	 64: (07) r1 += 8
+        	 65: (b7) r2 = 16
+        	 66: (bf) r3 = r6
+        	 67: (85) call bpf_probe_read_kernel_str#115
+        	 68: (63) *(u32 *)(r10 -8) = r9
+        	 69: (63) *(u32 *)(r10 -12) = r8
+        	 70: (bf) r1 = r7
+        	 71: (b7) r2 = 0
+        	 72: (85) call bpf_ringbuf_submit#132
+        	 73: (bf) r2 = r10
+        	 74: (07) r2 += -8
+        	 75: (bf) r3 = r10
+        	 76: (07) r3 += -12
+        	 77: (18) r1 = 0xffff8cdf2240e000
+        	 79: (b7) r4 = 0
+        	 80: (85) call bpf_map_update_elem#2 // r2=fp0-8 r3=fp0-12
+        	 81: (b7) r0 = 0
+        	 82: (95) exit
+        	stack use/def subprog#0 tracepoint__sched__sched_process_fork (d0,cs0):
+        	  0: (bf) r6 = r1
+        	  1: (61) r9 = *(u32 *)(r6 +20)
+        	  2: (61) r8 = *(u32 *)(r6 +12)
+        	  3: (63) *(u32 *)(r10 -4) = r8        ; def: fp0-4h
+        	  4: (bf) r2 = r10
+        	  5: (07) r2 += -4
+        	  6: (18) r1 = 0xffff8cdf2240e000
+        	  8: (85) call bpf_map_lookup_elem#1   ; use: fp0-4h
+        	  9: (15) if r0 == 0x0 goto pc+71
+        	 10: (b7) r7 = 0
+        	 11: (18) r1 = 0xffff8cdf47d09600
+        	 13: (b7) r2 = 296
+        	 14: (b7) r3 = 0
+        	 15: (85) call bpf_ringbuf_reserve#131
+        	 16: (15) if r0 == 0x0 goto pc+64
+        	 17: (7b) *(u64 *)(r0 +288) = r7
+        	 18: (7b) *(u64 *)(r0 +280) = r7
+        	 19: (7b) *(u64 *)(r0 +272) = r7
+        	 20: (7b) *(u64 *)(r0 +264) = r7
+        	 21: (7b) *(u64 *)(r0 +256) = r7
+        	 22: (7b) *(u64 *)(r0 +248) = r7
+        	 23: (7b) *(u64 *)(r0 +240) = r7
+        	 24: (7b) *(u64 *)(r0 +232) = r7
+        	 25: (7b) *(u64 *)(r0 +224) = r7
+        	 26: (7b) *(u64 *)(r0 +216) = r7
+        	 27: (7b) *(u64 *)(r0 +208) = r7
+        	 28: (7b) *(u64 *)(r0 +200) = r7
+        	 29: (7b) *(u64 *)(r0 +192) = r7
+        	 30: (7b) *(u64 *)(r0 +184) = r7
+        	 31: (7b) *(u64 *)(r0 +176) = r7
+        	 32: (7b) *(u64 *)(r0 +168) = r7
+        	 33: (7b) *(u64 *)(r0 +160) = r7
+        	 34: (7b) *(u64 *)(r0 +152) = r7
+        	 35: (7b) *(u64 *)(r0 +144) = r7
+        	 36: (7b) *(u64 *)(r0 +136) = r7
+        	 37: (7b) *(u64 *)(r0 +128) = r7
+        	 38: (7b) *(u64 *)(r0 +120) = r7
+        	 39: (7b) *(u64 *)(r0 +112) = r7
+        	 40: (7b) *(u64 *)(r0 +104) = r7
+        	 41: (7b) *(u64 *)(r0 +96) = r7
+        	 42: (7b) *(u64 *)(r0 +88) = r7
+        	 43: (7b) *(u64 *)(r0 +80) = r7
+        	 44: (7b) *(u64 *)(r0 +72) = r7
+        	 45: (7b) *(u64 *)(r0 +64) = r7
+        	 46: (7b) *(u64 *)(r0 +56) = r7
+        	 47: (7b) *(u64 *)(r0 +48) = r7
+        	 48: (7b) *(u64 *)(r0 +40) = r7
+        	 49: (7b) *(u64 *)(r0 +32) = r7
+        	 50: (7b) *(u64 *)(r0 +24) = r7
+        	 51: (7b) *(u64 *)(r0 +16) = r7
+        	 52: (7b) *(u64 *)(r0 +8) = r7
+        	 53: (63) *(u32 *)(r0 +4) = r8
+        	 54: (63) *(u32 *)(r0 +0) = r9
+        	 55: (bf) r7 = r0
+        	 56: (85) call bpf_ktime_get_ns#5
+        	 57: (b7) r1 = 1
+        	 58: (73) *(u8 *)(r7 +292) = r1
+        	 59: (63) *(u32 *)(r7 +288) = r1
+        	 60: (7b) *(u64 *)(r7 +280) = r0
+        	 61: (85) call unknown#195896080
+        	 62: (0f) r6 += r1
+        	 63: (bf) r1 = r7
+        	 64: (07) r1 += 8
+        	 65: (b7) r2 = 16
+        	 66: (bf) r3 = r6
+        	 67: (85) call bpf_probe_read_kernel_str#115
+        	 68: (63) *(u32 *)(r10 -8) = r9        ; def: fp0-8h
+        	 69: (63) *(u32 *)(r10 -12) = r8       ; def: fp0-12h
+        	 70: (bf) r1 = r7
+        	 71: (b7) r2 = 0
+        	 72: (85) call bpf_ringbuf_submit#132
+        	 73: (bf) r2 = r10
+        	 74: (07) r2 += -8
+        	 75: (bf) r3 = r10
+        	 76: (07) r3 += -12
+        	 77: (18) r1 = 0xffff8cdf2240e000
+        	 79: (b7) r4 = 0
+        	 80: (85) call bpf_map_update_elem#2   ; use: fp0-8h fp0-12h
+        	 81: (b7) r0 = 0
+        	 82: (95) exit
+        	Live regs before insn:
+        	      0: .1........ (bf) r6 = r1
+        	      1: ......6... (61) r9 = *(u32 *)(r6 +20)
+        	      2: ......6..9 (61) r8 = *(u32 *)(r6 +12)
+        	      3: ......6.89 (63) *(u32 *)(r10 -4) = r8
+        	      4: ......6.89 (bf) r2 = r10
+        	      5: ..2...6.89 (07) r2 += -4
+        	      6: ..2...6.89 (18) r1 = 0xffff8cdf2240e000
+        	      8: .12...6.89 (85) call bpf_map_lookup_elem#1
+        	      9: 0.....6.89 (15) if r0 == 0x0 goto pc+71
+        	     10: ......6.89 (b7) r7 = 0
+        	     11: ......6789 (18) r1 = 0xffff8cdf47d09600
+        	     13: .1....6789 (b7) r2 = 296
+        	     14: .12...6789 (b7) r3 = 0
+        	     15: .123..6789 (85) call bpf_ringbuf_reserve#131
+        	     16: 0.....6789 (15) if r0 == 0x0 goto pc+64
+        	     17: 0.....6789 (7b) *(u64 *)(r0 +288) = r7
+        	     18: 0.....6789 (7b) *(u64 *)(r0 +280) = r7
+        	     19: 0.....6789 (7b) *(u64 *)(r0 +272) = r7
+        	     20: 0.....6789 (7b) *(u64 *)(r0 +264) = r7
+        	     21: 0.....6789 (7b) *(u64 *)(r0 +256) = r7
+        	     22: 0.....6789 (7b) *(u64 *)(r0 +248) = r7
+        	     23: 0.....6789 (7b) *(u64 *)(r0 +240) = r7
+        	     24: 0.....6789 (7b) *(u64 *)(r0 +232) = r7
+        	     25: 0.....6789 (7b) *(u64 *)(r0 +224) = r7
+        	     26: 0.....6789 (7b) *(u64 *)(r0 +216) = r7
+        	     27: 0.....6789 (7b) *(u64 *)(r0 +208) = r7
+        	     28: 0.....6789 (7b) *(u64 *)(r0 +200) = r7
+        	     29: 0.....6789 (7b) *(u64 *)(r0 +192) = r7
+        	     30: 0.....6789 (7b) *(u64 *)(r0 +184) = r7
+        	     31: 0.....6789 (7b) *(u64 *)(r0 +176) = r7
+        	     32: 0.....6789 (7b) *(u64 *)(r0 +168) = r7
+        	     33: 0.....6789 (7b) *(u64 *)(r0 +160) = r7
+        	     34: 0.....6789 (7b) *(u64 *)(r0 +152) = r7
+        	     35: 0.....6789 (7b) *(u64 *)(r0 +144) = r7
+        	     36: 0.....6789 (7b) *(u64 *)(r0 +136) = r7
+        	     37: 0.....6789 (7b) *(u64 *)(r0 +128) = r7
+        	     38: 0.....6789 (7b) *(u64 *)(r0 +120) = r7
+        	     39: 0.....6789 (7b) *(u64 *)(r0 +112) = r7
+        	     40: 0.....6789 (7b) *(u64 *)(r0 +104) = r7
+        	     41: 0.....6789 (7b) *(u64 *)(r0 +96) = r7
+        	     42: 0.....6789 (7b) *(u64 *)(r0 +88) = r7
+        	     43: 0.....6789 (7b) *(u64 *)(r0 +80) = r7
+        	     44: 0.....6789 (7b) *(u64 *)(r0 +72) = r7
+        	     45: 0.....6789 (7b) *(u64 *)(r0 +64) = r7
+        	     46: 0.....6789 (7b) *(u64 *)(r0 +56) = r7
+        	     47: 0.....6789 (7b) *(u64 *)(r0 +48) = r7
+        	     48: 0.....6789 (7b) *(u64 *)(r0 +40) = r7
+        	     49: 0.....6789 (7b) *(u64 *)(r0 +32) = r7
+        	     50: 0.....6789 (7b) *(u64 *)(r0 +24) = r7
+        	     51: 0.....6789 (7b) *(u64 *)(r0 +16) = r7
+        	     52: 0.....6789 (7b) *(u64 *)(r0 +8) = r7
+        	     53: 0.....6.89 (63) *(u32 *)(r0 +4) = r8
+        	     54: 0.....6.89 (63) *(u32 *)(r0 +0) = r9
+        	     55: 0.....6.89 (bf) r7 = r0
+        	     56: ......6789 (85) call bpf_ktime_get_ns#5
+        	     57: 0.23456789 (b7) r1 = 1
+        	     58: 0123456789 (73) *(u8 *)(r7 +292) = r1
+        	     59: 0123456789 (63) *(u32 *)(r7 +288) = r1
+        	     60: 0123456789 (7b) *(u64 *)(r7 +280) = r0
+        	     61: .123456789 (85) call unknown#195896080
+        	     62: .1....6789 (0f) r6 += r1
+        	     63: ......6789 (bf) r1 = r7
+        	     64: .1....6789 (07) r1 += 8
+        	     65: .1....6789 (b7) r2 = 16
+        	     66: .12...6789 (bf) r3 = r6
+        	     67: .123...789 (85) call bpf_probe_read_kernel_str#115
+        	     68: .......789 (63) *(u32 *)(r10 -8) = r9
+        	     69: .......78. (63) *(u32 *)(r10 -12) = r8
+        	     70: .......7.. (bf) r1 = r7
+        	     71: .1........ (b7) r2 = 0
+        	     72: .12....... (85) call bpf_ringbuf_submit#132
+        	     73: .......... (bf) r2 = r10
+        	     74: ..2....... (07) r2 += -8
+        	     75: ..2....... (bf) r3 = r10
+        	     76: ..23...... (07) r3 += -12
+        	     77: ..23...... (18) r1 = 0xffff8cdf2240e000
+        	     79: .123...... (b7) r4 = 0
+        	     80: .1234..... (85) call bpf_map_update_elem#2
+        	     81: .......... (b7) r0 = 0
+        	     82: 0......... (95) exit
+        	0: R1=ctx() R10=fp0
+        	; int tracepoint__sched__sched_process_fork(struct trace_event_raw_sched_process_fork *ctx) @ process_tracer.bpf.c:204
+        	0: (bf) r6 = r1                       ; R1=ctx() R6=ctx()
+        	; __u32 child_pid  = (__u32)ctx->child_pid; @ process_tracer.bpf.c:207
+        	1: (61) r9 = *(u32 *)(r6 +20)         ; R6=ctx() R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+        	; __u32 parent_pid = (__u32)ctx->parent_pid; @ process_tracer.bpf.c:206
+        	2: (61) r8 = *(u32 *)(r6 +12)         ; R6=ctx() R8=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+        	3: (63) *(u32 *)(r10 -4) = r8         ; R8=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R10=fp0 fp-8=mmmm????
+        	4: (bf) r2 = r10                      ; R2=fp0 R10=fp0
+        	;  @ process_tracer.bpf.c:0
+        	5: (07) r2 += -4                      ; R2=fp-4
+        	; return bpf_map_lookup_elem(&tracked_pids, &pid) != NULL; @ process_tracer.bpf.c:87
+        	6: (18) r1 = 0xffff8cdf2240e000       ; R1=map_ptr(map=tracked_pids,ks=4,vs=4)
+        	8: (85) call bpf_map_lookup_elem#1    ; R0=map_value_or_null(id=1,map=tracked_pids,ks=4,vs=4)
+        	; if (!is_tracked(parent_pid)) @ process_tracer.bpf.c:211
+        	9: (15) if r0 == 0x0 goto pc+71       ; R0=map_value(map=tracked_pids,ks=4,vs=4)
+        	10: (b7) r7 = 0                       ; R7=0
+        	; evt = bpf_ringbuf_reserve(&process_events, sizeof(*evt), 0); @ process_tracer.bpf.c:214
+        	11: (18) r1 = 0xffff8cdf47d09600      ; R1=map_ptr(map=process_events,ks=0,vs=0)
+        	13: (b7) r2 = 296                     ; R2=296
+        	14: (b7) r3 = 0                       ; R3=0
+        	15: (85) call bpf_ringbuf_reserve#131
+        	mark_precise: frame0: last_idx 15 first_idx 0 subseq_idx -1
+        	mark_precise: frame0: regs=r2 stack= before 14: (b7) r3 = 0
+        	mark_precise: frame0: regs=r2 stack= before 13: (b7) r2 = 296
+        	16: R0=ringbuf_mem_or_null(id=3,ref_obj_id=3,sz=296) refs=3
+        	; if (!evt) @ process_tracer.bpf.c:215
+        	16: (15) if r0 == 0x0 goto pc+64      ; R0=ringbuf_mem(ref_obj_id=3,sz=296) refs=3
+        	; __builtin_memset(evt, 0, sizeof(*evt)); @ process_tracer.bpf.c:218
+        	17: (7b) *(u64 *)(r0 +288) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	18: (7b) *(u64 *)(r0 +280) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	19: (7b) *(u64 *)(r0 +272) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	20: (7b) *(u64 *)(r0 +264) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	21: (7b) *(u64 *)(r0 +256) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	22: (7b) *(u64 *)(r0 +248) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	23: (7b) *(u64 *)(r0 +240) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	24: (7b) *(u64 *)(r0 +232) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	25: (7b) *(u64 *)(r0 +224) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	26: (7b) *(u64 *)(r0 +216) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	27: (7b) *(u64 *)(r0 +208) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	28: (7b) *(u64 *)(r0 +200) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	29: (7b) *(u64 *)(r0 +192) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	30: (7b) *(u64 *)(r0 +184) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	31: (7b) *(u64 *)(r0 +176) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	32: (7b) *(u64 *)(r0 +168) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	33: (7b) *(u64 *)(r0 +160) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	34: (7b) *(u64 *)(r0 +152) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	35: (7b) *(u64 *)(r0 +144) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	36: (7b) *(u64 *)(r0 +136) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	37: (7b) *(u64 *)(r0 +128) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	38: (7b) *(u64 *)(r0 +120) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	39: (7b) *(u64 *)(r0 +112) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	40: (7b) *(u64 *)(r0 +104) = r7       ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	41: (7b) *(u64 *)(r0 +96) = r7        ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	42: (7b) *(u64 *)(r0 +88) = r7        ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	43: (7b) *(u64 *)(r0 +80) = r7        ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	44: (7b) *(u64 *)(r0 +72) = r7        ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	45: (7b) *(u64 *)(r0 +64) = r7        ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	46: (7b) *(u64 *)(r0 +56) = r7        ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	47: (7b) *(u64 *)(r0 +48) = r7        ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	48: (7b) *(u64 *)(r0 +40) = r7        ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	49: (7b) *(u64 *)(r0 +32) = r7        ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	50: (7b) *(u64 *)(r0 +24) = r7        ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	51: (7b) *(u64 *)(r0 +16) = r7        ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	52: (7b) *(u64 *)(r0 +8) = r7         ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=0 refs=3
+        	; evt->ppid = parent_pid; @ process_tracer.bpf.c:220
+        	53: (63) *(u32 *)(r0 +4) = r8         ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R8=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) refs=3
+        	; evt->pid = child_pid; @ process_tracer.bpf.c:219
+        	54: (63) *(u32 *)(r0 +0) = r9         ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) refs=3
+        	55: (bf) r7 = r0                      ; R0=ringbuf_mem(ref_obj_id=3,sz=296) R7=ringbuf_mem(ref_obj_id=3,sz=296) refs=3
+        	; evt->timestamp_ns = bpf_ktime_get_ns(); @ process_tracer.bpf.c:221
+        	56: (85) call bpf_ktime_get_ns#5      ; R0=scalar() refs=3
+        	57: (b7) r1 = 1                       ; R1=1 refs=3
+        	; evt->event_type = 1; @ process_tracer.bpf.c:223
+        	58: (73) *(u8 *)(r7 +292) = r1        ; R1=1 R7=ringbuf_mem(ref_obj_id=3,sz=296) refs=3
+        	; evt->is_npm_related = 1; @ process_tracer.bpf.c:222
+        	59: (63) *(u32 *)(r7 +288) = r1       ; R1=1 R7=ringbuf_mem(ref_obj_id=3,sz=296) refs=3
+        	; evt->timestamp_ns = bpf_ktime_get_ns(); @ process_tracer.bpf.c:221
+        	60: (7b) *(u64 *)(r7 +280) = r0       ; R0=scalar() R7=ringbuf_mem(ref_obj_id=3,sz=296) refs=3
+        	61: (85) call unknown#195896080
+        	invalid func unknown#195896080
+        	processed 60 insns (limit 1000000) max_states_per_insn 0 total_states 2 peak_states 2 mark_read 0
+--- FAIL: TestDiagLoadProcessTracer (0.21s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/collector	0.219s
+FAIL

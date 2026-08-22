@@ -144,8 +144,10 @@ func main() {
 	startTrackedGoroutine(&wg, func() { bytesCollector.Run(ctx) })
 	startTrackedGoroutine(&wg, func() { detector.Run(ctx) })
 	startTrackedGoroutine(&wg, func() { router.Run(ctx) })
+	// Safe to read after wg.Wait(): the WaitGroup establishes happens-before.
+	var outStats outputStats
 	startTrackedGoroutine(&wg, func() {
-		runOutputWorker(detector, writer, *verbose)
+		outStats = runOutputWorker(detector.Completed(), writer, *verbose)
 	})
 
 	fmt.Println("npm-ebpf-monitor active. Watching for npm install...")
@@ -161,6 +163,15 @@ func main() {
 	closeAndLog("file collector", fileCollector)
 	closeAndLog("syscall collector", syscallCollector)
 	closeAndLog("process collector", processCollector)
+
+	if outStats.failed > 0 {
+		log.Printf("LOST %d of %d session(s): they were collected but could not be written",
+			outStats.failed, outStats.written+outStats.failed)
+	} else {
+		fmt.Printf("Wrote %d session record(s).\n", outStats.written)
+	}
+
+	os.Exit(exitCodeForOutput(outStats))
 }
 
 // probeResult holds the load outcome for a single BPF probe group.
@@ -274,8 +285,28 @@ func startTrackedGoroutine(wg *sync.WaitGroup, fn func()) {
 	}()
 }
 
-func runOutputWorker(detector *session.Detector, writer *output.JSONWriter, verbose bool) {
-	for completed := range detector.Completed() {
+// outputStats records what the output worker managed to persist, so that
+// shutdown can report it and set the exit status accordingly.
+type outputStats struct {
+	written int
+	failed  int
+}
+
+// exitCodeForOutput returns the process exit status implied by the output
+// worker's results. Any lost session is a failed run: a capture is usually
+// driven by a script, and an incomplete corpus that exits zero is worse than
+// one that stops loudly.
+func exitCodeForOutput(stats outputStats) int {
+	if stats.failed > 0 {
+		return 1
+	}
+	return 0
+}
+
+func runOutputWorker(completed <-chan *session.Session, writer *output.JSONWriter, verbose bool) outputStats {
+	var stats outputStats
+
+	for completed := range completed {
 		installFeatures, err := loadInstallFeatures(completed)
 		if err != nil {
 			log.Printf("extract install features for session %s: %v", completed.ID, err)
@@ -290,14 +321,21 @@ func runOutputWorker(detector *session.Detector, writer *output.JSONWriter, verb
 
 		path, err := writer.Write(record)
 		if err != nil {
+			// Keep going: aborting a long capture over one bad write would
+			// discard the sessions that are still to come. The count is what
+			// makes the loss visible at shutdown.
+			stats.failed++
 			log.Printf("write session %s: %v", completed.ID, err)
 			continue
 		}
 
+		stats.written++
 		if verbose {
 			log.Printf("wrote session record: %s", path)
 		}
 	}
+
+	return stats
 }
 
 func loadInstallFeatures(sess *session.Session) (features.InstallFeatures, error) {
