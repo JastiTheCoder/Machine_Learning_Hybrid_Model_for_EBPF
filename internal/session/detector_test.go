@@ -3,6 +3,7 @@ package session
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"sync"
 	"syscall"
@@ -798,4 +799,63 @@ func TestDetectorTimedOutStaysFalseWhenExitCompletesBeforeTheTimer(t *testing.T)
 
 	cancel()
 	waitForDetectorExit(t, done)
+}
+
+// TestRouteToSessionCountsAndLogsDropsForUnknownPID pins RouteToSession's own
+// contract directly (no Router involved): a call for a PID with no
+// registered session must be counted, must log when a verbose logger is
+// configured, and -- the negative check that gives this test teeth -- a call
+// for a PID that *is* registered must do neither. AUDIT.md H4 is the
+// audited gap this closes: the drop itself is architecturally unavoidable
+// (five independent ring-buffer-reading goroutines give no cross-channel
+// ordering guarantee), but it was previously invisible on both counts.
+func TestRouteToSessionCountsAndLogsDropsForUnknownPID(t *testing.T) {
+	detector := NewDetector(0)
+
+	var loggedLines []string
+	detector.SetLogger(func(format string, args ...any) {
+		loggedLines = append(loggedLines, fmt.Sprintf(format, args...))
+	})
+
+	if got := detector.DroppedRoutesForUnknownPID(); got != 0 {
+		t.Fatalf("DroppedRoutesForUnknownPID() = %d before any calls, want 0", got)
+	}
+
+	// Three calls for an unrecognized pid: all three must be counted.
+	const unknownPID = uint32(12345)
+	for i := 0; i < 3; i++ {
+		detector.RouteToSession(unknownPID, func(s *Session) {
+			t.Fatal("fn was called for an unregistered pid; RouteToSession should not have found a session")
+		})
+	}
+
+	if got := detector.DroppedRoutesForUnknownPID(); got != 3 {
+		t.Fatalf("DroppedRoutesForUnknownPID() = %d after 3 unknown-pid calls, want 3", got)
+	}
+	if len(loggedLines) != 3 {
+		t.Fatalf("verbose logger received %d line(s), want 3", len(loggedLines))
+	}
+	for _, line := range loggedLines {
+		if !strings.Contains(line, fmt.Sprintf("pid=%d", unknownPID)) {
+			t.Errorf("logged line %q does not mention pid=%d", line, unknownPID)
+		}
+	}
+
+	// The negative check: a registered pid must not be counted or logged.
+	session := NewSession(unknownPID+1, "pkg")
+	detector.registerSession(session)
+	detector.associatePID(session, unknownPID+1)
+
+	called := false
+	detector.RouteToSession(unknownPID+1, func(s *Session) { called = true })
+
+	if !called {
+		t.Fatal("fn was not called for a registered pid")
+	}
+	if got := detector.DroppedRoutesForUnknownPID(); got != 3 {
+		t.Fatalf("DroppedRoutesForUnknownPID() = %d after a known-pid call, want unchanged at 3", got)
+	}
+	if len(loggedLines) != 3 {
+		t.Fatalf("verbose logger received %d line(s) after a known-pid call, want unchanged at 3", len(loggedLines))
+	}
 }

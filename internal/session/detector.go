@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/aniruddha/npm-ebpf-monitor/internal/collector"
@@ -37,6 +38,12 @@ type Detector struct {
 	mu              sync.RWMutex
 	completedMu     sync.RWMutex
 	completedClosed bool
+
+	// routeDropCount counts RouteToSession calls for a PID with no
+	// registered session -- see RouteToSession's doc comment and
+	// DroppedRoutesForUnknownPID (AUDIT.md H4). Accessed via sync/atomic
+	// since RouteToSession only takes d.mu's read lock, not its write lock.
+	routeDropCount uint64
 }
 
 // NewDetector creates a ready-to-run detector for routed collector events.
@@ -104,6 +111,19 @@ func (d *Detector) HandleProcess(event collector.ProcessEvent) {
 }
 
 // RouteToSession finds the session for pid and applies fn when present.
+//
+// If no session is registered for pid, the event is dropped: this is a real,
+// audited gap (AUDIT.md H4), not a defensive corner case. The five collector
+// event types are read by five independent ring-buffer-reading goroutines
+// with no cross-channel delivery-order guarantee, so a syscall/file/TCP event
+// for a brand-new PID can physically be read and routed here before the
+// corresponding EXEC event has been processed and registered the PID.
+// Router.Run's outer-select priority for process events narrows this window
+// -- it does not close it, since it only helps when a process event happens
+// to already be buffered at the moment select runs.
+//
+// The drop is counted (see DroppedRoutesForUnknownPID) and, when a verbose
+// logger is configured, logged -- it was previously silent on both counts.
 func (d *Detector) RouteToSession(pid uint32, fn func(*Session)) {
 	if fn == nil {
 		return
@@ -120,11 +140,20 @@ func (d *Detector) RouteToSession(pid uint32, fn func(*Session)) {
 	session := d.pidToSession[pid]
 	d.mu.RUnlock()
 	if session == nil {
+		atomic.AddUint64(&d.routeDropCount, 1)
+		d.logf("dropped event for pid=%d: no session registered (AUDIT.md H4)", pid)
 		return
 	}
 
 	d.ensureLivePID(session, pid)
 	fn(session)
+}
+
+// DroppedRoutesForUnknownPID returns how many times RouteToSession has been
+// called for a PID with no registered session since this detector was
+// created. See RouteToSession's doc comment and AUDIT.md H4.
+func (d *Detector) DroppedRoutesForUnknownPID() uint64 {
+	return atomic.LoadUint64(&d.routeDropCount)
 }
 
 // Completed returns the stream of completed npm sessions.

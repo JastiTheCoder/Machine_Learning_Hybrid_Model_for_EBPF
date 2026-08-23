@@ -198,6 +198,11 @@ func TestRouter_UnknownPID(t *testing.T) {
 	if exists {
 		t.Fatal("unknown pid was unexpectedly attached to a session")
 	}
+
+	// AUDIT.md H4: these three drops must now be counted, not silent.
+	if got := detector.DroppedRoutesForUnknownPID(); got != 3 {
+		t.Fatalf("DroppedRoutesForUnknownPID() = %d, want 3 (syscall + file + tcp, all pid 999)", got)
+	}
 }
 
 func TestRouter_RaceConditions(t *testing.T) {

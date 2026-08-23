@@ -1,0 +1,7 @@
+# github.com/aniruddha/npm-ebpf-monitor/internal/session [github.com/aniruddha/npm-ebpf-monitor/internal/session.test]
+internal/session/detector_test.go:820:21: detector.DroppedRoutesForUnknownPID undefined (type *Detector has no field or method DroppedRoutesForUnknownPID)
+internal/session/detector_test.go:832:21: detector.DroppedRoutesForUnknownPID undefined (type *Detector has no field or method DroppedRoutesForUnknownPID)
+internal/session/detector_test.go:855:21: detector.DroppedRoutesForUnknownPID undefined (type *Detector has no field or method DroppedRoutesForUnknownPID)
+internal/session/router_test.go:203:21: detector.DroppedRoutesForUnknownPID undefined (type *Detector has no field or method DroppedRoutesForUnknownPID)
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/session [build failed]
+FAIL

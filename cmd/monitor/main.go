@@ -175,6 +175,11 @@ func main() {
 			"4096-entry bound during this run", pendingOpensLost)
 	}
 
+	if dropped := detector.DroppedRoutesForUnknownPID(); dropped > 0 {
+		log.Printf("%d syscall/file/TCP event(s) were dropped: no session was registered yet "+
+			"for their pid (AUDIT.md H4 -- a cross-channel ordering race, not a crash)", dropped)
+	}
+
 	if outStats.failed > 0 {
 		log.Printf("LOST %d of %d session(s): they were collected but could not be written",
 			outStats.failed, outStats.written+outStats.failed)
