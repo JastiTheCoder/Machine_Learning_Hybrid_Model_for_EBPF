@@ -1,0 +1,8 @@
+=== RUN   TestMonitorEndToEnd_PathLikeInstallIsCapturedTreeAndSanitized
+--- PASS: TestMonitorEndToEnd_PathLikeInstallIsCapturedTreeAndSanitized (1.70s)
+=== RUN   TestMonitorEndToEnd_BenignAndMaliciousFixturesAreLabeledCorrectly
+--- PASS: TestMonitorEndToEnd_BenignAndMaliciousFixturesAreLabeledCorrectly (2.62s)
+=== RUN   TestMonitorEndToEnd_ExitsNonZeroAndReportsLossWhenOutputCannotBeWritten
+--- PASS: TestMonitorEndToEnd_ExitsNonZeroAndReportsLossWhenOutputCannotBeWritten (2.81s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/monitor	7.129s

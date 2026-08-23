@@ -175,6 +175,20 @@ func TestRouter_UnknownPID(t *testing.T) {
 
 	waitForWaitGroup(t, &senders, "unknown pid senders did not complete")
 
+	// A sender unblocking only proves Router.Run's select *received* that
+	// event -- an unbuffered channel's rendezvous synchronizes the transfer
+	// itself, not whatever the receiving goroutine (Router.Run, in the same
+	// loop iteration) does next. RouteToSession's atomic increment happens
+	// after that receive, so waitForWaitGroup above does not guarantee all
+	// three drops have actually been counted yet -- exactly the race
+	// TestRouter_Multiplexing already guards against the same way for its
+	// own (non-zero) counts. Discovered here as a genuine, reproducible flake
+	// (failed 4 of 5 standalone runs before this fix) while validating this
+	// project's existing fixes end to end, not by inspection.
+	waitForCondition(t, func() bool {
+		return detector.DroppedRoutesForUnknownPID() == 3
+	}, "DroppedRoutesForUnknownPID() did not reach 3 within 1s")
+
 	syscallCount, homeCount, fileProcesses, tcpTransitions, livePID := snapshotSession(session, session.NpmPID)
 	if syscallCount != 0 {
 		t.Fatalf("syscall count = %d, want 0", syscallCount)

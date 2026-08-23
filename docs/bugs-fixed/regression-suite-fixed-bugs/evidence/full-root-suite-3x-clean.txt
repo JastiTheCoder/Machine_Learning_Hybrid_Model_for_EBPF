@@ -1,0 +1,30 @@
+=== FULL SUITE, ROOT, RUN 1 ===
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/exporter	0.005s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/labeler	0.003s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/validator	0.002s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/monitor	7.039s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	4.433s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/dataset	0.002s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/features	2.323s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	0.040s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	0.652s
+=== FULL SUITE, ROOT, RUN 2 ===
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/exporter	0.004s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/labeler	0.004s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/validator	0.003s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/monitor	7.039s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	4.549s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/dataset	0.003s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/features	2.314s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	0.053s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	0.644s
+=== FULL SUITE, ROOT, RUN 3 ===
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/exporter	0.003s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/labeler	0.003s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/validator	0.002s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/monitor	7.246s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	4.552s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/dataset	0.002s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/features	2.327s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	0.041s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	0.642s
