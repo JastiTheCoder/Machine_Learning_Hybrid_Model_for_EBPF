@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"testing"
 	"time"
@@ -413,5 +414,103 @@ func TestSnapshotIsRaceFreeUnderConcurrentWriters(t *testing.T) {
 	final := session.Snapshot()
 	if totalSyscalls(final.SyscallCounts) == 0 {
 		t.Error("final snapshot recorded no syscalls; the writers did not run")
+	}
+}
+
+// TestMarkCompleteOnceHasExactlyOneWinner asserts that when many goroutines
+// call MarkCompleteOnce concurrently on the same Session, exactly one of them
+// is told it won -- regardless of how many call it, or with what timedOut
+// value.
+//
+// This is the arbitration primitive C3's fix depends on: the detector's two
+// completion paths (normal exit, and the timeout callback on its own
+// goroutine) each call this once and must never both proceed to unregister and
+// send the session. The oracle is `go test -race`.
+func TestMarkCompleteOnceHasExactlyOneWinner(t *testing.T) {
+	const callers = 50
+
+	session := NewSession(303, "pkg")
+
+	var winners int32
+	var wg sync.WaitGroup
+	for i := 0; i < callers; i++ {
+		i := i
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if session.MarkCompleteOnce(i%2 == 0) {
+				atomic.AddInt32(&winners, 1)
+			}
+		}()
+	}
+	wg.Wait()
+
+	if winners != 1 {
+		t.Errorf("MarkCompleteOnce reported %d winner(s) across %d concurrent callers, want exactly 1",
+			winners, callers)
+	}
+}
+
+// TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut asserts that TimedOut,
+// State and EndTime are all set together, by whichever call wins.
+//
+// Before this fix, TimedOut was written directly by the timeout callback with
+// no lock at all -- a data race against any locked reader, independent of the
+// double-completion bug itself.
+func TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut(t *testing.T) {
+	tests := []struct {
+		name         string
+		timedOut     bool
+		wantTimedOut bool
+	}{
+		{name: "normal exit wins", timedOut: false, wantTimedOut: false},
+		{name: "timeout wins", timedOut: true, wantTimedOut: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			session := NewSession(303, "pkg")
+			before := time.Now()
+
+			won := session.MarkCompleteOnce(tt.timedOut)
+			if !won {
+				t.Fatal("first call to MarkCompleteOnce reported losing; want winning")
+			}
+
+			snap := session.Snapshot()
+			if snap.TimedOut != tt.wantTimedOut {
+				t.Errorf("TimedOut = %v, want %v", snap.TimedOut, tt.wantTimedOut)
+			}
+			if snap.State != SessionComplete {
+				t.Errorf("State = %q, want %q", snap.State, SessionComplete)
+			}
+			if snap.EndTime.Before(before) {
+				t.Errorf("EndTime = %v, want it no earlier than %v", snap.EndTime, before)
+			}
+		})
+	}
+}
+
+// TestMarkCompleteOnceSecondCallDoesNotOverwriteTheFirstWinner asserts that a
+// losing call cannot alter what the winner already recorded.
+//
+// This pins the exact scenario in AUDIT.md C3's "compounding" description: a
+// session that completed via normal exit (TimedOut=false) must not have that
+// silently flipped to true by a timeout callback that fires moments later on
+// the very same session.
+func TestMarkCompleteOnceSecondCallDoesNotOverwriteTheFirstWinner(t *testing.T) {
+	session := NewSession(303, "pkg")
+
+	if !session.MarkCompleteOnce(false) {
+		t.Fatal("first call (normal exit) reported losing; want winning")
+	}
+	if session.MarkCompleteOnce(true) {
+		t.Fatal("second call (timeout) reported winning; want losing")
+	}
+
+	snap := session.Snapshot()
+	if snap.TimedOut {
+		t.Error("TimedOut = true after a losing call overwrote the winner's false; " +
+			"the losing call must be a no-op")
 	}
 }

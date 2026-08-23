@@ -1,0 +1,9 @@
+# github.com/aniruddha/npm-ebpf-monitor/internal/session [github.com/aniruddha/npm-ebpf-monitor/internal/session.test]
+internal/session/session_test.go:441:15: session.MarkCompleteOnce undefined (type *Session has no field or method MarkCompleteOnce)
+internal/session/session_test.go:475:19: session.MarkCompleteOnce undefined (type *Session has no field or method MarkCompleteOnce)
+internal/session/session_test.go:484:12: snap.State undefined (type Snapshot has no field or method State)
+internal/session/session_test.go:485:42: snap.State undefined (type Snapshot has no field or method State)
+internal/session/session_test.go:504:14: session.MarkCompleteOnce undefined (type *Session has no field or method MarkCompleteOnce)
+internal/session/session_test.go:507:13: session.MarkCompleteOnce undefined (type *Session has no field or method MarkCompleteOnce)
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/session [build failed]
+FAIL

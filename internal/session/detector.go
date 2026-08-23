@@ -307,8 +307,24 @@ func (d *Detector) handleExit(event collector.ProcessEvent) {
 		return
 	}
 
+	// Always stop/clear our timer entry here, whether or not we go on to win
+	// the completion race below -- otherwise a session that also times out
+	// around now leaks its *time.Timer entry in d.timers forever (AUDIT.md
+	// C3's "compounding leak").
 	d.stopSessionTimer(session.NpmPID)
-	session.Complete()
+
+	if !session.MarkCompleteOnce(false) {
+		// The timeout callback, racing on its own goroutine, already
+		// completed this session first. Do not unregister or send it again --
+		// that already happened once and this delivery would be a duplicate.
+		d.logf(
+			"session id=%s pid=%d already completed by timeout; skipping duplicate completion",
+			session.ID,
+			session.NpmPID,
+		)
+		return
+	}
+
 	d.unregisterSession(session)
 	d.logf(
 		"completed session id=%s pid=%d package=%q",
@@ -421,9 +437,21 @@ func (d *Detector) startSessionTimer(s *Session) {
 
 	npmPID := s.NpmPID
 	timer := time.AfterFunc(d.sessionTimeout, func() {
+		// Always clear our own entry from d.timers first, whether or not we
+		// go on to win the completion race below -- this is the callback's
+		// only chance to do so; nothing else ever cleans up a timer entry on
+		// its behalf (AUDIT.md C3's "compounding leak"). stopSessionTimer
+		// also calls Stop() on a timer that has already fired, which is a
+		// documented no-op, so this is safe to call unconditionally.
+		d.stopSessionTimer(npmPID)
+
+		if !s.MarkCompleteOnce(true) {
+			// The normal-exit path, racing on the router goroutine, already
+			// completed this session first. Do not send it again.
+			return
+		}
+
 		slog.Warn("session timed out", "session_id", s.ID, "package", s.PackageName)
-		s.TimedOut = true
-		s.Complete()
 
 		d.completedMu.RLock()
 		defer d.completedMu.RUnlock()

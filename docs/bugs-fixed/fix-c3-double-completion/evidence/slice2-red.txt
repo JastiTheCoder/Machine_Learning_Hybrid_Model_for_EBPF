@@ -1,0 +1,23 @@
+=== RUN   TestDetectorNeverDeliversASessionMoreThanOnceWhenExitRacesTimeout
+2026/08/22 22:58:10 WARN session timed out session_id=npm-1787419690 package=lodash
+2026/08/22 22:58:10 WARN session timed out session_id=npm-1787419690 package=lodash
+2026/08/22 22:58:10 WARN session timed out session_id=npm-1787419690 package=lodash
+2026/08/22 22:58:10 WARN session timed out session_id=npm-1787419690 package=lodash
+2026/08/22 22:58:10 WARN session timed out session_id=npm-1787419690 package=lodash
+2026/08/22 22:58:10 WARN session timed out session_id=npm-1787419690 package=lodash
+2026/08/22 22:58:10 WARN session timed out session_id=npm-1787419690 package=lodash
+2026/08/22 22:58:10 WARN session timed out session_id=npm-1787419690 package=lodash
+2026/08/22 22:58:10 WARN session timed out session_id=npm-1787419690 package=lodash
+    detector_test.go:613: session for pid 20191 was delivered on Completed() 2 times, want exactly 1
+    detector_test.go:613: session for pid 20146 was delivered on Completed() 2 times, want exactly 1
+    detector_test.go:613: session for pid 20170 was delivered on Completed() 2 times, want exactly 1
+    detector_test.go:613: session for pid 20160 was delivered on Completed() 2 times, want exactly 1
+    detector_test.go:613: session for pid 20120 was delivered on Completed() 2 times, want exactly 1
+    detector_test.go:613: session for pid 20213 was delivered on Completed() 2 times, want exactly 1
+    detector_test.go:613: session for pid 20192 was delivered on Completed() 2 times, want exactly 1
+    detector_test.go:613: session for pid 20116 was delivered on Completed() 2 times, want exactly 1
+    detector_test.go:618: 8 of 300 sessions were completed more than once
+--- FAIL: TestDetectorNeverDeliversASessionMoreThanOnceWhenExitRacesTimeout (0.11s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/session	0.111s
+FAIL

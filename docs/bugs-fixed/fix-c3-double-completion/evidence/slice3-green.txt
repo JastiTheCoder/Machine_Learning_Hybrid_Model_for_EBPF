@@ -1,0 +1,5 @@
+=== RUN   TestSessionTimeoutClearsItsOwnTimerEntry
+2026/08/22 22:59:57 WARN session timed out session_id=npm-1787419797 package=lodash
+--- PASS: TestSessionTimeoutClearsItsOwnTimerEntry (0.02s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	0.024s

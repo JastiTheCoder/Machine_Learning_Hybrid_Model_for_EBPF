@@ -22,7 +22,8 @@ const (
 
 // Session tracks one npm install invocation and the features collected for it.
 type Session struct {
-	mu sync.Mutex
+	mu           sync.Mutex
+	completeOnce sync.Once
 
 	ID          string
 	PackageName string
@@ -229,6 +230,7 @@ type Snapshot struct {
 	PackageName string
 	Cwd         string
 	ProcessTree string
+	State       SessionState
 	TimedOut    bool
 	StartTime   time.Time
 	EndTime     time.Time
@@ -256,6 +258,7 @@ func (s *Session) Snapshot() Snapshot {
 		PackageName: s.PackageName,
 		Cwd:         s.Cwd,
 		ProcessTree: s.ProcessTree,
+		State:       s.State,
 		TimedOut:    s.TimedOut,
 		StartTime:   s.StartTime,
 		EndTime:     s.EndTime,
@@ -284,4 +287,37 @@ func (s *Session) Snapshot() Snapshot {
 	}
 
 	return snap
+}
+
+// MarkCompleteOnce marks the session complete exactly once, no matter how many
+// goroutines call it concurrently, and reports whether this call was the one
+// that did it.
+//
+// A session can be completed from two independent goroutines racing each
+// other: the normal-exit path (the router goroutine, when the last live PID
+// exits) and the timeout callback (a *time.Timer's own goroutine, firing
+// time.AfterFunc). Without a single arbitration point, both could decide they
+// are the one completing the session and both hand it to the output pipeline,
+// producing a duplicate session record (AUDIT.md C3).
+//
+// The winner's timedOut value is the one that sticks -- a losing call is a
+// complete no-op, including for TimedOut, so a session that genuinely
+// completed via normal exit can never be silently flipped to "timed out" by a
+// timeout callback that fires moments later on the same session.
+//
+// TimedOut, State and EndTime are set together under one lock acquisition by
+// the winner, so a concurrent Snapshot() never observes them out of step with
+// each other -- and, unlike the code this replaces, TimedOut is never written
+// outside the lock.
+func (s *Session) MarkCompleteOnce(timedOut bool) bool {
+	won := false
+	s.completeOnce.Do(func() {
+		won = true
+		s.mu.Lock()
+		s.TimedOut = timedOut
+		s.State = SessionComplete
+		s.EndTime = time.Now()
+		s.mu.Unlock()
+	})
+	return won
 }

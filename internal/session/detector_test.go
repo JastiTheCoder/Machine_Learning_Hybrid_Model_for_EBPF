@@ -482,44 +482,296 @@ func waitForDetectorExit(t *testing.T, done <-chan struct{}) {
 }
 
 func TestSessionTimeout(t *testing.T) {
-const timeout = 100 * time.Millisecond
+	const timeout = 100 * time.Millisecond
 
-detector := NewDetector(timeout)
+	detector := NewDetector(timeout)
 
-ctx, cancel := context.WithCancel(context.Background())
-done := make(chan struct{})
-go func() {
-defer close(done)
-detector.Run(ctx)
-}()
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		detector.Run(ctx)
+	}()
 
-// Submit an EXEC for npm install but never send the EXIT.
-detector.SubmitProcess(context.Background(), collector.ProcessEvent{
-Pid:       500,
-Ppid:      1,
-Comm:      fixedComm("npm"),
-Args:      fixedSlotArgs("npm", "install", "lodash"),
-EventType: processEventExec,
-})
+	// Submit an EXEC for npm install but never send the EXIT.
+	detector.SubmitProcess(context.Background(), collector.ProcessEvent{
+		Pid:       500,
+		Ppid:      1,
+		Comm:      fixedComm("npm"),
+		Args:      fixedSlotArgs("npm", "install", "lodash"),
+		EventType: processEventExec,
+	})
 
-// Wait up to 300ms — the timer should fire after ~100ms.
-var sess *Session
-select {
-case sess = <-detector.Completed():
-case <-time.After(300 * time.Millisecond):
-t.Fatal("timed out waiting for session to be completed by the session timer")
+	// Wait up to 300ms — the timer should fire after ~100ms.
+	var sess *Session
+	select {
+	case sess = <-detector.Completed():
+	case <-time.After(300 * time.Millisecond):
+		t.Fatal("timed out waiting for session to be completed by the session timer")
+	}
+
+	if sess == nil {
+		t.Fatal("Completed() returned nil session")
+	}
+	if !sess.TimedOut {
+		t.Fatalf("session.TimedOut = false, want true")
+	}
+	if sess.State != SessionComplete {
+		t.Fatalf("session.State = %q after timeout, want %q", sess.State, SessionComplete)
+	}
+
+	cancel()
+	waitForDetectorExit(t, done)
 }
 
-if sess == nil {
-t.Fatal("Completed() returned nil session")
-}
-if !sess.TimedOut {
-t.Fatalf("session.TimedOut = false, want true")
-}
-if sess.State != SessionComplete {
-t.Fatalf("session.State = %q after timeout, want %q", sess.State, SessionComplete)
+// TestDetectorNeverDeliversASessionMoreThanOnceWhenExitRacesTimeout is the
+// direct end-to-end reproduction of AUDIT.md C3: "a session can be completed
+// twice -- timeout vs. normal-exit race."
+//
+// It arms an extremely short per-session timeout and submits the matching EXIT
+// event for the same PID immediately afterward, so the router goroutine
+// (handleExit) and the timer's own goroutine (the time.AfterFunc callback) are
+// racing to complete the very same session. Repeated across many independent
+// sessions on one live Detector to make the race reliably observable rather
+// than dependent on a single lucky (or unlucky) interleaving.
+//
+// Deliveries are keyed by NpmPID rather than Session.ID: NewSession derives ID
+// from time.Now().Unix(), which has one-second resolution, so many sessions
+// created in the same tight loop collide on ID even though they are genuinely
+// different sessions. NpmPID is unique per trial by construction.
+func TestDetectorNeverDeliversASessionMoreThanOnceWhenExitRacesTimeout(t *testing.T) {
+	const trials = 300
+	const timeout = 1 * time.Microsecond
+
+	detector := NewDetector(timeout)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		detector.Run(ctx)
+	}()
+
+	submitCtx := context.Background()
+	for trial := 0; trial < trials; trial++ {
+		pid := uint32(20000 + trial)
+
+		detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+			Pid:       pid,
+			Ppid:      1,
+			Comm:      fixedComm("npm"),
+			Args:      fixedSlotArgs("npm", "install", "lodash"),
+			EventType: processEventExec,
+		})
+		// Racing the exit right on the timer's heels: the timer is already
+		// armed (with a 1us timeout) and may fire before, during, or after
+		// this event is processed.
+		detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+			Pid:       pid,
+			EventType: processEventExit,
+		})
+	}
+
+	deliveries := make(map[uint32]int)
+	deadline := time.After(3 * time.Second)
+drain:
+	for len(deliveries) < trials {
+		select {
+		case sess := <-detector.Completed():
+			deliveries[sess.NpmPID]++
+		case <-deadline:
+			break drain
+		}
+	}
+
+	// A duplicate send (if the bug is present) can lag slightly behind the
+	// first, since it comes from a different goroutine racing to reach the
+	// same channel send. Give stragglers a short further window.
+	extra := time.After(100 * time.Millisecond)
+extraLoop:
+	for {
+		select {
+		case sess := <-detector.Completed():
+			deliveries[sess.NpmPID]++
+		case <-extra:
+			break extraLoop
+		}
+	}
+
+	cancel()
+	waitForDetectorExit(t, done)
+
+	if len(deliveries) < trials {
+		t.Fatalf("only %d of %d sessions were ever completed; the race scenario did not run "+
+			"as intended", len(deliveries), trials)
+	}
+
+	duplicates := 0
+	for pid, count := range deliveries {
+		if count > 1 {
+			duplicates++
+			t.Errorf("session for pid %d was delivered on Completed() %d times, want exactly 1",
+				pid, count)
+		}
+	}
+	if duplicates > 0 {
+		t.Logf("%d of %d sessions were completed more than once", duplicates, trials)
+	}
 }
 
-cancel()
-waitForDetectorExit(t, done)
+// TestSessionTimeoutClearsItsOwnTimerEntry asserts that a session which
+// completes via the timeout callback no longer has an entry in d.timers
+// afterward.
+//
+// Before this fix, only the normal-exit path (handleExit -> stopSessionTimer)
+// ever removed an entry from d.timers; the timeout callback itself never did,
+// so every session that timed out leaked one *time.Timer map entry for the
+// life of the process (AUDIT.md C3's "compounding leak"). A long-running
+// monitor capturing many timed-out installs would grow this map without
+// bound.
+//
+// This is a guard, not a fresh red: the leak fix was written as part of the
+// same change as the double-completion fix (both live in startSessionTimer's
+// callback), so by the time this test was written the code already passed it.
+// Checked for teeth rather than trusted: temporarily removing just the
+// d.stopSessionTimer(npmPID) cleanup line reproduces the leak and fails this
+// test (see evidence/slice3-teeth-check.txt), confirming it is not vacuous.
+//
+// This reaches d.timers directly because it is unexported detector state with
+// no public accessor, and this test lives in the same package -- consistent
+// with how the rest of this file already configures unexported fields like
+// cwdResolver.
+func TestSessionTimeoutClearsItsOwnTimerEntry(t *testing.T) {
+	const timeout = 20 * time.Millisecond
+
+	detector := NewDetector(timeout)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		detector.Run(ctx)
+	}()
+
+	const pid = uint32(30000)
+	detector.SubmitProcess(context.Background(), collector.ProcessEvent{
+		Pid:       pid,
+		Ppid:      1,
+		Comm:      fixedComm("npm"),
+		Args:      fixedSlotArgs("npm", "install", "lodash"),
+		EventType: processEventExec,
+	})
+
+	select {
+	case sess := <-detector.Completed():
+		if !sess.TimedOut {
+			t.Fatalf("session.TimedOut = false, want true (it should have completed by timeout)")
+		}
+	case <-time.After(1 * time.Second):
+		t.Fatal("timed out waiting for the session to complete by timeout")
+	}
+
+	// Give the timeout callback's own cleanup a moment to run -- it clears
+	// d.timers itself now, but that happens after the send on Completed(),
+	// which is what the select above already waited for.
+	deadline := time.Now().Add(500 * time.Millisecond)
+	for {
+		detector.mu.RLock()
+		_, leaked := detector.timers[pid]
+		remaining := len(detector.timers)
+		detector.mu.RUnlock()
+
+		if !leaked {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("d.timers still holds an entry for pid %d %s after it timed out "+
+				"(map has %d total entries); the timeout callback never cleaned up its own entry",
+				pid, "500ms later", remaining)
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
+
+	cancel()
+	waitForDetectorExit(t, done)
+}
+
+// TestDetectorTimedOutStaysFalseWhenExitCompletesBeforeTheTimer asserts that an
+// ordinary session, which exits well within its timeout window, reports
+// TimedOut=false and is delivered on Completed() exactly once, with the armed
+// timer never firing at all.
+//
+// IMPORTANT -- what this test does NOT do: checked for teeth the same way as
+// TestBuildRecordOnCompletedSessionWhileCollectorsStillWrite was in the C2
+// fix, and it has none against C3. With a 200ms window and an exit submitted
+// essentially instantly, stopSessionTimer successfully cancels the timer well
+// before it would fire -- true whether or not MarkCompleteOnce's arbitration
+// exists at all, since nothing here creates an actual race between the two
+// completion paths. Confirmed by running it against the fully reverted,
+// pre-fix detector.go: it still passed (see
+// evidence/slice4-teeth-check.txt).
+//
+// "TimedOut reflects the actual winner" -- the seam this was meant to cover --
+// IS genuinely tested with teeth, but at the unit level:
+// TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut and
+// TestMarkCompleteOnceSecondCallDoesNotOverwriteTheFirstWinner in
+// session_test.go construct the exact disagreement (a losing call arguing for
+// the opposite TimedOut value) and prove the winner's value survives. The
+// Detector layer only ever calls MarkCompleteOnce and trusts its result, so
+// there is no separate end-to-end-only bug for a further test to catch here --
+// this one is kept as an honest regression guard for the ordinary,
+// non-racing case, not as C3 coverage.
+func TestDetectorTimedOutStaysFalseWhenExitCompletesBeforeTheTimer(t *testing.T) {
+	const timeout = 200 * time.Millisecond
+
+	detector := NewDetector(timeout)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		detector.Run(ctx)
+	}()
+
+	const pid = uint32(40000)
+	submitCtx := context.Background()
+
+	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+		Pid:       pid,
+		Ppid:      1,
+		Comm:      fixedComm("npm"),
+		Args:      fixedSlotArgs("npm", "install", "lodash"),
+		EventType: processEventExec,
+	})
+	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+		Pid:       pid,
+		EventType: processEventExit,
+	})
+
+	var sess *Session
+	select {
+	case sess = <-detector.Completed():
+	case <-time.After(1 * time.Second):
+		t.Fatal("timed out waiting for the session to complete via normal exit")
+	}
+
+	if sess.TimedOut {
+		t.Error("session.TimedOut = true for a session that exited well within its timeout window")
+	}
+	if sess.State != SessionComplete {
+		t.Errorf("session.State = %q, want %q", sess.State, SessionComplete)
+	}
+
+	// The timer must not fire at all: wait past the timeout window and confirm
+	// no second delivery ever arrives.
+	select {
+	case second := <-detector.Completed():
+		t.Errorf("session was delivered a second time (id=%s) after its timeout window elapsed; "+
+			"the armed timer fired despite the session already completing normally", second.ID)
+	case <-time.After(timeout + 100*time.Millisecond):
+		// Correct: the timer was disarmed by the normal-exit path and never fired.
+	}
+
+	cancel()
+	waitForDetectorExit(t, done)
 }

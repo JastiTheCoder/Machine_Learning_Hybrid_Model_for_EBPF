@@ -1,0 +1,7 @@
+=== RUN   TestSessionTimeoutClearsItsOwnTimerEntry
+2026/08/22 22:59:43 WARN session timed out session_id=npm-1787419783 package=lodash
+    detector_test.go:681: d.timers still holds an entry for pid 30000 500ms later after it timed out (map has 1 total entries); the timeout callback never cleaned up its own entry
+--- FAIL: TestSessionTimeoutClearsItsOwnTimerEntry (0.52s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/session	0.531s
+FAIL

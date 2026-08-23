@@ -1,0 +1,7 @@
+--- PASS: TestMarkCompleteOnceHasExactlyOneWinner (0.00s)
+--- PASS: TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut (0.00s)
+    --- PASS: TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut/normal_exit_wins (0.00s)
+    --- PASS: TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut/timeout_wins (0.00s)
+--- PASS: TestMarkCompleteOnceSecondCallDoesNotOverwriteTheFirstWinner (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	0.003s
