@@ -1,0 +1,6 @@
+=== RUN   TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat
+    file_collector_test.go:260: pending_opens still holds an entry for killed pid 42724 2s later; the entry leaked (AUDIT.md H2)
+--- FAIL: TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat (2.56s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/collector	2.569s
+FAIL

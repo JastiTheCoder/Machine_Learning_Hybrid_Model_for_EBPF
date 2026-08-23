@@ -1,0 +1,4 @@
+=== RUN   TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat
+--- PASS: TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat (0.65s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	0.652s

@@ -158,11 +158,22 @@ func main() {
 	cancel()
 	wg.Wait()
 
+	// Read before Close(): closing the file collector releases the map FD
+	// this counter is read from. See AUDIT.md H2.
+	pendingOpensLost, pendingOpensLostErr := fileCollector.PendingOpensInsertFailures()
+
 	closeAndLog("bytes collector", bytesCollector)
 	closeAndLog("tcp collector", tcpCollector)
 	closeAndLog("file collector", fileCollector)
 	closeAndLog("syscall collector", syscallCollector)
 	closeAndLog("process collector", processCollector)
+
+	if pendingOpensLostErr != nil {
+		log.Printf("read pending_opens insert-failure counter: %v", pendingOpensLostErr)
+	} else if pendingOpensLost > 0 {
+		log.Printf("%d file-open event(s) were dropped: pending_opens filled to its "+
+			"4096-entry bound during this run", pendingOpensLost)
+	}
 
 	if outStats.failed > 0 {
 		log.Printf("LOST %d of %d session(s): they were collected but could not be written",
@@ -213,7 +224,9 @@ func runDryRun() {
 	}
 
 	fileCollector, err := collector.NewFileCollector(processCollector.TrackedPidsMap())
-	addResult("FileMonitor", "tracepoint/syscalls/sys_enter_openat, sys_exit_openat", err)
+	addResult("FileMonitor",
+		"tracepoint/syscalls/sys_enter_openat, sys_exit_openat, sched_process_exit",
+		err)
 	if err == nil {
 		defer closeAndLog("file collector", fileCollector)
 	}

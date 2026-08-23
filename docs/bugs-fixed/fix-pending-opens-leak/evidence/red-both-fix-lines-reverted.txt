@@ -1,0 +1,8 @@
+=== RUN   TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat
+--- PASS: TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat (0.67s)
+=== RUN   TestFileMonitorCountsFailedPendingOpensInserts
+    file_collector_test.go:340: file_monitor_stats[pending_opens insert failed] did not increase (before=0, after=0) after a real openat() with pending_opens full; the failed insert went uncounted (AUDIT.md H2)
+--- FAIL: TestFileMonitorCountsFailedPendingOpensInserts (2.47s)
+FAIL
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/collector	3.146s
+FAIL

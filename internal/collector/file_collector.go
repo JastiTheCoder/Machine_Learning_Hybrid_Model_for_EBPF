@@ -74,11 +74,17 @@ type FileEvent struct {
 // tracepoint/syscalls/sys_exit_openat and streams decoded FileEvent values
 // to the Events channel.  Events are emitted at exit time so open_success
 // reflects the actual kernel return value.
+//
+// It also attaches sched/sched_process_exit, which cleans up a tracked
+// thread's pending_opens entry if it is killed while still blocked inside
+// openat() -- see the tracepoint's own comment in file_monitor.bpf.c and
+// AUDIT.md H2.
 type FileCollector struct {
-	objs      FileMonitorObjects
-	linkEnter link.Link
-	linkExit  link.Link
-	reader    *ringbuf.Reader
+	objs            FileMonitorObjects
+	linkEnter       link.Link
+	linkExit        link.Link
+	linkProcessExit link.Link
+	reader          *ringbuf.Reader
 
 	// Events receives one FileEvent per openat() call made by a tracked PID.
 	// The channel is buffered (4096).  Events are dropped (not blocked) when
@@ -128,9 +134,26 @@ func NewFileCollector(trackedPids *ebpf.Map) (*FileCollector, error) {
 		return nil, fmt.Errorf("attach tracepoint syscalls/sys_exit_openat: %w", err)
 	}
 
+	// Attach to sched/sched_process_exit, which closes the pending_opens
+	// leak (AUDIT.md H2): without it, a tracked thread killed while blocked
+	// inside openat() leaves its entry in the map forever, since
+	// sys_exit_openat never runs for that syscall.
+	tpProcessExit, err := link.Tracepoint(
+		"sched", "sched_process_exit",
+		objs.TracepointSchedSchedProcessExit,
+		nil,
+	)
+	if err != nil {
+		tpExit.Close()
+		tpEnter.Close()
+		objs.Close()
+		return nil, fmt.Errorf("attach tracepoint sched/sched_process_exit: %w", err)
+	}
+
 	// Open a ring-buffer reader on the file_events map.
 	rd, err := ringbuf.NewReader(objs.FileEvents)
 	if err != nil {
+		tpProcessExit.Close()
 		tpExit.Close()
 		tpEnter.Close()
 		objs.Close()
@@ -138,11 +161,12 @@ func NewFileCollector(trackedPids *ebpf.Map) (*FileCollector, error) {
 	}
 
 	return &FileCollector{
-		objs:      objs,
-		linkEnter: tpEnter,
-		linkExit:  tpExit,
-		reader:    rd,
-		Events:    make(chan FileEvent, 4096),
+		objs:            objs,
+		linkEnter:       tpEnter,
+		linkExit:        tpExit,
+		linkProcessExit: tpProcessExit,
+		reader:          rd,
+		Events:          make(chan FileEvent, 4096),
 	}, nil
 }
 
@@ -184,13 +208,31 @@ func (c *FileCollector) TrackedPidsMap() *ebpf.Map {
 	return c.objs.TrackedPids
 }
 
-// Close detaches both tracepoints, closes the ring-buffer reader, and
+// PendingOpensInsertFailures returns how many times inserting into the
+// pending_opens map has failed since this collector was loaded -- almost
+// always because the map was at its 4096-entry bound. A nonzero count means
+// file-open events were silently dropped: the corresponding sys_exit_openat
+// can never find a pending_opens entry to pair with, so no file_event is
+// emitted for that open() call at all. See AUDIT.md H2.
+func (c *FileCollector) PendingOpensInsertFailures() (uint64, error) {
+	var count uint64
+	key := uint32(0)
+	if err := c.objs.FileMonitorStats.Lookup(&key, &count); err != nil {
+		return 0, fmt.Errorf("lookup file_monitor_stats[0]: %w", err)
+	}
+	return count, nil
+}
+
+// Close detaches all tracepoints, closes the ring-buffer reader, and
 // releases all BPF resources.  Safe to call while Run is still active.
 func (c *FileCollector) Close() error {
 	var errs []error
 
 	if err := c.reader.Close(); err != nil && !errors.Is(err, ringbuf.ErrClosed) && !errors.Is(err, os.ErrClosed) {
 		errs = append(errs, fmt.Errorf("close ring buffer reader: %w", err))
+	}
+	if err := c.linkProcessExit.Close(); err != nil {
+		errs = append(errs, fmt.Errorf("close tracepoint link (process exit): %w", err))
 	}
 	if err := c.linkExit.Close(); err != nil {
 		errs = append(errs, fmt.Errorf("close tracepoint link (exit): %w", err))

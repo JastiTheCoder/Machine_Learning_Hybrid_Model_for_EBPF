@@ -5,11 +5,14 @@
 // Tracepoints:
 //   syscalls/sys_enter_openat  — capture filename + classify dir → pending_opens
 //   syscalls/sys_exit_openat   — read retval, emit file_events ring-buffer event
+//   sched/sched_process_exit   — clean up pending_opens for an exiting thread
+//                                 (AUDIT.md H2 -- see the tracepoint's own comment)
 //
 // Maps:
-//   file_events    BPF_MAP_TYPE_RINGBUF   — events sent to userspace
-//   tracked_pids   BPF_MAP_TYPE_HASH      — shared with process_tracer
-//   pending_opens  BPF_MAP_TYPE_HASH      — transient per-syscall state
+//   file_events        BPF_MAP_TYPE_RINGBUF   — events sent to userspace
+//   tracked_pids       BPF_MAP_TYPE_HASH      — shared with process_tracer
+//   pending_opens      BPF_MAP_TYPE_HASH      — transient per-syscall state
+//   file_monitor_stats BPF_MAP_TYPE_ARRAY     — counters for otherwise-silent drops
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -87,10 +90,33 @@ struct {
     __uint(max_entries, 4096);
 } pending_opens SEC(".maps");
 
+/* ── file_monitor_stats: userspace-visible counters (AUDIT.md H2) ─── *
+ * Index 0: how many times bpf_map_update_elem into pending_opens failed.
+ * pending_opens is bounded at 4096 entries, so a nonzero count here
+ * almost always means the map was full when a tracked process's openat()
+ * fired -- previously this return value was never checked, so the program
+ * would silently stop emitting new file events once the map filled, with
+ * no signal to userspace at all. */
+struct {
+    __uint(type, BPF_MAP_TYPE_ARRAY);
+    __type(key, __u32);
+    __type(value, __u64);
+    __uint(max_entries, 1);
+} file_monitor_stats SEC(".maps");
+
+#define STAT_PENDING_OPENS_INSERT_FAILED 0
+
 /* ── helpers ─────────────────────────────────────────────────────── */
 static __always_inline bool is_tracked(__u32 pid)
 {
     return bpf_map_lookup_elem(&tracked_pids, &pid) != NULL;
+}
+
+static __always_inline void count_stat(__u32 index)
+{
+    __u64 *counter = bpf_map_lookup_elem(&file_monitor_stats, &index);
+    if (counter)
+        __sync_fetch_and_add(counter, 1);
 }
 
 /* ── fast substring search (used for sensitive patterns) ──────────── */
@@ -221,7 +247,8 @@ int tracepoint__syscalls__sys_enter_openat(struct trace_event_raw_sys_enter *ctx
     po.flags        = (__u32)ctx->args[2];
     po.dir_category = classify_dir(fname, len);
 
-    bpf_map_update_elem(&pending_opens, &pid_tgid, &po, BPF_ANY);
+    if (bpf_map_update_elem(&pending_opens, &pid_tgid, &po, BPF_ANY) != 0)
+        count_stat(STAT_PENDING_OPENS_INSERT_FAILED);
     return 0;
 }
 
@@ -262,6 +289,37 @@ int tracepoint__syscalls__sys_exit_openat(struct trace_event_raw_sys_exit *ctx)
     evt->flags = po->flags;
 
     bpf_ringbuf_submit(evt, 0);
+    bpf_map_delete_elem(&pending_opens, &pid_tgid);
+    return 0;
+}
+
+/* ── tracepoint: sched_process_exit ──────────────────────────────── *
+ * Fixes AUDIT.md H2's leak: pending_opens is only ever cleared by the exit
+ * half of the syscall (sys_exit_openat). If the thread that inserted an
+ * entry is killed (e.g. SIGKILL) while still blocked inside openat() --
+ * which blocking on a FIFO with no writer reproduces deterministically --
+ * the exit probe never fires for that syscall and the entry stays in the
+ * bounded (4096-entry) map for the life of the monitor process.
+ *
+ * sched_process_exit fires from do_exit() in the context of the exiting
+ * task regardless of why it's exiting, so removing the entry here closes
+ * the leak unconditionally.
+ *
+ * pending_opens is keyed by the *thread's* full pid_tgid, exactly as
+ * sys_enter_openat inserted it. Unlike process_tracer.bpf.c's own
+ * sched_process_exit handler -- which only acts when the thread-group
+ * leader exits, because tracked_pids is keyed by tgid alone -- this must
+ * NOT filter to the leader: any exiting thread of a tracked process may
+ * have its own outstanding pending_opens entry to clean up. */
+SEC("tracepoint/sched/sched_process_exit")
+int tracepoint__sched__sched_process_exit(struct trace_event_raw_sched_process_template *ctx)
+{
+    __u64 pid_tgid = bpf_get_current_pid_tgid();
+    __u32 tgid     = (__u32)(pid_tgid >> 32);
+
+    if (!is_tracked(tgid))
+        return 0;
+
     bpf_map_delete_elem(&pending_opens, &pid_tgid);
     return 0;
 }

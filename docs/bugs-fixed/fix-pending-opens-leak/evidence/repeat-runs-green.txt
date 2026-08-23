@@ -1,0 +1,14 @@
+=== RUN   TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat
+--- PASS: TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat (0.53s)
+=== RUN   TestFileMonitorCountsFailedPendingOpensInserts
+--- PASS: TestFileMonitorCountsFailedPendingOpensInserts (0.42s)
+=== RUN   TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat
+--- PASS: TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat (0.51s)
+=== RUN   TestFileMonitorCountsFailedPendingOpensInserts
+--- PASS: TestFileMonitorCountsFailedPendingOpensInserts (0.43s)
+=== RUN   TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat
+--- PASS: TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat (0.49s)
+=== RUN   TestFileMonitorCountsFailedPendingOpensInserts
+--- PASS: TestFileMonitorCountsFailedPendingOpensInserts (0.50s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	2.885s

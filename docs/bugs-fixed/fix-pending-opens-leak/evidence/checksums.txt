@@ -1,0 +1,6 @@
+processtracer_x86_bpfel.o: match=yes
+syscalltracer_x86_bpfel.o: match=yes
+tcpmonitor_x86_bpfel.o: match=yes
+processtracer_x86_bpfel.go: match=yes
+syscalltracer_x86_bpfel.go: match=yes
+tcpmonitor_x86_bpfel.go: match=yes
