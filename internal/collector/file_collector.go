@@ -60,7 +60,19 @@ var DirCategoryName = map[DirectoryCategory]string{
 //	__u8 open_success        → OpenSuccess  uint8               offset 261
 //	__u8 pad[2]              → Pad          [2]uint8            offset 262
 //	__u32 flags              → Flags        uint32              offset 264
+//	(compiler alignment gap) → Pad2         [4]uint8            offset 268
 //	__u64 timestamp_ns       → TimestampNs  uint64              offset 272
+//
+// Pad2 is explicit, not cosmetic: flags ends at offset 268, but timestamp_ns
+// is a __u64 and the C compiler pads the struct so it starts on an 8-byte
+// boundary, at 272. unsafe.Sizeof/unsafe.Offsetof on this Go struct already
+// reflect that gap, because the Go compiler aligns uint64 fields the same
+// way -- but Run's decode path uses encoding/binary.Read on a raw byte
+// stream, which has no notion of either compiler's alignment rules and
+// reads fields back-to-back by their declared size alone. Without Pad2
+// consuming those 4 real wire bytes explicitly, binary.Read would start
+// reading timestamp_ns 4 bytes early, corrupting every FileEvent.TimestampNs
+// ever decoded. See TestFileEventBinaryReadDecodesTimestampFromRealWireBytes.
 type FileEvent struct {
 	Pid         uint32
 	Filename    [256]byte
@@ -68,6 +80,7 @@ type FileEvent struct {
 	OpenSuccess uint8
 	Pad         [2]uint8
 	Flags       uint32
+	Pad2        [4]uint8
 	TimestampNs uint64
 }
 

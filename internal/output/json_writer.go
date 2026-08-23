@@ -12,9 +12,15 @@ import (
 
 	"github.com/aniruddha/npm-ebpf-monitor/internal/features"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/session"
+	"github.com/aniruddha/npm-ebpf-monitor/internal/verdict"
 )
 
-const CurrentSchemaVersion = "1.0.0"
+// CurrentSchemaVersion bumped 1.0.0 -> 1.1.0 for the addition of the
+// "verdict" block. The 36 QUT-DV25 feature fields it sits alongside are
+// unchanged -- see TestBuildRecordFeatureFieldsUnaffectedByVerdict -- so a
+// 1.0.0 reader that simply ignores an unknown JSON key still works, and a
+// 1.0.0 file with no "verdict" key still unmarshals (Verdict stays nil).
+const CurrentSchemaVersion = "1.1.0"
 
 // SessionRecord is the persisted JSON representation of one monitored session.
 type SessionRecord struct {
@@ -31,6 +37,7 @@ type SessionRecord struct {
 	Patterns      features.PatternCounts   `json:"patterns"`
 	ProcessTree   string                   `json:"process_tree"`
 	TimedOut      bool                     `json:"timed_out"`
+	Verdict       *verdict.Verdict         `json:"verdict"`
 }
 
 // ToCSVRow returns a slice of strings representing this record as a CSV row.
@@ -117,8 +124,9 @@ func (s *SessionRecord) ToCSVRow() ([]string, error) {
 	}, nil
 }
 
-// BuildRecord converts a collected session into the JSON output format.
-func BuildRecord(sess *session.Session, installFeatures features.InstallFeatures) SessionRecord {
+// BuildRecord converts a collected session into the JSON output format,
+// including a verdict banded against thresholds.
+func BuildRecord(sess *session.Session, installFeatures features.InstallFeatures, thresholds verdict.Thresholds) SessionRecord {
 	record := SessionRecord{
 		SchemaVersion: CurrentSchemaVersion,
 		Install:       installFeatures,
@@ -126,6 +134,8 @@ func BuildRecord(sess *session.Session, installFeatures features.InstallFeatures
 	}
 
 	if sess == nil {
+		v := verdict.Evaluate(verdict.Input{Install: installFeatures}, verdict.DefaultRules, thresholds)
+		record.Verdict = &v
 		return record
 	}
 
@@ -152,6 +162,19 @@ func BuildRecord(sess *session.Session, installFeatures features.InstallFeatures
 	if snap.Opensnoop != nil {
 		record.Opensnoop = snap.Opensnoop
 	}
+
+	input := verdict.Input{
+		Filetop:   record.Filetop,
+		Install:   record.Install,
+		DirCounts: record.Opensnoop,
+		TCP:       record.TCP,
+		Syscalls:  record.Syscalls,
+		Patterns:  record.Patterns,
+		Evidence:  snap.Evidence,
+		Derived:   verdict.NewDerived(record.Syscalls, record.Install.DirectDependencies),
+	}
+	v := verdict.Evaluate(input, verdict.DefaultRules, thresholds)
+	record.Verdict = &v
 
 	return record
 }

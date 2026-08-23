@@ -45,6 +45,16 @@ var fixtureLabels = map[string]FixtureLabel{
 	"env-stealer-test":       {Label: 1, Category: "credential-theft"},
 	"ci-secret-grabber-test": {Label: 1, Category: "credential-theft"},
 	"reverse-shell-test":     {Label: 1, Category: "remote-access"},
+
+	// Real, unmodified packages from the public npm registry, captured to
+	// calibrate the verdict engine (internal/verdict) against benign installs
+	// that are not our own hand-written fixtures. None of these run a
+	// postinstall script as of the versions captured; see
+	// docs/new-features/001-verdict-scoring-engine/ for the exact versions.
+	"lodash":  {Label: 0, Category: "benign-real-world"},
+	"express": {Label: 0, Category: "benign-real-world"},
+	"chalk":   {Label: 0, Category: "benign-real-world"},
+	"debug":   {Label: 0, Category: "benign-real-world"},
 }
 
 // ErrUnknownPackage is returned by Lookup for a package absent from the

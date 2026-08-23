@@ -1,0 +1,4 @@
+=== RUN   TestMonitorEndToEnd_MaliciousInstallGetsDecisiveVerdictAndAlert
+--- PASS: TestMonitorEndToEnd_MaliciousInstallGetsDecisiveVerdictAndAlert (1.71s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/monitor	1.713s

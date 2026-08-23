@@ -46,6 +46,7 @@ import (
 	"github.com/aniruddha/npm-ebpf-monitor/internal/features"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/output"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/session"
+	"github.com/aniruddha/npm-ebpf-monitor/internal/verdict"
 	"github.com/cilium/ebpf/rlimit"
 )
 
@@ -57,6 +58,8 @@ func main() {
 	outputDir := flag.String("output-dir", "./sessions", "directory for JSON session outputs")
 	verbose := flag.Bool("verbose", false, "enable verbose monitor logging")
 	sessionTimeout := flag.Duration("session-timeout", 120*time.Second, "maximum duration for an npm session before it is forcibly completed (0 = disable)")
+	suspiciousThreshold := flag.Int("suspicious-threshold", verdict.DefaultThresholds.Suspicious, "verdict score at or above which a session is banded suspicious")
+	maliciousThreshold := flag.Int("malicious-threshold", verdict.DefaultThresholds.Malicious, "verdict score at or above which a session is banded malicious")
 	dryRun := flag.Bool("dry-run", false, "load all BPF programs, print attachment status, and exit")
 	flag.Parse()
 
@@ -145,9 +148,10 @@ func main() {
 	startTrackedGoroutine(&wg, func() { detector.Shutdown(ctx) })
 	startTrackedGoroutine(&wg, func() { router.Run(ctx) })
 	// Safe to read after wg.Wait(): the WaitGroup establishes happens-before.
+	thresholds := verdict.Thresholds{Suspicious: *suspiciousThreshold, Malicious: *maliciousThreshold}
 	var outStats outputStats
 	startTrackedGoroutine(&wg, func() {
-		outStats = runOutputWorker(detector.Completed(), writer, *verbose)
+		outStats = runOutputWorker(detector.Completed(), writer, *verbose, thresholds, printMaliciousAlert)
 	})
 
 	fmt.Println("npm-ebpf-monitor active. Watching for npm install...")
@@ -342,7 +346,11 @@ func exitCodeForOutput(stats outputStats) int {
 	return 0
 }
 
-func runOutputWorker(completed <-chan *session.Session, writer *output.JSONWriter, verbose bool) outputStats {
+// runOutputWorker builds and persists a record for every completed session,
+// invoking alert for any record whose verdict bands malicious. alert is a
+// seam so tests can capture alerts without touching the real process's
+// stdout; main wires it to printMaliciousAlert.
+func runOutputWorker(completed <-chan *session.Session, writer *output.JSONWriter, verbose bool, thresholds verdict.Thresholds, alert func(output.SessionRecord)) outputStats {
 	var stats outputStats
 
 	for completed := range completed {
@@ -353,9 +361,13 @@ func runOutputWorker(completed <-chan *session.Session, writer *output.JSONWrite
 			log.Printf("session %s has no cwd; install metadata unavailable", completed.ID)
 		}
 
-		record := output.BuildRecord(completed, installFeatures)
+		record := output.BuildRecord(completed, installFeatures, thresholds)
 		for _, warning := range output.Validate(record) {
 			log.Printf("%s", warning)
+		}
+
+		if record.Verdict != nil && record.Verdict.Level == verdict.LevelMalicious && alert != nil {
+			alert(record)
 		}
 
 		path, err := writer.Write(record)
@@ -375,6 +387,26 @@ func runOutputWorker(completed <-chan *session.Session, writer *output.JSONWrite
 	}
 
 	return stats
+}
+
+// printMaliciousAlert prints a one-line alert to stdout for a session
+// banded malicious -- the operator-facing signal for a live capture, kept
+// separate from the -verbose log lines (which go through the log package,
+// i.e. stderr) so it is visible by default.
+func printMaliciousAlert(record output.SessionRecord) {
+	fmt.Printf("[ALERT] session %s (package %q) -> MALICIOUS (score %d): %s\n",
+		record.SessionID, record.PackageName, record.Verdict.Score, summarizeFindings(record.Verdict.Findings))
+}
+
+func summarizeFindings(findings []verdict.Finding) string {
+	if len(findings) == 0 {
+		return "no findings"
+	}
+	ids := make([]string, 0, len(findings))
+	for _, f := range findings {
+		ids = append(ids, f.RuleID)
+	}
+	return strings.Join(ids, ", ")
 }
 
 func loadInstallFeatures(sess *session.Session) (features.InstallFeatures, error) {

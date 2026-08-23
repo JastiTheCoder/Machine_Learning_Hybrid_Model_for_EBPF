@@ -2,6 +2,8 @@ package features
 
 import (
 	"encoding/binary"
+	"encoding/json"
+	"fmt"
 	"net"
 )
 
@@ -27,6 +29,49 @@ type TCPCounts struct {
 	RemoteIPs        int `json:"remote_ips"`
 	LocalPorts       int `json:"local_ports"`
 	RemotePorts      int `json:"remote_ports"`
+}
+
+// UnmarshalJSON supports both canonical snake_case keys and older
+// PascalCase keys used in early session JSON files.
+func (c *TCPCounts) UnmarshalJSON(data []byte) error {
+	var raw map[string]any
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	c.StateTransitions = getAnyInt(raw, "state_transitions", "StateTransitions")
+	c.LocalIPs = getAnyInt(raw, "local_ips", "LocalIPs")
+	c.RemoteIPs = getAnyInt(raw, "remote_ips", "RemoteIPs")
+	c.LocalPorts = getAnyInt(raw, "local_ports", "LocalPorts")
+	c.RemotePorts = getAnyInt(raw, "remote_ports", "RemotePorts")
+
+	return nil
+}
+
+func getAnyInt(m map[string]any, keys ...string) int {
+	for _, key := range keys {
+		v, ok := m[key]
+		if !ok {
+			continue
+		}
+
+		switch n := v.(type) {
+		case float64:
+			return int(n)
+		case int:
+			return n
+		case int32:
+			return int(n)
+		case int64:
+			return int(n)
+		case json.Number:
+			if i, err := n.Int64(); err == nil {
+				return int(i)
+			}
+		}
+	}
+
+	return 0
 }
 
 // TCPAggregator tracks deduplicated IP/port information for one session.
@@ -83,6 +128,14 @@ func (a *TCPAggregator) Counts() TCPCounts {
 		LocalPorts:       len(a.LocalPorts),
 		RemotePorts:      len(a.RemotePorts),
 	}
+}
+
+// FormatEndpoint renders a kernel-provided big-endian IPv4 address and a
+// host-order port as "ip:port", for evidence such as
+// EvidenceCollector.AddEndpoint that needs the endpoint as a single
+// comparable string rather than the raw event fields.
+func FormatEndpoint(addr uint32, port uint16) string {
+	return fmt.Sprintf("%s:%d", kernelBEU32ToIPv4(addr), port)
 }
 
 // kernelBEU32ToIPv4 converts a kernel-provided big-endian IPv4 u32 into

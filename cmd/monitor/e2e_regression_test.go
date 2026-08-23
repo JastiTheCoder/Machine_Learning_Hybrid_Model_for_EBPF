@@ -29,6 +29,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -239,6 +240,58 @@ func newLocalPackage(t *testing.T, name, version string) string {
 while (Date.now() < end) { /* keep this process alive briefly, see newLocalPackage's comment */ }
 console.log('fixture postinstall ran');
 `
+	if err := os.WriteFile(filepath.Join(dir, "postinstall.js"), []byte(postinstall), 0o644); err != nil {
+		t.Fatalf("write postinstall.js: %v", err)
+	}
+	return dir
+}
+
+// newMaliciousLocalPackage creates a network-free-except-for-loopback npm
+// package fixture whose postinstall does the one thing this project's rule
+// engine treats as decisive: it reads a credential-shaped path (a file whose
+// name ends in "/.ssh/id_rsa", matching features.PathClassSSHPrivateKey) and
+// then, strictly afterwards, opens an outbound connection -- the ordered
+// read-then-connect shape RuleEXFIL001 (internal/verdict/rules.go) is built
+// to catch. The connection target is loopbackPort, a listener this test
+// starts itself, so the fixture never depends on the network or on any of
+// the tests/packages/* attack-simulation fixtures.
+//
+// The key file lives under a fixture-private subdirectory of os.TempDir(),
+// not a real user's actual ~/.ssh -- PathClass matching is suffix-based (see
+// internal/features/pathclass.go) precisely so this works without needing
+// $HOME to point anywhere real.
+func newMaliciousLocalPackage(t *testing.T, name, version string, loopbackPort int) string {
+	t.Helper()
+
+	dir := shortTempDir(t)
+	pkgJSON := fmt.Sprintf(`{"name":%q,"version":%q,"scripts":{"postinstall":"node postinstall.js"}}`, name, version)
+	if err := os.WriteFile(filepath.Join(dir, "package.json"), []byte(pkgJSON), 0o644); err != nil {
+		t.Fatalf("write package.json: %v", err)
+	}
+	postinstall := fmt.Sprintf(`const fs = require('fs');
+const net = require('net');
+const path = require('path');
+const os = require('os');
+
+const sshDir = path.join(os.tmpdir(), 'e2e-exfil-fake-home', '.ssh');
+fs.mkdirSync(sshDir, { recursive: true });
+const keyPath = path.join(sshDir, 'id_rsa');
+fs.writeFileSync(keyPath, 'fake-private-key-for-e2e-test\n');
+fs.readFileSync(keyPath, 'utf8');
+
+// Give the read's openat a moment to be picked up off the ring buffer before
+// the connect happens, so the two events are seen in the order they really
+// occurred in -- see EvidenceCollector.markFirstSeen's own comment on why
+// ordering, not just presence, is what RuleEXFIL001 requires.
+const end = Date.now() + 200;
+while (Date.now() < end) { /* busy-wait, see newLocalPackage's comment */ }
+
+const sock = net.connect(%d, '127.0.0.1', () => {
+	sock.end();
+	console.log('fixture postinstall ran (malicious e2e)');
+});
+sock.on('error', () => { /* the test's listener may already be gone by shutdown; irrelevant here */ });
+`, loopbackPort)
 	if err := os.WriteFile(filepath.Join(dir, "postinstall.js"), []byte(postinstall), 0o644); err != nil {
 		t.Fatalf("write postinstall.js: %v", err)
 	}
@@ -516,6 +569,101 @@ func TestMonitorEndToEnd_BenignAndMaliciousFixturesAreLabeledCorrectly(t *testin
 		if got != f.wantLabel {
 			t.Errorf("fixture %q: label = %v, want %v", f.name, got, f.wantLabel)
 		}
+	}
+}
+
+// TestMonitorEndToEnd_MaliciousInstallGetsDecisiveVerdictAndAlert drives the
+// real monitor binary against a real npm install whose postinstall script
+// reads a credential-shaped path and then connects outbound, the ordered
+// shape internal/verdict's decisive RuleEXFIL001 exists to catch. It is the
+// first end-to-end test in this suite to close the loop across every stage
+// of the verdict engine at once, through real kernel events rather than
+// hand-built verdict.Input values: the Stage 1 kernel change that carries a
+// file's path through struct pending_open (bpf/file_monitor.bpf.c) feeds
+// features.EvidenceCollector's path classification (internal/features/
+// pathclass.go), which internal/session.Session hydrates under its own
+// lock and internal/verdict.Evaluate consumes to produce a decisive
+// "malicious" verdict, which internal/output writes into the session JSON
+// and cmd/monitor's output worker turns into a live [ALERT] line on stdout.
+//
+// The outbound connection targets a listener this test starts itself on
+// 127.0.0.1, not a real network endpoint or one of tests/packages/*'s
+// existing attack-simulation fixtures -- see newMaliciousLocalPackage's own
+// comment for why that keeps this test free of any network or fixture
+// dependency while still exercising a real TCPEvent from a real connect().
+//
+// See docs/new-features/001-verdict-scoring-engine/ for this rule and the
+// data that calibrated it.
+func TestMonitorEndToEnd_MaliciousInstallGetsDecisiveVerdictAndAlert(t *testing.T) {
+	requireRootAndNpm(t)
+
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("start loopback listener: %v", err)
+	}
+	defer ln.Close()
+	go func() {
+		for {
+			conn, err := ln.Accept()
+			if err != nil {
+				return
+			}
+			conn.Close()
+		}
+	}()
+	loopbackPort := ln.Addr().(*net.TCPAddr).Port
+
+	outputDir := t.TempDir()
+	mp := startMonitor(t, outputDir)
+
+	pkgDir := newMaliciousLocalPackage(t, "e2e-exfil-test", "1.0.0", loopbackPort)
+	tgz := npmPack(t, pkgDir)
+	projectDir := t.TempDir()
+	copyFile(t, filepath.Join(pkgDir, tgz), filepath.Join(projectDir, tgz))
+	runNpmInstall(t, projectDir, tgz) // bare filename arg, cwd=projectDir -- matches this project's real captured corpus
+
+	wantPkg := "e2e-exfil-test-1.0.0.tgz"
+	path, record := waitForSessionWithPackageName(t, outputDir, wantPkg, 20*time.Second)
+
+	exitCode := stopMonitor(t, mp)
+	if exitCode != 0 {
+		t.Fatalf("monitor exit code = %d, want 0\noutput:\n%s", exitCode, mp.output())
+	}
+
+	if sv, _ := record["schema_version"].(string); sv != "1.1.0" {
+		t.Errorf("session %s: schema_version = %q, want \"1.1.0\"", path, sv)
+	}
+
+	verdictRaw, ok := record["verdict"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("session %s has no \"verdict\" object; record=%v", path, record)
+	}
+	if level, _ := verdictRaw["level"].(string); level != "malicious" {
+		t.Errorf("session %s: verdict.level = %q, want \"malicious\"; verdict=%v", path, level, verdictRaw)
+	}
+
+	findings, _ := verdictRaw["findings"].([]interface{})
+	foundExfil := false
+	for _, f := range findings {
+		fm, ok := f.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		if id, _ := fm["rule_id"].(string); id == "EXFIL-001" {
+			foundExfil = true
+			break
+		}
+	}
+	if !foundExfil {
+		t.Errorf("session %s: verdict.findings does not contain EXFIL-001; findings=%v\nmonitor output:\n%s", path, findings, mp.output())
+	}
+
+	out := mp.output()
+	if !strings.Contains(out, "[ALERT]") || !strings.Contains(out, "MALICIOUS") {
+		t.Errorf("monitor stdout/stderr does not contain a malicious alert line; output:\n%s", out)
+	}
+	if !strings.Contains(out, "e2e-exfil-test") {
+		t.Errorf("monitor's alert line does not name the offending package; output:\n%s", out)
 	}
 }
 

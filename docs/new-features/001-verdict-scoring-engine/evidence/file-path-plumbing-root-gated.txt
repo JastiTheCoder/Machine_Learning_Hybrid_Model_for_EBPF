@@ -1,0 +1,5 @@
+$ sudo -n /usr/bin/go test ./internal/collector/... -run TestFileCollectorReportsFilenameFromRealOpenat -v -count=1
+=== RUN   TestFileCollectorReportsFilenameFromRealOpenat
+--- PASS: TestFileCollectorReportsFilenameFromRealOpenat (0.38s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	0.380s

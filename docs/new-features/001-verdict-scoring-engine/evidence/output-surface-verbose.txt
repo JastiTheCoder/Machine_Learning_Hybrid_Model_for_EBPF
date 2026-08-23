@@ -1,0 +1,233 @@
+$ go test ./internal/output/... -run "Verdict|SchemaVersion" -v -count=1
+=== RUN   TestCurrentSchemaVersionIsBumpedForVerdict
+--- PASS: TestCurrentSchemaVersionIsBumpedForVerdict (0.00s)
+=== RUN   TestBuildRecordAttachesBenignVerdictForEmptySession
+--- PASS: TestBuildRecordAttachesBenignVerdictForEmptySession (0.00s)
+=== RUN   TestBuildRecordAttachesMaliciousVerdictForDecisiveEvidence
+--- PASS: TestBuildRecordAttachesMaliciousVerdictForDecisiveEvidence (0.00s)
+=== RUN   TestBuildRecordFeatureFieldsUnaffectedByVerdict
+--- PASS: TestBuildRecordFeatureFieldsUnaffectedByVerdict (0.00s)
+=== RUN   TestSessionRecordUnmarshalsLegacyRecordWithoutVerdictKey
+--- PASS: TestSessionRecordUnmarshalsLegacyRecordWithoutVerdictKey (0.00s)
+=== RUN   TestToCSVRowStillHas39ColumnsWithVerdictAttached
+--- PASS: TestToCSVRowStillHas39ColumnsWithVerdictAttached (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	0.004s
+
+$ go test ./cmd/monitor/... -run "Alert|OutputWorker" -v -count=1
+=== RUN   TestRunOutputWorkerReportsWriteOutcomes
+=== RUN   TestRunOutputWorkerReportsWriteOutcomes/all_writes_succeed
+2026/08/23 22:11:30 warning: syscalls.io_ops is 0 (missing syscall tracer data?)
+2026/08/23 22:11:30 warning: filetop.file_access_processes is 0 (missing filetop tracer data?)
+2026/08/23 22:11:30 warning: install.total_dependencies is 0 (missing package-lock/package.json data?)
+2026/08/23 22:11:30 warning: process_tree is empty (missing process tracer data?)
+2026/08/23 22:11:30 WARN session record field missing or zero field=read_processes path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=write_processes path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=file_access_processes path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=total_dependencies path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=root_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=home_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=user_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=other_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=state_transitions path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=local_ips path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=remote_ips path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=local_ports path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=remote_ports path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=io_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=file_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=network_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=time_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=security_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=process_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p2_read_data path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p3_write_data path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p5_process_create path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p8_ipc path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400000_lodash.json
+2026/08/23 22:11:30 warning: syscalls.io_ops is 0 (missing syscall tracer data?)
+2026/08/23 22:11:30 warning: filetop.file_access_processes is 0 (missing filetop tracer data?)
+2026/08/23 22:11:30 warning: install.total_dependencies is 0 (missing package-lock/package.json data?)
+2026/08/23 22:11:30 warning: process_tree is empty (missing process tracer data?)
+2026/08/23 22:11:30 WARN session record field missing or zero field=read_processes path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=write_processes path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=file_access_processes path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=total_dependencies path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=root_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=home_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=user_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=other_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=state_transitions path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=local_ips path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=remote_ips path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=local_ports path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=remote_ports path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=io_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=file_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=network_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=time_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=security_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=process_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p2_read_data path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p3_write_data path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p5_process_create path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p8_ipc path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400001_lodash.json
+2026/08/23 22:11:30 warning: syscalls.io_ops is 0 (missing syscall tracer data?)
+2026/08/23 22:11:30 warning: filetop.file_access_processes is 0 (missing filetop tracer data?)
+2026/08/23 22:11:30 warning: install.total_dependencies is 0 (missing package-lock/package.json data?)
+2026/08/23 22:11:30 warning: process_tree is empty (missing process tracer data?)
+2026/08/23 22:11:30 WARN session record field missing or zero field=read_processes path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=write_processes path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=file_access_processes path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=total_dependencies path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=root_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=home_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=user_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=other_dir_access path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=state_transitions path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=local_ips path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=remote_ips path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=local_ports path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=remote_ports path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=io_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=file_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=network_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=time_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=security_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=process_ops path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p2_read_data path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p3_write_data path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p5_process_create path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p8_ipc path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_succeed985499543/001/npm-1787400002_lodash.json
+=== RUN   TestRunOutputWorkerReportsWriteOutcomes/all_writes_fail
+2026/08/23 22:11:30 warning: syscalls.io_ops is 0 (missing syscall tracer data?)
+2026/08/23 22:11:30 warning: filetop.file_access_processes is 0 (missing filetop tracer data?)
+2026/08/23 22:11:30 warning: install.total_dependencies is 0 (missing package-lock/package.json data?)
+2026/08/23 22:11:30 warning: process_tree is empty (missing process tracer data?)
+2026/08/23 22:11:30 write session npm-1787400000: mkdir /tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_fail1432150101/001/blocker: not a directory
+2026/08/23 22:11:30 warning: syscalls.io_ops is 0 (missing syscall tracer data?)
+2026/08/23 22:11:30 warning: filetop.file_access_processes is 0 (missing filetop tracer data?)
+2026/08/23 22:11:30 warning: install.total_dependencies is 0 (missing package-lock/package.json data?)
+2026/08/23 22:11:30 warning: process_tree is empty (missing process tracer data?)
+2026/08/23 22:11:30 write session npm-1787400001: mkdir /tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_fail1432150101/001/blocker: not a directory
+2026/08/23 22:11:30 warning: syscalls.io_ops is 0 (missing syscall tracer data?)
+2026/08/23 22:11:30 warning: filetop.file_access_processes is 0 (missing filetop tracer data?)
+2026/08/23 22:11:30 warning: install.total_dependencies is 0 (missing package-lock/package.json data?)
+2026/08/23 22:11:30 warning: process_tree is empty (missing process tracer data?)
+2026/08/23 22:11:30 write session npm-1787400002: mkdir /tmp/TestRunOutputWorkerReportsWriteOutcomesall_writes_fail1432150101/001/blocker: not a directory
+=== RUN   TestRunOutputWorkerReportsWriteOutcomes/no_sessions_at_all
+--- PASS: TestRunOutputWorkerReportsWriteOutcomes (0.00s)
+    --- PASS: TestRunOutputWorkerReportsWriteOutcomes/all_writes_succeed (0.00s)
+    --- PASS: TestRunOutputWorkerReportsWriteOutcomes/all_writes_fail (0.00s)
+    --- PASS: TestRunOutputWorkerReportsWriteOutcomes/no_sessions_at_all (0.00s)
+=== RUN   TestRunOutputWorkerAlertsOnlyForMaliciousVerdict
+2026/08/23 22:11:30 warning: syscalls.io_ops is 0 (missing syscall tracer data?)
+2026/08/23 22:11:30 warning: install.total_dependencies is 0 (missing package-lock/package.json data?)
+2026/08/23 22:11:30 WARN session record field missing or zero field=write_processes path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=total_dependencies path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=root_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=home_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=user_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=io_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=file_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=network_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=time_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=security_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=process_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p2_read_data path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p3_write_data path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p5_process_create path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p8_ipc path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_env-stealer-test.json
+2026/08/23 22:11:30 warning: syscalls.io_ops is 0 (missing syscall tracer data?)
+2026/08/23 22:11:30 warning: filetop.file_access_processes is 0 (missing filetop tracer data?)
+2026/08/23 22:11:30 warning: install.total_dependencies is 0 (missing package-lock/package.json data?)
+2026/08/23 22:11:30 WARN session record field missing or zero field=read_processes path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=write_processes path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=file_access_processes path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=total_dependencies path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=root_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=home_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=user_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=other_dir_access path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=state_transitions path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=local_ips path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=remote_ips path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=local_ports path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=remote_ports path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=io_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=file_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=network_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=time_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=security_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=process_ops path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p2_read_data path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p3_write_data path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p5_process_create path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p8_ipc path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+2026/08/23 22:11:30 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestRunOutputWorkerAlertsOnlyForMaliciousVerdict3894035469/001/npm-1787503290_lodash.json
+--- PASS: TestRunOutputWorkerAlertsOnlyForMaliciousVerdict (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/monitor	0.008s

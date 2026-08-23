@@ -6,9 +6,11 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/aniruddha/npm-ebpf-monitor/internal/collector"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/features"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/output"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/session"
+	"github.com/aniruddha/npm-ebpf-monitor/internal/verdict"
 )
 
 func TestLoadInstallFeaturesUsesSessionCwd(t *testing.T) {
@@ -162,7 +164,7 @@ func TestRunOutputWorkerReportsWriteOutcomes(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			stats := runOutputWorker(feedSessions(tt.sessions), tt.writer(t), false)
+			stats := runOutputWorker(feedSessions(tt.sessions), tt.writer(t), false, verdict.DefaultThresholds, func(output.SessionRecord) {})
 
 			if stats.written != tt.wantWritten {
 				t.Errorf("written = %d, want %d", stats.written, tt.wantWritten)
@@ -171,6 +173,40 @@ func TestRunOutputWorkerReportsWriteOutcomes(t *testing.T) {
 				t.Errorf("failed = %d, want %d", stats.failed, tt.wantFailed)
 			}
 		})
+	}
+}
+
+// TestRunOutputWorkerAlertsOnlyForMaliciousVerdict pins the live-alert seam:
+// the worker calls alert exactly once, for the session whose verdict bands
+// malicious, and never for a session that stays benign.
+func TestRunOutputWorkerAlertsOnlyForMaliciousVerdict(t *testing.T) {
+	malicious := session.NewSession(1, "env-stealer-test")
+	var fileEvt collector.FileEvent
+	fileEvt.Pid = 1
+	copy(fileEvt.Filename[:], "/home/x/.aws/credentials")
+	fileEvt.TimestampNs = 100
+	malicious.AddFile(fileEvt)
+	malicious.AddTCP(collector.TCPEvent{Pid: 1, Daddr: 0x0100007f, Dport: 4444, TimestampNs: 200})
+
+	benign := session.NewSession(2, "lodash")
+
+	ch := make(chan *session.Session, 2)
+	ch <- malicious
+	ch <- benign
+	close(ch)
+
+	var alerted []output.SessionRecord
+	stats := runOutputWorker(ch, output.NewJSONWriter(t.TempDir()), false, verdict.DefaultThresholds,
+		func(r output.SessionRecord) { alerted = append(alerted, r) })
+
+	if stats.written != 2 {
+		t.Fatalf("stats.written = %d, want 2", stats.written)
+	}
+	if len(alerted) != 1 {
+		t.Fatalf("alert called %d times, want exactly 1; alerted = %+v", len(alerted), alerted)
+	}
+	if alerted[0].PackageName != "env-stealer-test" {
+		t.Fatalf("alerted for package %q, want %q", alerted[0].PackageName, "env-stealer-test")
 	}
 }
 

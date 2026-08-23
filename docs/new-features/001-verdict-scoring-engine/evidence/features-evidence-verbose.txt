@@ -1,0 +1,115 @@
+$ go test ./internal/features/... -run "Evidence|ClassifyPath|ClassifyArgv|FormatEndpoint|TCPCountsUnmarshal" -v -count=1
+=== RUN   TestClassifyArgv
+=== RUN   TestClassifyArgv/bash_as_comm
+=== RUN   TestClassifyArgv/restricted_bash_is_not_bash
+=== RUN   TestClassifyArgv/bash_spawned_via_absolute_path_in_argv
+=== RUN   TestClassifyArgv/word_merely_containing_bash_is_not_a_shell_spawn
+=== RUN   TestClassifyArgv/curl_as_comm
+=== RUN   TestClassifyArgv/word_merely_containing_curl_is_not_a_network_tool
+=== RUN   TestClassifyArgv/base64_decode
+=== RUN   TestClassifyArgv/base64_encode_(no_-d)_is_not_a_decode
+=== RUN   TestClassifyArgv/node_-e_inline_eval
+=== RUN   TestClassifyArgv/node_running_a_script_file_is_not_an_inline_eval
+=== RUN   TestClassifyArgv/eval(_literal_in_argv
+=== RUN   TestClassifyArgv/evaluate(_is_not_eval(
+=== RUN   TestClassifyArgv/chmod_+x
+=== RUN   TestClassifyArgv/chmod_to_a_non-executable_mode_is_not_chmod-exec
+=== RUN   TestClassifyArgv/ordinary_comm_and_argv
+--- PASS: TestClassifyArgv (0.00s)
+    --- PASS: TestClassifyArgv/bash_as_comm (0.00s)
+    --- PASS: TestClassifyArgv/restricted_bash_is_not_bash (0.00s)
+    --- PASS: TestClassifyArgv/bash_spawned_via_absolute_path_in_argv (0.00s)
+    --- PASS: TestClassifyArgv/word_merely_containing_bash_is_not_a_shell_spawn (0.00s)
+    --- PASS: TestClassifyArgv/curl_as_comm (0.00s)
+    --- PASS: TestClassifyArgv/word_merely_containing_curl_is_not_a_network_tool (0.00s)
+    --- PASS: TestClassifyArgv/base64_decode (0.00s)
+    --- PASS: TestClassifyArgv/base64_encode_(no_-d)_is_not_a_decode (0.00s)
+    --- PASS: TestClassifyArgv/node_-e_inline_eval (0.00s)
+    --- PASS: TestClassifyArgv/node_running_a_script_file_is_not_an_inline_eval (0.00s)
+    --- PASS: TestClassifyArgv/eval(_literal_in_argv (0.00s)
+    --- PASS: TestClassifyArgv/evaluate(_is_not_eval( (0.00s)
+    --- PASS: TestClassifyArgv/chmod_+x (0.00s)
+    --- PASS: TestClassifyArgv/chmod_to_a_non-executable_mode_is_not_chmod-exec (0.00s)
+    --- PASS: TestClassifyArgv/ordinary_comm_and_argv (0.00s)
+=== RUN   TestEvidenceCollectorDeduplicatesRepeatedPaths
+--- PASS: TestEvidenceCollectorDeduplicatesRepeatedPaths (0.00s)
+=== RUN   TestEvidenceCollectorCapsEndpoints
+--- PASS: TestEvidenceCollectorCapsEndpoints (0.00s)
+=== RUN   TestEvidenceCollectorFirstSeenRecordsEarliestTimestamp
+--- PASS: TestEvidenceCollectorFirstSeenRecordsEarliestTimestamp (0.00s)
+=== RUN   TestEvidenceCollectorSnapshotIsCloned
+--- PASS: TestEvidenceCollectorSnapshotIsCloned (0.00s)
+=== RUN   TestEvidenceCollectorNonRootEndpointsOnlyTrackNonRoot
+--- PASS: TestEvidenceCollectorNonRootEndpointsOnlyTrackNonRoot (0.00s)
+=== RUN   TestEvidenceCollectorTracksPersistenceWritesOnlyForWriteOpens
+--- PASS: TestEvidenceCollectorTracksPersistenceWritesOnlyForWriteOpens (0.00s)
+=== RUN   TestClassifyPath
+=== RUN   TestClassifyPath/ssh_private_key
+=== RUN   TestClassifyPath/ssh_known_hosts_is_not_a_private_key
+=== RUN   TestClassifyPath/npmrc
+=== RUN   TestClassifyPath/npmrc_backup_file_is_not_npmrc
+=== RUN   TestClassifyPath/aws_credentials
+=== RUN   TestClassifyPath/aws_cli_cache_is_not_credentials
+=== RUN   TestClassifyPath/global_gitconfig
+=== RUN   TestClassifyPath/per-repo_git_config_is_not_the_global_gitconfig
+=== RUN   TestClassifyPath/etc_passwd
+=== RUN   TestClassifyPath/etc_passwd_backup_is_not_passwd
+=== RUN   TestClassifyPath/etc_shadow
+=== RUN   TestClassifyPath/etc_shadow_backup_is_not_shadow
+=== RUN   TestClassifyPath/docker_config
+=== RUN   TestClassifyPath/docker_daemon.json_is_not_the_client_config
+=== RUN   TestClassifyPath/kube_config
+=== RUN   TestClassifyPath/kube_cache_is_not_the_config
+=== RUN   TestClassifyPath/dotenv
+=== RUN   TestClassifyPath/dotenv_example_is_not_a_real_dotenv
+=== RUN   TestClassifyPath/wallet.dat
+=== RUN   TestClassifyPath/wallet.dat_backup_is_not_the_wallet_itself
+=== RUN   TestClassifyPath/electrum_wallet_directory
+=== RUN   TestClassifyPath/file_merely_named_like_electrum_is_not_the_wallet_dir
+=== RUN   TestClassifyPath/bashrc
+=== RUN   TestClassifyPath/bash_history_is_not_an_rc_file
+=== RUN   TestClassifyPath/cron.d_drop-in
+=== RUN   TestClassifyPath/crontab_file_itself
+=== RUN   TestClassifyPath/similarly-named_directory_is_not_cron.d
+=== RUN   TestClassifyPath/systemd_system_unit
+=== RUN   TestClassifyPath/systemd_network_config_is_not_a_unit
+=== RUN   TestClassifyPath/ordinary_dependency_file
+--- PASS: TestClassifyPath (0.00s)
+    --- PASS: TestClassifyPath/ssh_private_key (0.00s)
+    --- PASS: TestClassifyPath/ssh_known_hosts_is_not_a_private_key (0.00s)
+    --- PASS: TestClassifyPath/npmrc (0.00s)
+    --- PASS: TestClassifyPath/npmrc_backup_file_is_not_npmrc (0.00s)
+    --- PASS: TestClassifyPath/aws_credentials (0.00s)
+    --- PASS: TestClassifyPath/aws_cli_cache_is_not_credentials (0.00s)
+    --- PASS: TestClassifyPath/global_gitconfig (0.00s)
+    --- PASS: TestClassifyPath/per-repo_git_config_is_not_the_global_gitconfig (0.00s)
+    --- PASS: TestClassifyPath/etc_passwd (0.00s)
+    --- PASS: TestClassifyPath/etc_passwd_backup_is_not_passwd (0.00s)
+    --- PASS: TestClassifyPath/etc_shadow (0.00s)
+    --- PASS: TestClassifyPath/etc_shadow_backup_is_not_shadow (0.00s)
+    --- PASS: TestClassifyPath/docker_config (0.00s)
+    --- PASS: TestClassifyPath/docker_daemon.json_is_not_the_client_config (0.00s)
+    --- PASS: TestClassifyPath/kube_config (0.00s)
+    --- PASS: TestClassifyPath/kube_cache_is_not_the_config (0.00s)
+    --- PASS: TestClassifyPath/dotenv (0.00s)
+    --- PASS: TestClassifyPath/dotenv_example_is_not_a_real_dotenv (0.00s)
+    --- PASS: TestClassifyPath/wallet.dat (0.00s)
+    --- PASS: TestClassifyPath/wallet.dat_backup_is_not_the_wallet_itself (0.00s)
+    --- PASS: TestClassifyPath/electrum_wallet_directory (0.00s)
+    --- PASS: TestClassifyPath/file_merely_named_like_electrum_is_not_the_wallet_dir (0.00s)
+    --- PASS: TestClassifyPath/bashrc (0.00s)
+    --- PASS: TestClassifyPath/bash_history_is_not_an_rc_file (0.00s)
+    --- PASS: TestClassifyPath/cron.d_drop-in (0.00s)
+    --- PASS: TestClassifyPath/crontab_file_itself (0.00s)
+    --- PASS: TestClassifyPath/similarly-named_directory_is_not_cron.d (0.00s)
+    --- PASS: TestClassifyPath/systemd_system_unit (0.00s)
+    --- PASS: TestClassifyPath/systemd_network_config_is_not_a_unit (0.00s)
+    --- PASS: TestClassifyPath/ordinary_dependency_file (0.00s)
+=== RUN   TestFormatEndpoint
+--- PASS: TestFormatEndpoint (0.00s)
+=== RUN   TestTCPCountsUnmarshalJSON_CanonicalKeys
+--- PASS: TestTCPCountsUnmarshalJSON_CanonicalKeys (0.00s)
+=== RUN   TestTCPCountsUnmarshalJSON_LegacyKeys
+--- PASS: TestTCPCountsUnmarshalJSON_LegacyKeys (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/features	0.009s

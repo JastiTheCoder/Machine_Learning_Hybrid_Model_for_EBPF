@@ -2,6 +2,7 @@ package features
 
 import (
 	"encoding/binary"
+	"encoding/json"
 	"net"
 	"testing"
 )
@@ -69,6 +70,42 @@ func TestKernelBEU32ToIPv4(t *testing.T) {
 	got := kernelBEU32ToIPv4(ipToKernelEventUint32(t, "1.2.3.4"))
 	if got != "1.2.3.4" {
 		t.Fatalf("kernelBEU32ToIPv4(...) = %q, want %q", got, "1.2.3.4")
+	}
+}
+
+// TestFormatEndpoint pins the "ip:port" shape EvidenceCollector.AddEndpoint
+// consumes -- one comparable string built from the same raw fields
+// kernelBEU32ToIPv4 already decodes.
+func TestFormatEndpoint(t *testing.T) {
+	got := FormatEndpoint(ipToKernelEventUint32(t, "203.0.113.5"), 443)
+	if got != "203.0.113.5:443" {
+		t.Fatalf("FormatEndpoint(...) = %q, want %q", got, "203.0.113.5:443")
+	}
+}
+
+func TestTCPCountsUnmarshalJSON_CanonicalKeys(t *testing.T) {
+	raw := []byte(`{"state_transitions":4,"local_ips":1,"remote_ips":2,"local_ports":3,"remote_ports":4}`)
+
+	var got TCPCounts
+	if err := json.Unmarshal(raw, &got); err != nil {
+		t.Fatalf("json.Unmarshal(canonical) error = %v", err)
+	}
+
+	if got.StateTransitions != 4 || got.LocalIPs != 1 || got.RemoteIPs != 2 || got.LocalPorts != 3 || got.RemotePorts != 4 {
+		t.Fatalf("canonical unmarshal = %#v, want {4,1,2,3,4}", got)
+	}
+}
+
+func TestTCPCountsUnmarshalJSON_LegacyKeys(t *testing.T) {
+	raw := []byte(`{"StateTransitions":7,"LocalIPs":2,"RemoteIPs":3,"LocalPorts":5,"RemotePorts":11}`)
+
+	var got TCPCounts
+	if err := json.Unmarshal(raw, &got); err != nil {
+		t.Fatalf("json.Unmarshal(legacy) error = %v", err)
+	}
+
+	if got.StateTransitions != 7 || got.LocalIPs != 2 || got.RemoteIPs != 3 || got.LocalPorts != 5 || got.RemotePorts != 11 {
+		t.Fatalf("legacy unmarshal = %#v, want {7,2,3,5,11}", got)
 	}
 }
 

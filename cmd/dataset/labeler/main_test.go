@@ -27,6 +27,10 @@ var expectedLabels = map[string]int{
 	"env-stealer-test":       1,
 	"ci-secret-grabber-test": 1,
 	"reverse-shell-test":     1,
+	// lodash: a real, unmodified npm-registry package, captured pre-verdict-
+	// engine to seed the corpus with a genuine benign-real-world sample. See
+	// internal/dataset/labels.go and docs/new-features/001-verdict-scoring-engine/.
+	"lodash": 0,
 }
 
 // copyCorpusToTemp copies the real session corpus into a temp directory, so the

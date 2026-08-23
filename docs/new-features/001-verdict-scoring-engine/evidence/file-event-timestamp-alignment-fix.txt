@@ -1,0 +1,13 @@
+=== decode-level (no root required) ===
+=== RUN   TestFileEventLayoutMatchesBPFStruct
+--- PASS: TestFileEventLayoutMatchesBPFStruct (0.00s)
+=== RUN   TestFileEventBinaryReadDecodesTimestampFromRealWireBytes
+--- PASS: TestFileEventBinaryReadDecodesTimestampFromRealWireBytes (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	0.006s
+
+=== root-gated, real load/run against real kernel ===
+=== RUN   TestFileCollectorReportsFilenameFromRealOpenat
+--- PASS: TestFileCollectorReportsFilenameFromRealOpenat (0.42s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	0.428s

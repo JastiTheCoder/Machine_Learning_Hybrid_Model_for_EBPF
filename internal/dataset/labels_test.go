@@ -93,8 +93,8 @@ func TestLookupRejectsUndeclaredPackages(t *testing.T) {
 		name        string
 		packageSpec string
 	}{
-		{name: "real registry package", packageSpec: "lodash"},
-		{name: "versioned registry package", packageSpec: "express-4.18.2.tgz"},
+		{name: "real registry package", packageSpec: "react"},
+		{name: "versioned registry package", packageSpec: "axios-1.6.0.tgz"},
 		{name: "undeclared fixture", packageSpec: "keylogger-test-1.0.0.tgz"},
 		{name: "empty spec", packageSpec: ""},
 		{name: "near miss on a declared name", packageSpec: "crypto-miner-tes-1.0.0.tgz"},

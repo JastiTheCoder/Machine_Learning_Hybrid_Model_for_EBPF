@@ -1,0 +1,55 @@
+$ go test ./internal/verdict/... -v -count=1
+=== RUN   TestMustRegisterAcceptsUniqueIDs
+--- PASS: TestMustRegisterAcceptsUniqueIDs (0.00s)
+=== RUN   TestMustRegisterPanicsOnDuplicateID
+--- PASS: TestMustRegisterPanicsOnDuplicateID (0.00s)
+=== RUN   TestDefaultRulesHasNoDuplicateIDs
+--- PASS: TestDefaultRulesHasNoDuplicateIDs (0.00s)
+=== RUN   TestRuleCRED001
+--- PASS: TestRuleCRED001 (0.00s)
+=== RUN   TestRuleRECON001
+--- PASS: TestRuleRECON001 (0.00s)
+=== RUN   TestRulePROC001
+--- PASS: TestRulePROC001 (0.00s)
+=== RUN   TestRulePROC002
+--- PASS: TestRulePROC002 (0.00s)
+=== RUN   TestRulePROC003
+--- PASS: TestRulePROC003 (0.00s)
+=== RUN   TestRuleNET001
+--- PASS: TestRuleNET001 (0.00s)
+=== RUN   TestRuleNET002
+--- PASS: TestRuleNET002 (0.00s)
+=== RUN   TestRuleDROP001
+--- PASS: TestRuleDROP001 (0.00s)
+=== RUN   TestRuleOBF001
+--- PASS: TestRuleOBF001 (0.00s)
+=== RUN   TestRulePERSIST001
+--- PASS: TestRulePERSIST001 (0.00s)
+=== RUN   TestRuleEXFIL001
+--- PASS: TestRuleEXFIL001 (0.00s)
+=== RUN   TestEvaluateNET003DoesNotFireBelowBaseline
+--- PASS: TestEvaluateNET003DoesNotFireBelowBaseline (0.00s)
+=== RUN   TestEvaluateNET003FiresAboveBaselineAndNamesFinding
+--- PASS: TestEvaluateNET003FiresAboveBaselineAndNamesFinding (0.00s)
+=== RUN   TestEvaluateBandsScoreAgainstThresholds
+=== RUN   TestEvaluateBandsScoreAgainstThresholds/one_below_suspicious
+=== RUN   TestEvaluateBandsScoreAgainstThresholds/exactly_suspicious_boundary
+=== RUN   TestEvaluateBandsScoreAgainstThresholds/between_suspicious_and_malicious
+=== RUN   TestEvaluateBandsScoreAgainstThresholds/exactly_malicious_boundary
+=== RUN   TestEvaluateBandsScoreAgainstThresholds/well_above_malicious
+--- PASS: TestEvaluateBandsScoreAgainstThresholds (0.00s)
+    --- PASS: TestEvaluateBandsScoreAgainstThresholds/one_below_suspicious (0.00s)
+    --- PASS: TestEvaluateBandsScoreAgainstThresholds/exactly_suspicious_boundary (0.00s)
+    --- PASS: TestEvaluateBandsScoreAgainstThresholds/between_suspicious_and_malicious (0.00s)
+    --- PASS: TestEvaluateBandsScoreAgainstThresholds/exactly_malicious_boundary (0.00s)
+    --- PASS: TestEvaluateBandsScoreAgainstThresholds/well_above_malicious (0.00s)
+=== RUN   TestEvaluateDecisiveRuleAloneForcesMaliciousBelowThreshold
+--- PASS: TestEvaluateDecisiveRuleAloneForcesMaliciousBelowThreshold (0.00s)
+=== RUN   TestEvaluateNonDecisiveRulesSummingPastThresholdAreMalicious
+--- PASS: TestEvaluateNonDecisiveRulesSummingPastThresholdAreMalicious (0.00s)
+=== RUN   TestEvaluateFindingsOrderedByWeightDescThenIDAsc
+--- PASS: TestEvaluateFindingsOrderedByWeightDescThenIDAsc (0.00s)
+=== RUN   TestEvaluateFindingsOrderDeterministicAcrossRepeatedCalls
+--- PASS: TestEvaluateFindingsOrderDeterministicAcrossRepeatedCalls (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/verdict	0.005s

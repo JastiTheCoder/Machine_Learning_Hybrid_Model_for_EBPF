@@ -17,6 +17,7 @@ type FileMonitorPendingOpen struct {
 	Flags       uint32
 	DirCategory uint8
 	Pad         [3]uint8
+	Filename    [256]int8
 }
 
 // LoadFileMonitor returns the embedded CollectionSpec for FileMonitor.

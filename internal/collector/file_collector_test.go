@@ -2,7 +2,9 @@ package collector
 
 import (
 	"bufio"
+	"bytes"
 	"context"
+	"encoding/binary"
 	"errors"
 	"os"
 	"os/exec"
@@ -39,12 +41,62 @@ func TestFileEventLayoutMatchesBPFStruct(t *testing.T) {
 		{"OpenSuccess", unsafe.Offsetof(evt.OpenSuccess), 261},
 		{"Pad", unsafe.Offsetof(evt.Pad), 262},
 		{"Flags", unsafe.Offsetof(evt.Flags), 264},
+		{"Pad2", unsafe.Offsetof(evt.Pad2), 268},
 		{"TimestampNs", unsafe.Offsetof(evt.TimestampNs), 272},
 	}
 	for _, o := range offsets {
 		if o.got != o.want {
 			t.Errorf("offsetof(FileEvent.%s) = %d, want %d", o.name, o.got, o.want)
 		}
+	}
+}
+
+// TestFileEventBinaryReadDecodesTimestampFromRealWireBytes closes a gap
+// TestFileEventLayoutMatchesBPFStruct's own offsets cannot: unsafe.Offsetof
+// reports where TimestampNs lives in FileEvent's *Go-native* memory layout,
+// which the Go compiler already pads to an 8-byte boundary the same way C
+// does -- so that test passes regardless of whether binary.Read (the code
+// Run actually calls, file_collector.go's Run) reproduces that same gap when
+// decoding a byte stream. It does not: encoding/binary reads a struct
+// field-by-field using each field's own size, with no allowance for the
+// compiler-inserted alignment padding C leaves between "flags" (ends at
+// wire offset 268) and "timestamp_ns" (starts at wire offset 272, per
+// bpf/file_monitor.bpf.c's own layout comment) -- a 4-byte gap the Go struct
+// has no field for. Without an explicit padding field, binary.Read consumes
+// those 4 real timestamp bytes as if they were padding, and shifts every
+// byte of the real 8-byte timestamp 4 bytes early, corrupting it.
+//
+// This test builds a raw 280-byte buffer with the timestamp at its real
+// wire offset (272) and asserts the value FileCollector.Run's own decode
+// path (binary.Read) recovers it exactly -- the decisive EXFIL-001 rule
+// (internal/verdict/rules.go) depends entirely on FileEvent.TimestampNs
+// being real, since it orders a sensitive read against an outbound connect.
+func TestFileEventBinaryReadDecodesTimestampFromRealWireBytes(t *testing.T) {
+	const wantTimestamp = uint64(0x0102030405060708)
+
+	raw := make([]byte, 280)
+	// pid @0..4, filename @4..260, dir_category @260, open_success @261,
+	// pad[2] @262..264 -- left zero, none of it participates in this test.
+	binary.LittleEndian.PutUint32(raw[264:268], 0x11223344) // flags
+	// raw[268:272] is the C compiler's own alignment gap before the u64 --
+	// filled with a recognizable non-zero pattern so a decode that
+	// mistakenly starts reading the timestamp here, instead of at 272,
+	// produces a value distinguishable from wantTimestamp rather than one
+	// that could accidentally match by coincidence.
+	copy(raw[268:272], []byte{0xAA, 0xAA, 0xAA, 0xAA})
+	binary.LittleEndian.PutUint64(raw[272:280], wantTimestamp)
+
+	var evt FileEvent
+	if err := binary.Read(bytes.NewReader(raw), binary.LittleEndian, &evt); err != nil {
+		t.Fatalf("binary.Read: %v", err)
+	}
+
+	if evt.TimestampNs != wantTimestamp {
+		t.Errorf("TimestampNs = %#x, want %#x (decode did not land on the real wire offset 272)",
+			evt.TimestampNs, wantTimestamp)
+	}
+	if evt.Flags != 0x11223344 {
+		t.Errorf("Flags = %#x, want %#x", evt.Flags, 0x11223344)
 	}
 }
 
@@ -124,6 +176,92 @@ func TestFileCollectorReportsOpenFlagsFromRealOpenat(t *testing.T) {
 	}
 }
 
+// decodeFilename trims a NUL-terminated C string out of a fixed-size byte
+// array, mirroring decodeComm's role for FileEvent.Filename.
+func decodeFilename(b [256]byte) string {
+	end := bytes.IndexByte(b[:], 0)
+	if end == -1 {
+		end = len(b)
+	}
+	return string(b[:end])
+}
+
+// TestFileCollectorReportsFilenameFromRealOpenat is the seam where the
+// kernel probe meets userspace for the path itself, not just its flags.
+// bpf/file_monitor.bpf.c's sys_enter_openat probe already reads the
+// filename into a stack buffer to classify its directory -- but the exit
+// probe (where the ring-buffer event is actually emitted) has historically
+// discarded it, memset-ing FileEvent.Filename to all zero instead of
+// carrying it through struct pending_open. Every consumer that wants to
+// know *which* file was touched (not just which directory-category bucket
+// it fell into) depends on this event carrying the real path.
+//
+// Requires root: it loads and attaches BPF programs.
+func TestFileCollectorReportsFilenameFromRealOpenat(t *testing.T) {
+	if os.Geteuid() != 0 {
+		t.Skip("requires root to load BPF programs")
+	}
+	if err := rlimit.RemoveMemlock(); err != nil {
+		t.Fatalf("remove memlock rlimit: %v", err)
+	}
+
+	trackedPids, err := ebpf.NewMap(&ebpf.MapSpec{
+		Type:       ebpf.Hash,
+		KeySize:    4,
+		ValueSize:  4,
+		MaxEntries: 4096,
+	})
+	if err != nil {
+		t.Fatalf("create tracked_pids map: %v", err)
+	}
+	defer trackedPids.Close()
+
+	collector, err := NewFileCollector(trackedPids)
+	if err != nil {
+		t.Fatalf("NewFileCollector: %v", err)
+	}
+	defer collector.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go collector.Run(ctx)
+
+	pid := uint32(os.Getpid())
+	ppid := uint32(os.Getppid())
+	if err := trackedPids.Put(&pid, &ppid); err != nil {
+		t.Fatalf("seed tracked_pids: %v", err)
+	}
+
+	time.Sleep(200 * time.Millisecond)
+
+	path := filepath.Join(t.TempDir(), "filename-probe.txt")
+	fd, err := syscall.Open(path, syscall.O_WRONLY|syscall.O_CREAT, 0o644)
+	if err != nil {
+		t.Fatalf("openat probe file: %v", err)
+	}
+	syscall.Close(fd)
+
+	deadline := time.After(5 * time.Second)
+	for {
+		select {
+		case evt := <-collector.Events:
+			if evt.Pid != pid {
+				continue
+			}
+			if evt.Flags&syscall.O_ACCMODE == syscall.O_WRONLY && evt.Flags&syscall.O_CREAT != 0 {
+				got := decodeFilename(evt.Filename)
+				if got != path {
+					t.Fatalf("FileEvent.Filename = %q, want %q (the enter probe's captured "+
+						"path is not reaching the exit probe's emitted event)", got, path)
+				}
+				return
+			}
+		case <-deadline:
+			t.Fatal("no O_WRONLY|O_CREAT file event observed for this process within 5s")
+		}
+	}
+}
+
 // pendingOpenValue mirrors struct pending_open in bpf/file_monitor.bpf.c. It
 // exists only so ebpf.Map.Put/Lookup have a value of the right size and
 // layout for pending_opens; the tests below never inspect its fields.
@@ -132,6 +270,7 @@ type pendingOpenValue struct {
 	Flags       uint32
 	DirCategory uint8
 	Pad         [3]byte
+	Filename    [256]byte
 }
 
 // compileBlockInOpenatHelper builds testdata/block_in_openat.c into a fresh

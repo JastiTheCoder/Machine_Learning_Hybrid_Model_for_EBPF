@@ -514,3 +514,136 @@ func TestMarkCompleteOnceSecondCallDoesNotOverwriteTheFirstWinner(t *testing.T) 
 			"the losing call must be a no-op")
 	}
 }
+
+// TestAddFileExposesSensitivePathThroughSnapshot is the seam where a real
+// filename -- reaching userspace at all only since the pending_open fix --
+// becomes verdict-facing evidence: opening a path that looks like an SSH
+// private key must show up in Snapshot().Evidence.Paths.
+func TestAddFileExposesSensitivePathThroughSnapshot(t *testing.T) {
+	session := NewSession(404, "pkg")
+
+	var evt collector.FileEvent
+	evt.Pid = 404
+	copy(evt.Filename[:], "/home/x/.ssh/id_rsa")
+	evt.TimestampNs = 100
+
+	session.AddFile(evt)
+
+	snap := session.Snapshot()
+	if !containsPathClass(snap.Evidence.Paths, features.PathClassSSHPrivateKey) {
+		t.Fatalf("Snapshot().Evidence.Paths = %v, want it to contain PathClassSSHPrivateKey",
+			snap.Evidence.Paths)
+	}
+}
+
+func containsPathClass(paths []features.PathClass, want features.PathClass) bool {
+	for _, p := range paths {
+		if p == want {
+			return true
+		}
+	}
+	return false
+}
+
+// TestAddTCPNonRootEndpointOnlyFromNonRootPID confirms NonRootEndpoints only
+// grows for connections whose PID is not the session's own npm root --
+// NET-001 in the rule plan keys on exactly this distinction, since there is
+// no DNS name to tell "the registry" from anything else the install
+// contacted.
+func TestAddTCPNonRootEndpointOnlyFromNonRootPID(t *testing.T) {
+	session := NewSession(100, "pkg") // NpmPID = 100
+
+	session.AddTCP(collector.TCPEvent{
+		Pid: 100, Daddr: 0x0100007f, Dport: 443, TimestampNs: 1, // root PID
+	})
+	session.AddTCP(collector.TCPEvent{
+		Pid: 200, Daddr: 0x0200007f, Dport: 8080, TimestampNs: 2, // child PID
+	})
+
+	snap := session.Snapshot()
+	if len(snap.Evidence.NonRootEndpoints) != 1 {
+		t.Fatalf("NonRootEndpoints = %v, want exactly one entry (the child PID's connection)",
+			snap.Evidence.NonRootEndpoints)
+	}
+	if len(snap.Evidence.Endpoints) != 2 {
+		t.Fatalf("Endpoints = %v, want both connections recorded", snap.Evidence.Endpoints)
+	}
+}
+
+// TestSnapshotEvidenceRaceFreeUnderConcurrentWriters mirrors
+// TestSnapshotIsRaceFreeUnderConcurrentWriters's shape, but drives events
+// that actually produce evidence (a sensitive path, a shell-spawning
+// process, a non-root TCP connection) and reads Snapshot().Evidence
+// concurrently, at >=1000 iterations per writer.
+//
+// This test was verified, not just written, to actually close the race it
+// targets: with AddFile/AddProcess/AddTCP's evidence hydration temporarily
+// moved outside s.mu (and Snapshot's Evidence clone changed to alias the
+// live collector instead of calling Snapshot()), `go test -race` reported
+// a data race on this exact test within the first few iterations. That
+// change was reverted -- this file contains only the correct,
+// lock-disciplined version -- so "passes" here means the lock discipline is
+// actually right, not that this run's goroutine interleaving happened not
+// to trigger it.
+func TestSnapshotEvidenceRaceFreeUnderConcurrentWriters(t *testing.T) {
+	session := NewSession(999, "pkg") // NpmPID = 999, so pid 999 is root
+
+	stop := make(chan struct{})
+	var wg sync.WaitGroup
+
+	for w := 0; w < 6; w++ {
+		w := w
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			pid := uint32(1000 + w) // every writer PID is non-root
+			for i := 0; i < 1000; i++ {
+				select {
+				case <-stop:
+					return
+				default:
+				}
+
+				var fileEvt collector.FileEvent
+				fileEvt.Pid = pid
+				copy(fileEvt.Filename[:], "/home/x/.ssh/id_rsa")
+				fileEvt.TimestampNs = uint64(i)
+				session.AddFile(fileEvt)
+
+				var procEvt collector.ProcessEvent
+				procEvt.Pid = pid
+				procEvt.Comm = fixedComm("bash")
+				procEvt.TimestampNs = uint64(i)
+				session.AddProcess(procEvt)
+
+				session.AddTCP(collector.TCPEvent{
+					Pid: pid, Daddr: uint32(i + 1), Dport: uint16(4000 + i%50), TimestampNs: uint64(i),
+				})
+			}
+		}()
+	}
+
+	var last Snapshot
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for i := 0; i < 1000; i++ {
+			last = session.Snapshot()
+			// Reading the cloned evidence must be safe even as writers
+			// continue mutating the live collector concurrently.
+			_ = len(last.Evidence.Paths)
+			_ = len(last.Evidence.NonRootEndpoints)
+		}
+	}()
+
+	wg.Wait()
+	close(stop)
+
+	final := session.Snapshot()
+	if !containsPathClass(final.Evidence.Paths, features.PathClassSSHPrivateKey) {
+		t.Error("final snapshot recorded no sensitive path; the writers did not run")
+	}
+	if len(final.Evidence.NonRootEndpoints) == 0 {
+		t.Error("final snapshot recorded no non-root endpoints; the writers did not run")
+	}
+}

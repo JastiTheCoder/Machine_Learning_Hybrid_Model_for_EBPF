@@ -44,6 +44,10 @@ struct pending_open {
     __u32 flags;          /* openat() flags captured at enter time */
     __u8  dir_category;
     __u8  pad[3];
+    char  filename[FILENAME_LEN]; /* path captured at enter time, carried
+                                    * through to the exit probe's emitted
+                                    * event -- sys_exit_openat's own context
+                                    * only has the return value. */
 };
 
 /* ── event structure shared with userspace ────────────────────────── *
@@ -235,17 +239,21 @@ int tracepoint__syscalls__sys_enter_openat(struct trace_event_raw_sys_enter *ctx
     if (!is_tracked(tgid))
         return 0;
 
-    /* Read filename into a temporary stack buffer for classification. */
-    char fname[FILENAME_LEN];
+    /* Read the filename straight into pending_open's own buffer -- a
+     * second FILENAME_LEN-sized stack scratch buffer here (as this used
+     * to have, then memcpy'd into po.filename) pushes this probe's stack
+     * frame over the BPF verifier's 512-byte limit now that pending_open
+     * itself carries the path. */
+    struct pending_open po = {};
+    po.pid   = tgid;
+    po.flags = (__u32)ctx->args[2];
+
     const char *fname_ptr = (const char *)ctx->args[1];
-    int len = bpf_probe_read_user_str(fname, sizeof(fname), fname_ptr);
+    int len = bpf_probe_read_user_str(po.filename, sizeof(po.filename), fname_ptr);
     if (len < 0)
         len = 0;
 
-    struct pending_open po = {};
-    po.pid          = tgid;
-    po.flags        = (__u32)ctx->args[2];
-    po.dir_category = classify_dir(fname, len);
+    po.dir_category = classify_dir(po.filename, len);
 
     if (bpf_map_update_elem(&pending_opens, &pid_tgid, &po, BPF_ANY) != 0)
         count_stat(STAT_PENDING_OPENS_INSERT_FAILED);
@@ -280,9 +288,9 @@ int tracepoint__syscalls__sys_exit_openat(struct trace_event_raw_sys_exit *ctx)
     evt->pad[1]       = 0;
     evt->timestamp_ns = bpf_ktime_get_ns();
 
-    /* We don't have the filename here, so zero it out.  The consumer
-     * can correlate with pid + timestamp if needed. */
-    __builtin_memset(evt->filename, 0, sizeof(evt->filename));
+    /* The filename was captured at enter time (this probe's own context
+     * only carries the return value) and carried through pending_open. */
+    __builtin_memcpy(evt->filename, po->filename, sizeof(evt->filename));
 
     /* Open flags come from the enter probe: sys_exit_openat's context only
      * carries the return value, so args[2] is unavailable at this point. */

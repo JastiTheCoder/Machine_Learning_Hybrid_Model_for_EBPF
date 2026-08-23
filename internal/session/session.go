@@ -39,6 +39,7 @@ type Session struct {
 	DirCounts  *features.DirCounts
 	TCPAgg     *features.TCPAggregator
 	NGramCtr   *features.NGramCounter
+	Evidence   *features.EvidenceCollector
 
 	SyscallCounts map[features.SyscallCategory]int
 	ProcessTree   string
@@ -64,6 +65,7 @@ func NewSession(npmPID uint32, packageName string) *Session {
 		DirCounts:     &features.DirCounts{},
 		TCPAgg:        features.NewTCPAggregator(),
 		NGramCtr:      features.NewNGramCounter(),
+		Evidence:      features.NewEvidenceCollector(),
 		SyscallCounts: make(map[features.SyscallCategory]int),
 		ProcessTree:   fmt.Sprintf("npm(%d)", npmPID),
 	}
@@ -77,9 +79,14 @@ func (s *Session) AddProcess(event collector.ProcessEvent) {
 	if s.ChildPIDs == nil {
 		s.ChildPIDs = make(map[uint32]bool)
 	}
+	if s.Evidence == nil {
+		s.Evidence = features.NewEvidenceCollector()
+	}
 
+	comm := decodeComm(event.Comm)
 	s.ChildPIDs[event.Pid] = true
-	s.ProcessTree += fmt.Sprintf("->%s(%d)", decodeComm(event.Comm), event.Pid)
+	s.ProcessTree += fmt.Sprintf("->%s(%d)", comm, event.Pid)
+	s.Evidence.AddProcess(comm, decodeArgs(event.Args), event.TimestampNs)
 }
 
 // AddSyscall records one syscall against the session category and n-gram data.
@@ -110,9 +117,13 @@ func (s *Session) AddFile(event collector.FileEvent) {
 	if s.DirCounts == nil {
 		s.DirCounts = &features.DirCounts{}
 	}
+	if s.Evidence == nil {
+		s.Evidence = features.NewEvidenceCollector()
+	}
 
 	s.FiletopAgg.Add(event)
 	s.DirCounts.Add(event.DirCategory)
+	s.Evidence.AddPath(decodeFilename(event.Filename), event.Flags, event.TimestampNs)
 }
 
 // AddTCP forwards one TCP state transition into the session TCP summary.
@@ -122,6 +133,9 @@ func (s *Session) AddTCP(event collector.TCPEvent) {
 
 	if s.TCPAgg == nil {
 		s.TCPAgg = features.NewTCPAggregator()
+	}
+	if s.Evidence == nil {
+		s.Evidence = features.NewEvidenceCollector()
 	}
 
 	s.TCPAgg.Add(features.TCPEvent{
@@ -134,6 +148,14 @@ func (s *Session) AddTCP(event collector.TCPEvent) {
 		NewState:    event.NewState,
 		TimestampNs: event.TimestampNs,
 	})
+
+	// isRoot: whether this connection came from the session's own npm root
+	// PID rather than a spawned child. There is no DNS name in these events
+	// -- only a raw IPv4 address -- so "is this the registry?" is
+	// unanswerable, but "did the postinstall script itself open a socket?"
+	// is both answerable and the stronger discriminator (verdict's NET-001).
+	isRoot := event.Pid == s.NpmPID
+	s.Evidence.AddEndpoint(features.FormatEndpoint(event.Daddr, event.Dport), isRoot, event.TimestampNs)
 }
 
 // AddBytes records real TCP byte counts into the session's file-transfer
@@ -216,6 +238,20 @@ func decodeComm(comm [16]byte) string {
 	return string(comm[:end])
 }
 
+// decodeFilename trims a NUL-terminated C string out of FileEvent's fixed
+// size byte array. The field is only populated at all since the
+// pending_open fix carried the path through from the enter probe (AUDIT.md
+// H-series follow-up); before that it was always zero and this would always
+// decode to "".
+func decodeFilename(filename [256]byte) string {
+	end := bytes.IndexByte(filename[:], 0)
+	if end == -1 {
+		end = len(filename)
+	}
+
+	return string(filename[:end])
+}
+
 // Snapshot is a point-in-time copy of everything a consumer needs to build an
 // output record from a Session.
 //
@@ -240,6 +276,7 @@ type Snapshot struct {
 	Opensnoop     map[string]int
 	TCP           features.TCPCounts
 	Patterns      features.PatternCounts
+	Evidence      features.Evidence
 }
 
 // Snapshot returns a consistent point-in-time copy of the session's collected
@@ -284,6 +321,9 @@ func (s *Session) Snapshot() Snapshot {
 	}
 	if s.NGramCtr != nil {
 		snap.Patterns = s.NGramCtr.Snapshot()
+	}
+	if s.Evidence != nil {
+		snap.Evidence = s.Evidence.Snapshot()
 	}
 
 	return snap
