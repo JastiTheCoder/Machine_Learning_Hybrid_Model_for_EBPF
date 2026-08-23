@@ -24,6 +24,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sync/atomic"
 
 	"github.com/cilium/ebpf"
 	"github.com/cilium/ebpf/link"
@@ -56,8 +57,13 @@ type BytesCollector struct {
 	// Events receives one BytesEvent per tcp_sendmsg call or per successful
 	// tcp_recvmsg return for a tracked PID.  The channel is buffered (4096).
 	// Events are dropped (not blocked) when the consumer is slower than the
-	// producer.
+	// producer -- see dropCount and DroppedEvents (AUDIT.md H5).
 	Events chan BytesEvent
+
+	// dropCount counts events dropped because Events was full. Accessed via
+	// sync/atomic since it is written from Run's own goroutine and read from
+	// whichever goroutine calls DroppedEvents.
+	dropCount uint64
 }
 
 // NewBytesCollector loads the BPF objects (sharing tracked_pids with the
@@ -138,8 +144,15 @@ func (c *BytesCollector) Run(ctx context.Context) {
 		case c.Events <- evt:
 		default:
 			// Consumer is lagging; drop rather than block.
+			atomic.AddUint64(&c.dropCount, 1)
 		}
 	}
+}
+
+// DroppedEvents returns how many BytesEvents have been dropped because
+// Events was full since this collector started. See AUDIT.md H5.
+func (c *BytesCollector) DroppedEvents() uint64 {
+	return atomic.LoadUint64(&c.dropCount)
 }
 
 // Close detaches both probes, closes the ring-buffer reader, and releases

@@ -1,0 +1,5 @@
+# github.com/aniruddha/npm-ebpf-monitor/internal/collector [github.com/aniruddha/npm-ebpf-monitor/internal/collector.test]
+internal/collector/tcp_collector_test.go:50:15: tc.DroppedEvents undefined (type *TcpCollector has no field or method DroppedEvents)
+internal/collector/tcp_collector_test.go:93:9: tc.DroppedEvents undefined (type *TcpCollector has no field or method DroppedEvents)
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/collector [build failed]
+FAIL

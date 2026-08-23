@@ -1,0 +1,5 @@
+# github.com/aniruddha/npm-ebpf-monitor/internal/collector [github.com/aniruddha/npm-ebpf-monitor/internal/collector.test]
+internal/collector/file_collector_test.go:401:15: fc.DroppedEvents undefined (type *FileCollector has no field or method DroppedEvents)
+internal/collector/file_collector_test.go:426:9: fc.DroppedEvents undefined (type *FileCollector has no field or method DroppedEvents)
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/collector [build failed]
+FAIL

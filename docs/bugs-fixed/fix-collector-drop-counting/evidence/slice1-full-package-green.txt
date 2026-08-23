@@ -1,0 +1,20 @@
+=== RUN   TestFileEventLayoutMatchesBPFStruct
+--- PASS: TestFileEventLayoutMatchesBPFStruct (0.00s)
+=== RUN   TestFileCollectorReportsOpenFlagsFromRealOpenat
+--- PASS: TestFileCollectorReportsOpenFlagsFromRealOpenat (0.56s)
+=== RUN   TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat
+--- PASS: TestFileCollectorClearsPendingOpensEntryWhenKilledMidOpenat (0.54s)
+=== RUN   TestFileMonitorCountsFailedPendingOpensInserts
+--- PASS: TestFileMonitorCountsFailedPendingOpensInserts (0.48s)
+=== RUN   TestProcessEventLayoutMatchesBPFStruct
+--- PASS: TestProcessEventLayoutMatchesBPFStruct (0.00s)
+=== RUN   TestNewProcessCollectorLoadsAndAttaches
+--- PASS: TestNewProcessCollectorLoadsAndAttaches (0.25s)
+=== RUN   TestProcessCollectorReportsForkOfTrackedProcess
+--- PASS: TestProcessCollectorReportsForkOfTrackedProcess (0.73s)
+=== RUN   TestProcessCollectorReportsForkFromNonLeaderThreadOfTrackedProcess
+--- PASS: TestProcessCollectorReportsForkFromNonLeaderThreadOfTrackedProcess (0.67s)
+=== RUN   TestProcessCollectorCountsDroppedEvents
+--- PASS: TestProcessCollectorCountsDroppedEvents (0.77s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	4.002s

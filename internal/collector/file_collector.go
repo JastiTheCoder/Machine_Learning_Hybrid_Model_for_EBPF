@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sync/atomic"
 
 	"github.com/cilium/ebpf"
 	"github.com/cilium/ebpf/link"
@@ -88,8 +89,14 @@ type FileCollector struct {
 
 	// Events receives one FileEvent per openat() call made by a tracked PID.
 	// The channel is buffered (4096).  Events are dropped (not blocked) when
-	// the consumer is slower than the producer.
+	// the consumer is slower than the producer -- see dropCount and
+	// DroppedEvents (AUDIT.md H5).
 	Events chan FileEvent
+
+	// dropCount counts events dropped because Events was full. Accessed via
+	// sync/atomic since it is written from Run's own goroutine and read from
+	// whichever goroutine calls DroppedEvents.
+	dropCount uint64
 }
 
 // NewFileCollector loads the BPF objects (sharing tracked_pids with the
@@ -198,8 +205,15 @@ func (c *FileCollector) Run(ctx context.Context) {
 		case c.Events <- evt:
 		default:
 			// Consumer is lagging; drop rather than block.
+			atomic.AddUint64(&c.dropCount, 1)
 		}
 	}
+}
+
+// DroppedEvents returns how many FileEvents have been dropped because
+// Events was full since this collector started. See AUDIT.md H5.
+func (c *FileCollector) DroppedEvents() uint64 {
+	return atomic.LoadUint64(&c.dropCount)
 }
 
 // TrackedPidsMap returns the underlying *ebpf.Map for tracked_pids.

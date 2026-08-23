@@ -361,3 +361,75 @@ func TestFileMonitorCountsFailedPendingOpensInserts(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 	}
 }
+
+// TestFileCollectorCountsDroppedEvents is the direct reproduction of
+// AUDIT.md H5 for this collector: fills Events to its declared capacity so
+// a genuine event has nowhere to land, then triggers one real tracked
+// openat() and asserts the drop is counted rather than silently lost. This
+// is a different drop mechanism from TestFileMonitorCountsFailedPendingOpensInserts
+// above (a full userspace Go channel, not a full BPF map).
+func TestFileCollectorCountsDroppedEvents(t *testing.T) {
+	if os.Geteuid() != 0 {
+		t.Skip("requires root to load BPF programs")
+	}
+	if err := rlimit.RemoveMemlock(); err != nil {
+		t.Fatalf("remove memlock rlimit: %v", err)
+	}
+
+	trackedPids, err := ebpf.NewMap(&ebpf.MapSpec{
+		Type:       ebpf.Hash,
+		KeySize:    4,
+		ValueSize:  4,
+		MaxEntries: 4096,
+	})
+	if err != nil {
+		t.Fatalf("create tracked_pids map: %v", err)
+	}
+	defer trackedPids.Close()
+
+	fc, err := NewFileCollector(trackedPids)
+	if err != nil {
+		t.Fatalf("NewFileCollector: %v", err)
+	}
+	defer fc.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go fc.Run(ctx)
+	time.Sleep(200 * time.Millisecond) // let the tracepoints attach
+
+	if got := fc.DroppedEvents(); got != 0 {
+		t.Fatalf("DroppedEvents() = %d before any drop, want 0", got)
+	}
+
+	// Fill Events to its declared capacity so the next real event Run()
+	// reads from the ring buffer has nowhere to go.
+	for i := 0; i < cap(fc.Events); i++ {
+		fc.Events <- FileEvent{}
+	}
+
+	pid := uint32(os.Getpid())
+	ppid := uint32(os.Getppid())
+	if err := trackedPids.Put(&pid, &ppid); err != nil {
+		t.Fatalf("seed tracked_pids: %v", err)
+	}
+
+	path := filepath.Join(t.TempDir(), "drop-probe.txt")
+	fd, err := syscall.Open(path, syscall.O_WRONLY|syscall.O_CREAT, 0o644)
+	if err != nil {
+		t.Fatalf("openat probe file: %v", err)
+	}
+	syscall.Close(fd)
+
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		if fc.DroppedEvents() > 0 {
+			return
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("DroppedEvents() never rose above 0 within 5s after filling " +
+				"Events to capacity and opening a real tracked file")
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+}

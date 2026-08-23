@@ -1,0 +1,7 @@
+  ✓ ProcessTracer      → tracepoint/syscalls/sys_enter_execve, sched_process_fork, sched_process_exit
+  ✓ SyscallTracer      → tracepoint/raw_syscalls/sys_enter
+  ✓ FileMonitor        → tracepoint/syscalls/sys_enter_openat, sys_exit_openat, sched_process_exit
+  ✓ TCPMonitor         → tracepoint/sock/inet_sock_set_state
+  ✓ BytesCollector     → kprobe/tcp_sendmsg, kretprobe/tcp_recvmsg
+  Kernel: Linux version 7.1.9-arch1-2      BTF: supported        CO-RE: supported
+  All probes loaded successfully.

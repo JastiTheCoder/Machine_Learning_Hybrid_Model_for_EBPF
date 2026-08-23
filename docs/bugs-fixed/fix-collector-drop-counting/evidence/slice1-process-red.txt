@@ -1,0 +1,5 @@
+# github.com/aniruddha/npm-ebpf-monitor/internal/collector [github.com/aniruddha/npm-ebpf-monitor/internal/collector.test]
+internal/collector/process_collector_test.go:315:15: pc.DroppedEvents undefined (type *ProcessCollector has no field or method DroppedEvents)
+internal/collector/process_collector_test.go:340:9: pc.DroppedEvents undefined (type *ProcessCollector has no field or method DroppedEvents)
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/collector [build failed]
+FAIL

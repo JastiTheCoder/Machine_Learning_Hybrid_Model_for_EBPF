@@ -1,0 +1,4 @@
+=== RUN   TestFileCollectorCountsDroppedEvents
+--- PASS: TestFileCollectorCountsDroppedEvents (0.53s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	0.536s

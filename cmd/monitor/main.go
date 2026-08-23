@@ -180,6 +180,27 @@ func main() {
 			"for their pid (AUDIT.md H4 -- a cross-channel ordering race, not a crash)", dropped)
 	}
 
+	// Each collector drops events (rather than blocking its ring-buffer
+	// reader) when the consumer can't keep up -- previously invisible on
+	// every collector (AUDIT.md H5). Reported after Close() is fine here:
+	// unlike H2's pending_opens counter, these live in the collector's own
+	// Go memory, not a BPF map, so Close() doesn't invalidate them.
+	for _, d := range []struct {
+		name    string
+		dropped uint64
+	}{
+		{"process", processCollector.DroppedEvents()},
+		{"syscall", syscallCollector.DroppedEvents()},
+		{"file", fileCollector.DroppedEvents()},
+		{"tcp", tcpCollector.DroppedEvents()},
+		{"bytes", bytesCollector.DroppedEvents()},
+	} {
+		if d.dropped > 0 {
+			log.Printf("%d %s event(s) were dropped: the consumer was lagging behind "+
+				"the ring buffer (AUDIT.md H5)", d.dropped, d.name)
+		}
+	}
+
 	if outStats.failed > 0 {
 		log.Printf("LOST %d of %d session(s): they were collected but could not be written",
 			outStats.failed, outStats.written+outStats.failed)

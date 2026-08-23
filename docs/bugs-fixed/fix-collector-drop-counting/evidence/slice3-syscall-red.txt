@@ -1,0 +1,5 @@
+# github.com/aniruddha/npm-ebpf-monitor/internal/collector [github.com/aniruddha/npm-ebpf-monitor/internal/collector.test]
+internal/collector/syscall_collector_test.go:49:15: sc.DroppedEvents undefined (type *SyscallCollector has no field or method DroppedEvents)
+internal/collector/syscall_collector_test.go:70:9: sc.DroppedEvents undefined (type *SyscallCollector has no field or method DroppedEvents)
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/collector [build failed]
+FAIL

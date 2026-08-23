@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sync/atomic"
 
 	"github.com/cilium/ebpf"
 	"github.com/cilium/ebpf/link"
@@ -51,8 +52,15 @@ type ProcessCollector struct {
 
 	// Events receives one ProcessEvent per tracked exec/exit lifecycle event.
 	// The channel is buffered (1024). Events are dropped (not blocked) when
-	// the consumer is slower than the producer.
+	// the consumer is slower than the producer -- see dropCount and
+	// DroppedEvents (AUDIT.md H5).
 	Events chan ProcessEvent
+
+	// dropCount counts events dropped because Events was full. Accessed via
+	// sync/atomic since it is written from Run's own goroutine and read from
+	// whichever goroutine calls DroppedEvents (typically cmd/monitor at
+	// shutdown).
+	dropCount uint64
 }
 
 // NewProcessCollector loads the BPF objects, attaches the tracepoint, and
@@ -152,8 +160,15 @@ func (c *ProcessCollector) Run(ctx context.Context) {
 		case c.Events <- evt:
 		default:
 			// Consumer is lagging; drop the event rather than blocking the reader.
+			atomic.AddUint64(&c.dropCount, 1)
 		}
 	}
+}
+
+// DroppedEvents returns how many ProcessEvents have been dropped because
+// Events was full since this collector started. See AUDIT.md H5.
+func (c *ProcessCollector) DroppedEvents() uint64 {
+	return atomic.LoadUint64(&c.dropCount)
 }
 
 // Close detaches the tracepoint, closes the ring-buffer reader, and releases

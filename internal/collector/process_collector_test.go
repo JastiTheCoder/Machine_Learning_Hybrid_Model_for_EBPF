@@ -292,3 +292,87 @@ func parseHelperLine(line, prefix string) (uint32, error) {
 	}
 	return uint32(n), nil
 }
+
+// TestProcessCollectorCountsDroppedEvents is the direct reproduction of
+// AUDIT.md H5 for this collector: fills Events toward its declared capacity
+// so a genuine event has nowhere to land, then triggers one real FORK event
+// and asserts the resulting drop is counted rather than silently lost.
+//
+// Unlike the other four collectors' equivalent tests, this one cannot use an
+// absolute "0 before, then something after" assertion, and its fill loop
+// cannot use a plain blocking send. process_tracer.bpf.c's sys_enter_execve
+// handler is NOT gated by is_tracked() -- it emits an event for every
+// execve() on the entire machine, tracked or not, since tracking itself
+// begins at exec. Under real load (confirmed by this test hanging for 10
+// minutes under `go test ./...`'s concurrent subprocess spawning before this
+// fix) Run()'s own goroutine can already be pushing real, ambient,
+// system-wide events into Events concurrently with this test's setup -- so
+// a plain blocking send can permanently deadlock (nothing ever drains
+// Events in this test), and a fixed "DroppedEvents() == 0" baseline can be
+// wrong before the test does anything at all. Both are handled here: the
+// fill uses a non-blocking select, and the assertion is relative
+// (after > before), the same pattern already used for the BPF-map version
+// of this counter in TestFileMonitorCountsFailedPendingOpensInserts (H2).
+//
+// This is itself a real finding, not just a test-authoring wrinkle: on a
+// busy machine, ProcessCollector.Events can fill with unrelated system exec
+// noise and start dropping before any npm install even begins -- the
+// sharpest version of H5 among the five collectors, precisely because this
+// one has no is_tracked() gate at the kernel boundary at all.
+func TestProcessCollectorCountsDroppedEvents(t *testing.T) {
+	requireRoot(t)
+
+	pc, err := NewProcessCollector()
+	if err != nil {
+		t.Fatalf("NewProcessCollector: %v", err)
+	}
+	t.Cleanup(func() { pc.Close() })
+
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(cancel)
+	go pc.Run(ctx)
+	time.Sleep(300 * time.Millisecond) // let the tracepoints attach
+
+	before := pc.DroppedEvents()
+
+	// Top Events up toward its declared capacity without ever blocking:
+	// Run()'s own goroutine may already be concurrently pushing real,
+	// unrelated exec events into the same channel (see the doc comment
+	// above), and nothing in this test ever drains Events, so a plain
+	// blocking send here could deadlock permanently rather than merely losing
+	// the race for a slot.
+	for i := 0; i < cap(pc.Events); i++ {
+		select {
+		case pc.Events <- ProcessEvent{}:
+		default:
+			// Events is already full -- either this loop or real ambient
+			// exec traffic got there first. Either way the channel is at
+			// capacity, which is all this test needs.
+		}
+	}
+
+	tracked := pc.TrackedPidsMap()
+	one := uint32(1)
+	selfPID := uint32(os.Getpid())
+	if err := tracked.Update(&selfPID, &one, ebpf.UpdateAny); err != nil {
+		t.Fatalf("seed tgid %d: %v", selfPID, err)
+	}
+
+	cmd := exec.Command("/bin/sleep", "0.2")
+	if err := cmd.Start(); err != nil {
+		t.Fatalf("start child: %v", err)
+	}
+	t.Cleanup(func() { _ = cmd.Wait() })
+
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		if pc.DroppedEvents() > before {
+			return
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("DroppedEvents() never rose above its before-test value (%d) within 5s "+
+				"after filling Events toward capacity and forking a real tracked child", before)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+}

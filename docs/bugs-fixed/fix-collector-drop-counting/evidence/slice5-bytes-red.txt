@@ -1,0 +1,5 @@
+# github.com/aniruddha/npm-ebpf-monitor/internal/collector [github.com/aniruddha/npm-ebpf-monitor/internal/collector.test]
+internal/collector/bytes_collector_test.go:49:15: bc.DroppedEvents undefined (type *BytesCollector has no field or method DroppedEvents)
+internal/collector/bytes_collector_test.go:101:9: bc.DroppedEvents undefined (type *BytesCollector has no field or method DroppedEvents)
+FAIL	github.com/aniruddha/npm-ebpf-monitor/internal/collector [build failed]
+FAIL
