@@ -29,11 +29,6 @@ type Detector struct {
 	timers            map[uint32]*time.Timer
 	sessionTimeout    time.Duration
 
-	processEvents chan collector.ProcessEvent
-	syscallEvents chan collector.SyscallEvent
-	fileEvents    chan collector.FileEvent
-	tcpEvents     chan collector.TCPEvent
-
 	cwdResolver     func(uint32) (string, error)
 	cmdlineResolver func(uint32) (string, error)
 	rootTracker     func(uint32, uint32) error
@@ -54,10 +49,6 @@ func NewDetector(sessionTimeout time.Duration) *Detector {
 		completedSessions: make(chan *Session, 100),
 		timers:            make(map[uint32]*time.Timer),
 		sessionTimeout:    sessionTimeout,
-		processEvents:     make(chan collector.ProcessEvent, 1024),
-		syscallEvents:     make(chan collector.SyscallEvent, 4096),
-		fileEvents:        make(chan collector.FileEvent, 4096),
-		tcpEvents:         make(chan collector.TCPEvent, 4096),
 		cwdResolver:       readProcessCwd,
 		cmdlineResolver:   readProcessCmdline,
 	}
@@ -74,31 +65,30 @@ func (d *Detector) SetLogger(logger func(string, ...any)) {
 	d.logger = logger
 }
 
-// Run processes routed collector events until the context is canceled.
-func (d *Detector) Run(ctx context.Context) {
-	defer d.closeCompletedSessions()
-
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case event := <-d.processEvents:
-			d.HandleProcess(event)
-		default:
-			select {
-			case <-ctx.Done():
-				return
-			case event := <-d.processEvents:
-				d.HandleProcess(event)
-			case event := <-d.syscallEvents:
-				d.handleSyscall(event)
-			case event := <-d.fileEvents:
-				d.handleFile(event)
-			case event := <-d.tcpEvents:
-				d.handleTCP(event)
-			}
-		}
-	}
+// Shutdown blocks until ctx is canceled, then closes the Completed() channel.
+//
+// Event delivery itself happens through HandleProcess and RouteToSession,
+// called directly by Router.Run -- this method's only job is the one
+// production actually needs from a long-lived detector goroutine: knowing
+// when to close Completed() so a consumer ranging over it (cmd/monitor's
+// output worker) terminates cleanly on shutdown, rather than blocking
+// forever. Run it in its own goroutine alongside Router.Run:
+//
+//	go detector.Shutdown(ctx)
+//	go router.Run(ctx)
+//
+// This replaces the former Run()/SubmitProcess/SubmitSyscall/SubmitFile/
+// SubmitTCP machinery (AUDIT.md H3): those methods queued events onto
+// Detector's own private channels and a Run() loop drained them, but
+// production never called Submit* -- Router.Run has always called
+// HandleProcess/RouteToSession directly. That queueing layer had no
+// caller outside detector_test.go, so most of this package's own test
+// coverage exercised a path the real binary never executed. See
+// docs/bugs-fixed/fix-dead-detector-run/ for the removal and the test
+// migration onto the real Router-driven path.
+func (d *Detector) Shutdown(ctx context.Context) {
+	<-ctx.Done()
+	d.closeCompletedSessions()
 }
 
 // HandleProcess applies one process lifecycle event to detector state.
@@ -140,46 +130,6 @@ func (d *Detector) RouteToSession(pid uint32, fn func(*Session)) {
 // Completed returns the stream of completed npm sessions.
 func (d *Detector) Completed() <-chan *Session {
 	return d.completedSessions
-}
-
-// SubmitProcess routes one process event into the detector.
-func (d *Detector) SubmitProcess(ctx context.Context, event collector.ProcessEvent) bool {
-	select {
-	case <-ctx.Done():
-		return false
-	case d.processEvents <- event:
-		return true
-	}
-}
-
-// SubmitSyscall routes one syscall event into the detector.
-func (d *Detector) SubmitSyscall(ctx context.Context, event collector.SyscallEvent) bool {
-	select {
-	case <-ctx.Done():
-		return false
-	case d.syscallEvents <- event:
-		return true
-	}
-}
-
-// SubmitFile routes one file event into the detector.
-func (d *Detector) SubmitFile(ctx context.Context, event collector.FileEvent) bool {
-	select {
-	case <-ctx.Done():
-		return false
-	case d.fileEvents <- event:
-		return true
-	}
-}
-
-// SubmitTCP routes one TCP event into the detector.
-func (d *Detector) SubmitTCP(ctx context.Context, event collector.TCPEvent) bool {
-	select {
-	case <-ctx.Done():
-		return false
-	case d.tcpEvents <- event:
-		return true
-	}
 }
 
 func (d *Detector) handleProcess(event collector.ProcessEvent) {

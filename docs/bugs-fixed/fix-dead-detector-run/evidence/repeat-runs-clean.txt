@@ -1,0 +1,10 @@
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	1.763s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	1.070s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	1.784s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	1.063s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	1.753s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	1.100s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	1.763s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	1.077s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	1.717s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	1.093s

@@ -530,26 +530,44 @@ func TestBuildRecordOnCompletedSessionWhileCollectorsStillWrite(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	detectorDone := make(chan struct{})
+	// Drive the detector through session.Router, exactly as cmd/monitor does
+	// in production -- not through Detector's now-removed Run()/Submit*
+	// machinery (AUDIT.md H3), which no production code ever called. Channel
+	// capacities match the real collectors' own buffer sizes.
+	procCh := make(chan collector.ProcessEvent, 1024)
+	sysCh := make(chan collector.SyscallEvent, 4096)
+	fileCh := make(chan collector.FileEvent, 4096)
+	tcpCh := make(chan collector.TCPEvent, 4096)
+	router := session.NewRouter(detector, procCh, sysCh, fileCh, tcpCh, nil)
+
+	routerDone := make(chan struct{})
 	go func() {
-		defer close(detectorDone)
-		detector.Run(ctx)
+		defer close(routerDone)
+		router.Run(ctx)
 	}()
 
-	submitCtx := context.Background()
+	// Shutdown is what closes detector.Completed() on cancellation -- the one
+	// piece of the old Run() this test still needs, now split into its own
+	// method. See Detector.Shutdown's doc comment.
+	shutdownDone := make(chan struct{})
+	go func() {
+		defer close(shutdownDone)
+		detector.Shutdown(ctx)
+	}()
+
 	const npmPID = uint32(100)
 	const childPID = uint32(101)
 
 	// Create the session with an npm install exec, then a child process.
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	procCh <- collector.ProcessEvent{
 		Pid:       npmPID,
 		Comm:      commOf("bash"),
 		Args:      argSlots("npm", "install", "crypto-miner-test-1.0.0.tgz"),
 		EventType: evExec,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid: childPID, Ppid: npmPID, Comm: commOf("node"), EventType: evFork,
-	})
+	}
 
 	// Collector events keep flowing for the session's PIDs, exactly as they do
 	// while a real install is winding down.
@@ -565,26 +583,26 @@ func TestBuildRecordOnCompletedSessionWhileCollectorsStillWrite(t *testing.T) {
 					return
 				default:
 				}
-				detector.SubmitSyscall(submitCtx, collector.SyscallEvent{
+				sysCh <- collector.SyscallEvent{
 					Pid: childPID, SyscallID: uint32(257 + i%4),
-				})
-				detector.SubmitFile(submitCtx, collector.FileEvent{
+				}
+				fileCh <- collector.FileEvent{
 					Pid: childPID, Flags: uint32(syscall.O_WRONLY),
-				})
-				detector.SubmitTCP(submitCtx, collector.TCPEvent{
+				}
+				tcpCh <- collector.TCPEvent{
 					Pid: childPID, Sport: uint16(40000 + i%50), Dport: 4444,
-				})
+				}
 			}
 		}()
 	}
 
 	// Complete the session while those writers are still running.
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	procCh <- collector.ProcessEvent{
 		Pid: childPID, Ppid: npmPID, EventType: evExit,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid: npmPID, EventType: evExit,
-	})
+	}
 
 	var record SessionRecord
 	select {
@@ -603,7 +621,8 @@ func TestBuildRecordOnCompletedSessionWhileCollectorsStillWrite(t *testing.T) {
 	close(stop)
 	writers.Wait()
 	cancel()
-	<-detectorDone
+	<-routerDone
+	<-shutdownDone
 
 	if record.PackageName != "crypto-miner-test-1.0.0.tgz" {
 		t.Errorf("record PackageName = %q, want %q",

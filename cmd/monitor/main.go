@@ -142,7 +142,7 @@ func main() {
 	startTrackedGoroutine(&wg, func() { fileCollector.Run(ctx) })
 	startTrackedGoroutine(&wg, func() { tcpCollector.Run(ctx) })
 	startTrackedGoroutine(&wg, func() { bytesCollector.Run(ctx) })
-	startTrackedGoroutine(&wg, func() { detector.Run(ctx) })
+	startTrackedGoroutine(&wg, func() { detector.Shutdown(ctx) })
 	startTrackedGoroutine(&wg, func() { router.Run(ctx) })
 	// Safe to read after wg.Wait(): the WaitGroup establishes happens-before.
 	var outStats outputStats

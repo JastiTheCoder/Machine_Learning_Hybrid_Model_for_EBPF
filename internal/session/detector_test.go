@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"sync"
 	"syscall"
 	"testing"
 	"time"
@@ -11,6 +12,39 @@ import (
 	"github.com/aniruddha/npm-ebpf-monitor/internal/collector"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/features"
 )
+
+// startDetectorPipeline runs the same two goroutines cmd/monitor/main.go runs
+// in production -- Router.Run (event delivery) and Detector.Shutdown (closes
+// Completed() on cancellation) -- and returns a channel that closes once both
+// have exited.
+//
+// This replaces the removed Detector.Run(), which used to bundle both jobs
+// into one method that no production code ever called (AUDIT.md H3):
+// production has always wired Router.Run directly to the real collector
+// channels, calling HandleProcess/RouteToSession itself, while Run()'s own
+// event channels were fed only by Submit*, which nothing but this test file
+// ever invoked. Every test below now drives the detector through the same
+// Router-based path production uses, with channel capacities matching the
+// real collectors' own buffer sizes (process: 1024, others: 4096).
+func startDetectorPipeline(router *Router, detector *Detector, ctx context.Context) <-chan struct{} {
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		router.Run(ctx)
+	}()
+	go func() {
+		defer wg.Done()
+		detector.Shutdown(ctx)
+	}()
+
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		wg.Wait()
+	}()
+	return done
+}
 
 func TestDetector_NpmInstallLifecycle(t *testing.T) {
 	detector := NewDetector(0)
@@ -27,44 +61,44 @@ func TestDetector_NpmInstallLifecycle(t *testing.T) {
 		return "", errors.New("unexpected pid")
 	}
 
+	procCh := make(chan collector.ProcessEvent, 1024)
+	sysCh := make(chan collector.SyscallEvent, 4096)
+	fileCh := make(chan collector.FileEvent, 4096)
+	tcpCh := make(chan collector.TCPEvent, 4096)
+	router := NewRouter(detector, procCh, sysCh, fileCh, tcpCh, nil)
+
 	ctx, cancel := context.WithCancel(context.Background())
-	done := make(chan struct{})
+	done := startDetectorPipeline(router, detector, ctx)
 
-	go func() {
-		defer close(done)
-		detector.Run(ctx)
-	}()
-
-	submitCtx := context.Background()
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	procCh <- collector.ProcessEvent{
 		Pid:       100,
 		Comm:      fixedComm("bash"),
 		Args:      fixedSlotArgs("npm", "install", "lodash"),
 		EventType: processEventExec,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid:       101,
 		Ppid:      100,
 		Comm:      fixedComm("node"),
 		EventType: processEventFork,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid:       101,
 		Ppid:      100,
 		Comm:      fixedComm("node"),
 		Args:      fixedArgs("node worker.js"),
 		EventType: processEventExec,
-	})
-	detector.SubmitSyscall(submitCtx, collector.SyscallEvent{
+	}
+	sysCh <- collector.SyscallEvent{
 		Pid:       101,
 		SyscallID: 257,
-	})
-	detector.SubmitFile(submitCtx, collector.FileEvent{
+	}
+	fileCh <- collector.FileEvent{
 		Pid:         101,
 		DirCategory: uint8(collector.DirHome),
 		Flags:       uint32(syscall.O_RDONLY),
-	})
-	detector.SubmitTCP(submitCtx, collector.TCPEvent{
+	}
+	tcpCh <- collector.TCPEvent{
 		Pid:      101,
 		Saddr:    1,
 		Daddr:    2,
@@ -72,12 +106,12 @@ func TestDetector_NpmInstallLifecycle(t *testing.T) {
 		Dport:    443,
 		OldState: 1,
 		NewState: 2,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid:       100,
 		Comm:      fixedComm("npm"),
 		EventType: processEventExit,
-	})
+	}
 
 	select {
 	case session := <-detector.Completed():
@@ -85,11 +119,11 @@ func TestDetector_NpmInstallLifecycle(t *testing.T) {
 	case <-time.After(100 * time.Millisecond):
 	}
 
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	procCh <- collector.ProcessEvent{
 		Pid:       101,
 		Comm:      fixedComm("node"),
 		EventType: processEventExit,
-	})
+	}
 
 	var session *Session
 	select {
@@ -166,37 +200,34 @@ func TestDetector_ConcurrentSessionCwds(t *testing.T) {
 		}
 	}
 
+	procCh := make(chan collector.ProcessEvent, 1024)
+	router := NewRouter(detector, procCh, nil, nil, nil, nil)
+
 	ctx, cancel := context.WithCancel(context.Background())
-	done := make(chan struct{})
+	done := startDetectorPipeline(router, detector, ctx)
 
-	go func() {
-		defer close(done)
-		detector.Run(ctx)
-	}()
-
-	submitCtx := context.Background()
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	procCh <- collector.ProcessEvent{
 		Pid:       100,
 		Comm:      fixedComm("bash"),
 		Args:      fixedSlotArgs("npm", "install", "lodash"),
 		EventType: processEventExec,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid:       200,
 		Comm:      fixedComm("bash"),
 		Args:      fixedSlotArgs("npm", "i", "axios"),
 		EventType: processEventExec,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid:       200,
 		Comm:      fixedComm("npm"),
 		EventType: processEventExit,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid:       100,
 		Comm:      fixedComm("npm"),
 		EventType: processEventExit,
-	})
+	}
 
 	got := map[string]string{}
 	for len(got) < 2 {
@@ -219,7 +250,12 @@ func TestDetector_ConcurrentSessionCwds(t *testing.T) {
 	waitForDetectorExit(t, done)
 }
 
-func TestDetector_ContextCancellationClosesCompleted(t *testing.T) {
+// TestDetector_ShutdownClosesCompleted asserts Detector.Shutdown's entire
+// contract: it closes Completed() once ctx is canceled. This is the one piece
+// of behavior the removed Detector.Run() actually needed in production (see
+// Shutdown's doc comment and AUDIT.md H3) -- no Router or event delivery is
+// involved, since Shutdown itself never touches events.
+func TestDetector_ShutdownClosesCompleted(t *testing.T) {
 	detector := NewDetector(0)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -227,7 +263,7 @@ func TestDetector_ContextCancellationClosesCompleted(t *testing.T) {
 
 	go func() {
 		defer close(done)
-		detector.Run(ctx)
+		detector.Shutdown(ctx)
 	}()
 
 	cancel()
@@ -269,27 +305,24 @@ func TestDetector_SeedsTrackedRootPIDAndCompletesOnRootExit(t *testing.T) {
 		return nil
 	})
 
+	procCh := make(chan collector.ProcessEvent, 1024)
+	router := NewRouter(detector, procCh, nil, nil, nil, nil)
+
 	ctx, cancel := context.WithCancel(context.Background())
-	done := make(chan struct{})
+	done := startDetectorPipeline(router, detector, ctx)
 
-	go func() {
-		defer close(done)
-		detector.Run(ctx)
-	}()
-
-	submitCtx := context.Background()
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	procCh <- collector.ProcessEvent{
 		Pid:       100,
 		Ppid:      42,
 		Comm:      fixedComm("bash"),
 		Args:      fixedSlotArgs("npm", "install", "lodash"),
 		EventType: processEventExec,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid:       100,
 		Comm:      fixedComm("npm"),
 		EventType: processEventExit,
-	})
+	}
 
 	select {
 	case tracked := <-trackedRoots:
@@ -331,38 +364,35 @@ func TestDetector_ForkOnlyChildrenDoNotBlockCompletion(t *testing.T) {
 		return "", errors.New("unexpected pid")
 	}
 
+	procCh := make(chan collector.ProcessEvent, 1024)
+	router := NewRouter(detector, procCh, nil, nil, nil, nil)
+
 	ctx, cancel := context.WithCancel(context.Background())
-	done := make(chan struct{})
+	done := startDetectorPipeline(router, detector, ctx)
 
-	go func() {
-		defer close(done)
-		detector.Run(ctx)
-	}()
-
-	submitCtx := context.Background()
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	procCh <- collector.ProcessEvent{
 		Pid:       100,
 		Comm:      fixedComm("bash"),
 		Args:      fixedSlotArgs("npm", "install", "lodash"),
 		EventType: processEventExec,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid:       101,
 		Ppid:      100,
 		Comm:      fixedComm("node"),
 		EventType: processEventFork,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid:       102,
 		Ppid:      100,
 		Comm:      fixedComm("node"),
 		EventType: processEventFork,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid:       100,
 		Comm:      fixedComm("npm"),
 		EventType: processEventExit,
-	})
+	}
 
 	select {
 	case session := <-detector.Completed():
@@ -477,7 +507,7 @@ func waitForDetectorExit(t *testing.T, done <-chan struct{}) {
 	select {
 	case <-done:
 	case <-time.After(250 * time.Millisecond):
-		t.Fatal("detector.Run() did not exit in time")
+		t.Fatal("detector pipeline (router + shutdown) did not exit in time")
 	}
 }
 
@@ -486,21 +516,20 @@ func TestSessionTimeout(t *testing.T) {
 
 	detector := NewDetector(timeout)
 
+	procCh := make(chan collector.ProcessEvent, 1024)
+	router := NewRouter(detector, procCh, nil, nil, nil, nil)
+
 	ctx, cancel := context.WithCancel(context.Background())
-	done := make(chan struct{})
-	go func() {
-		defer close(done)
-		detector.Run(ctx)
-	}()
+	done := startDetectorPipeline(router, detector, ctx)
 
 	// Submit an EXEC for npm install but never send the EXIT.
-	detector.SubmitProcess(context.Background(), collector.ProcessEvent{
+	procCh <- collector.ProcessEvent{
 		Pid:       500,
 		Ppid:      1,
 		Comm:      fixedComm("npm"),
 		Args:      fixedSlotArgs("npm", "install", "lodash"),
 		EventType: processEventExec,
-	})
+	}
 
 	// Wait up to 300ms — the timer should fire after ~100ms.
 	var sess *Session
@@ -545,31 +574,29 @@ func TestDetectorNeverDeliversASessionMoreThanOnceWhenExitRacesTimeout(t *testin
 
 	detector := NewDetector(timeout)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	done := make(chan struct{})
-	go func() {
-		defer close(done)
-		detector.Run(ctx)
-	}()
+	procCh := make(chan collector.ProcessEvent, 1024)
+	router := NewRouter(detector, procCh, nil, nil, nil, nil)
 
-	submitCtx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	done := startDetectorPipeline(router, detector, ctx)
+
 	for trial := 0; trial < trials; trial++ {
 		pid := uint32(20000 + trial)
 
-		detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+		procCh <- collector.ProcessEvent{
 			Pid:       pid,
 			Ppid:      1,
 			Comm:      fixedComm("npm"),
 			Args:      fixedSlotArgs("npm", "install", "lodash"),
 			EventType: processEventExec,
-		})
+		}
 		// Racing the exit right on the timer's heels: the timer is already
 		// armed (with a 1us timeout) and may fire before, during, or after
 		// this event is processed.
-		detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+		procCh <- collector.ProcessEvent{
 			Pid:       pid,
 			EventType: processEventExit,
-		})
+		}
 	}
 
 	deliveries := make(map[uint32]int)
@@ -646,21 +673,20 @@ func TestSessionTimeoutClearsItsOwnTimerEntry(t *testing.T) {
 
 	detector := NewDetector(timeout)
 
+	procCh := make(chan collector.ProcessEvent, 1024)
+	router := NewRouter(detector, procCh, nil, nil, nil, nil)
+
 	ctx, cancel := context.WithCancel(context.Background())
-	done := make(chan struct{})
-	go func() {
-		defer close(done)
-		detector.Run(ctx)
-	}()
+	done := startDetectorPipeline(router, detector, ctx)
 
 	const pid = uint32(30000)
-	detector.SubmitProcess(context.Background(), collector.ProcessEvent{
+	procCh <- collector.ProcessEvent{
 		Pid:       pid,
 		Ppid:      1,
 		Comm:      fixedComm("npm"),
 		Args:      fixedSlotArgs("npm", "install", "lodash"),
 		EventType: processEventExec,
-	})
+	}
 
 	select {
 	case sess := <-detector.Completed():
@@ -726,27 +752,25 @@ func TestDetectorTimedOutStaysFalseWhenExitCompletesBeforeTheTimer(t *testing.T)
 
 	detector := NewDetector(timeout)
 
+	procCh := make(chan collector.ProcessEvent, 1024)
+	router := NewRouter(detector, procCh, nil, nil, nil, nil)
+
 	ctx, cancel := context.WithCancel(context.Background())
-	done := make(chan struct{})
-	go func() {
-		defer close(done)
-		detector.Run(ctx)
-	}()
+	done := startDetectorPipeline(router, detector, ctx)
 
 	const pid = uint32(40000)
-	submitCtx := context.Background()
 
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	procCh <- collector.ProcessEvent{
 		Pid:       pid,
 		Ppid:      1,
 		Comm:      fixedComm("npm"),
 		Args:      fixedSlotArgs("npm", "install", "lodash"),
 		EventType: processEventExec,
-	})
-	detector.SubmitProcess(submitCtx, collector.ProcessEvent{
+	}
+	procCh <- collector.ProcessEvent{
 		Pid:       pid,
 		EventType: processEventExit,
-	})
+	}
 
 	var sess *Session
 	select {

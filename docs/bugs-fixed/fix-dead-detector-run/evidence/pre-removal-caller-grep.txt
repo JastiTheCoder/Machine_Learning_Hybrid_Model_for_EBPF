@@ -1,0 +1,14 @@
+=== pre-removal: grep for Submit*/Run(ctx) callers outside detector_test.go/json_writer_test.go ===
+internal/session/detector.go:145:// SubmitProcess routes one process event into the detector.
+internal/session/detector.go:146:func (d *Detector) SubmitProcess(ctx context.Context, event collector.ProcessEvent) bool {
+internal/session/detector.go:155:// SubmitSyscall routes one syscall event into the detector.
+internal/session/detector.go:156:func (d *Detector) SubmitSyscall(ctx context.Context, event collector.SyscallEvent) bool {
+internal/session/detector.go:165:// SubmitFile routes one file event into the detector.
+internal/session/detector.go:166:func (d *Detector) SubmitFile(ctx context.Context, event collector.FileEvent) bool {
+internal/session/detector.go:175:// SubmitTCP routes one TCP event into the detector.
+internal/session/detector.go:176:func (d *Detector) SubmitTCP(ctx context.Context, event collector.TCPEvent) bool {
+cmd/monitor/main.go:145:	startTrackedGoroutine(&wg, func() { detector.Run(ctx) })
+
+=== which _test.go files call Submit*/Run(ctx)? ===
+internal/session/detector_test.go
+internal/output/json_writer_test.go

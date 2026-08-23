@@ -1,0 +1,791 @@
+=== RUN   TestDetector_NpmInstallLifecycle
+--- PASS: TestDetector_NpmInstallLifecycle (0.10s)
+=== RUN   TestDetector_ConcurrentSessionCwds
+--- PASS: TestDetector_ConcurrentSessionCwds (0.00s)
+=== RUN   TestDetector_ShutdownClosesCompleted
+--- PASS: TestDetector_ShutdownClosesCompleted (0.00s)
+=== RUN   TestDetector_SeedsTrackedRootPIDAndCompletesOnRootExit
+--- PASS: TestDetector_SeedsTrackedRootPIDAndCompletesOnRootExit (0.00s)
+=== RUN   TestDetector_ForkOnlyChildrenDoNotBlockCompletion
+--- PASS: TestDetector_ForkOnlyChildrenDoNotBlockCompletion (0.00s)
+=== RUN   TestParseInstallTarget
+=== RUN   TestParseInstallTarget/install_lodash
+=== RUN   TestParseInstallTarget/npm_i_axios
+=== RUN   TestParseInstallTarget/install_--save-dev_typescript
+=== RUN   TestParseInstallTarget/npm_install
+--- PASS: TestParseInstallTarget (0.00s)
+    --- PASS: TestParseInstallTarget/install_lodash (0.00s)
+    --- PASS: TestParseInstallTarget/npm_i_axios (0.00s)
+    --- PASS: TestParseInstallTarget/install_--save-dev_typescript (0.00s)
+    --- PASS: TestParseInstallTarget/npm_install (0.00s)
+=== RUN   TestDecodeArgsFixedSlots
+--- PASS: TestDecodeArgsFixedSlots (0.00s)
+=== RUN   TestIsNpmInstallInvocation_FixedSlotArgs
+--- PASS: TestIsNpmInstallInvocation_FixedSlotArgs (0.00s)
+=== RUN   TestIsNpmInstallInvocation_MissingBinaryName
+--- PASS: TestIsNpmInstallInvocation_MissingBinaryName (0.00s)
+=== RUN   TestResolveCommand_PrefersEventArgsOverStaleCmdline
+--- PASS: TestResolveCommand_PrefersEventArgsOverStaleCmdline (0.00s)
+=== RUN   TestSessionTimeout
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+--- PASS: TestSessionTimeout (0.10s)
+=== RUN   TestDetectorNeverDeliversASessionMoreThanOnceWhenExitRacesTimeout
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+2026/08/23 11:51:00 WARN session timed out session_id=npm-1787466060 package=lodash
+--- PASS: TestDetectorNeverDeliversASessionMoreThanOnceWhenExitRacesTimeout (0.12s)
+=== RUN   TestSessionTimeoutClearsItsOwnTimerEntry
+2026/08/23 11:51:01 WARN session timed out session_id=npm-1787466061 package=lodash
+--- PASS: TestSessionTimeoutClearsItsOwnTimerEntry (0.02s)
+=== RUN   TestDetectorTimedOutStaysFalseWhenExitCompletesBeforeTheTimer
+--- PASS: TestDetectorTimedOutStaysFalseWhenExitCompletesBeforeTheTimer (0.30s)
+=== RUN   TestRouter_Multiplexing
+--- PASS: TestRouter_Multiplexing (0.00s)
+=== RUN   TestRouter_ContextCancellation
+--- PASS: TestRouter_ContextCancellation (0.00s)
+=== RUN   TestRouter_UnknownPID
+--- PASS: TestRouter_UnknownPID (0.00s)
+=== RUN   TestRouter_RaceConditions
+--- PASS: TestRouter_RaceConditions (0.00s)
+=== RUN   TestNewSession
+--- PASS: TestNewSession (0.00s)
+=== RUN   TestAddProcess
+=== RUN   TestAddProcess/shell
+=== RUN   TestAddProcess/node
+--- PASS: TestAddProcess (0.00s)
+    --- PASS: TestAddProcess/shell (0.00s)
+    --- PASS: TestAddProcess/node (0.00s)
+=== RUN   TestAddSyscall
+--- PASS: TestAddSyscall (0.00s)
+=== RUN   TestStateTransition
+--- PASS: TestStateTransition (0.00s)
+=== RUN   TestAddFileUpdatesDirCounts
+--- PASS: TestAddFileUpdatesDirCounts (0.00s)
+=== RUN   TestConcurrency
+--- PASS: TestConcurrency (0.01s)
+=== RUN   TestSnapshotIsIndependentOfLaterMutation
+--- PASS: TestSnapshotIsIndependentOfLaterMutation (0.00s)
+=== RUN   TestSnapshotCopiesSessionIdentity
+--- PASS: TestSnapshotCopiesSessionIdentity (0.00s)
+=== RUN   TestSnapshotIsRaceFreeUnderConcurrentWriters
+--- PASS: TestSnapshotIsRaceFreeUnderConcurrentWriters (0.07s)
+=== RUN   TestMarkCompleteOnceHasExactlyOneWinner
+--- PASS: TestMarkCompleteOnceHasExactlyOneWinner (0.00s)
+=== RUN   TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut
+=== RUN   TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut/normal_exit_wins
+=== RUN   TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut/timeout_wins
+--- PASS: TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut (0.00s)
+    --- PASS: TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut/normal_exit_wins (0.00s)
+    --- PASS: TestMarkCompleteOnceSetsStateAtomicallyWithTimedOut/timeout_wins (0.00s)
+=== RUN   TestMarkCompleteOnceSecondCallDoesNotOverwriteTheFirstWinner
+--- PASS: TestMarkCompleteOnceSecondCallDoesNotOverwriteTheFirstWinner (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	1.749s
+=== RUN   TestJSONWriter_WriteSuccess
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriter_WriteSuccess1455289325/001/test-123_lodash.json
+--- PASS: TestJSONWriter_WriteSuccess (0.00s)
+=== RUN   TestSessionRecord_ToCSVRow_LegacyUserlibAlias
+--- PASS: TestSessionRecord_ToCSVRow_LegacyUserlibAlias (0.00s)
+=== RUN   TestBuildRecord_NilSafety
+--- PASS: TestBuildRecord_NilSafety (0.00s)
+=== RUN   TestValidate
+--- PASS: TestValidate (0.00s)
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/relative_path_spec
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesrelati3851180817/001/npm-1787403056_localdep.json
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/parent_path_spec
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesparent1542302063/001/npm-1787403056_escapee.json
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/nested_path_spec
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesnested2817895137/001/npm-1787403056_a-b-c.json
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/scoped_package
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesscoped2619279483/001/npm-1787403056_@scope-pkg.json
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/file_url_spec
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesfile_u2923785968/001/npm-1787403056_file-..-thing.json
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/git_url_spec
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesgit_ur1174480536/001/npm-1787403056_git-https-example.com-x.git.json
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/bare_parent
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesbare_p3701870522/001/npm-1787403056_unnamed.json
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/empty
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesempty2376314320/001/npm-1787403056_unnamed.json
+=== RUN   TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/overlong
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterWritesInsideOutputDirForAwkwardPackageNamesoverlo1712310007/001/npm-1787403056_verylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnameverylongnamevery.json
+--- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames (0.01s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/relative_path_spec (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/parent_path_spec (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/nested_path_spec (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/scoped_package (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/file_url_spec (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/git_url_spec (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/bare_parent (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/empty (0.00s)
+    --- PASS: TestJSONWriterWritesInsideOutputDirForAwkwardPackageNames/overlong (0.00s)
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/lodash
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamelodash3242178829/001/npm-1787403056_lodash.json
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/benign-test-1.0.0.tgz
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamebenign-test-1.4051583895/001/npm-1787403056_benign-test-1.0.0.tgz.json
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/suspicious-test-1.0.0.tgz
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamesuspicious-tes2657511968/001/npm-1787403056_suspicious-test-1.0.0.tgz.json
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/ci-secret-grabber-test-1.0.0.tgz
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameci-secret-grab1035562632/001/npm-1787403056_ci-secret-grabber-test-1.0.0.tgz.json
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/crypto-miner-test-1.0.0.tgz
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamecrypto-miner-t723402724/001/npm-1787403056_crypto-miner-test-1.0.0.tgz.json
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/env-stealer-test-1.0.0.tgz
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenameenv-stealer-te2046304480/001/npm-1787403056_env-stealer-test-1.0.0.tgz.json
+=== RUN   TestJSONWriterKeepsOrdinaryPackageNamesInFilename/reverse-shell-test-1.0.0.tgz
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=read_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=write_data_transfer_kb path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_access_processes path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=total_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=direct_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=indirect_dependencies path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=root_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=temp_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=home_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=user_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=sys_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=etc_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=other_dir_access path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=state_transitions path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ips path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=local_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=remote_ports path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=io_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=file_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=network_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=time_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=security_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=process_ops path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p1_file_metadata path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p2_read_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p3_write_data path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p4_socket_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p5_process_create path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p6_memory_map path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p7_fd_manage path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p8_ipc path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p9_file_lock path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+2026/08/23 11:51:00 WARN session record field missing or zero field=p10_error_handle path=/tmp/TestJSONWriterKeepsOrdinaryPackageNamesInFilenamereverse-shell-1291146947/001/npm-1787403056_reverse-shell-test-1.0.0.tgz.json
+--- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename (0.01s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/lodash (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/benign-test-1.0.0.tgz (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/suspicious-test-1.0.0.tgz (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/ci-secret-grabber-test-1.0.0.tgz (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/crypto-miner-test-1.0.0.tgz (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/env-stealer-test-1.0.0.tgz (0.00s)
+    --- PASS: TestJSONWriterKeepsOrdinaryPackageNamesInFilename/reverse-shell-test-1.0.0.tgz (0.00s)
+=== RUN   TestToCSVRowRefusesRecordWithNoLabel
+--- PASS: TestToCSVRowRefusesRecordWithNoLabel (0.00s)
+=== RUN   TestToCSVRowUsesTheAssignedLabel
+=== RUN   TestToCSVRowUsesTheAssignedLabel/benign
+=== RUN   TestToCSVRowUsesTheAssignedLabel/malicious
+--- PASS: TestToCSVRowUsesTheAssignedLabel (0.00s)
+    --- PASS: TestToCSVRowUsesTheAssignedLabel/benign (0.00s)
+    --- PASS: TestToCSVRowUsesTheAssignedLabel/malicious (0.00s)
+=== RUN   TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo
+--- PASS: TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo (0.04s)
+=== RUN   TestBuildRecordOnCompletedSessionWhileCollectorsStillWrite
+--- PASS: TestBuildRecordOnCompletedSessionWhileCollectorsStillWrite (0.00s)
+=== RUN   TestValidateRecord_AllPresent
+--- PASS: TestValidateRecord_AllPresent (0.00s)
+=== RUN   TestValidateRecord_MissingField
+--- PASS: TestValidateRecord_MissingField (0.00s)
+=== RUN   TestValidateRecord_ZeroValue
+--- PASS: TestValidateRecord_ZeroValue (0.00s)
+PASS
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	1.074s

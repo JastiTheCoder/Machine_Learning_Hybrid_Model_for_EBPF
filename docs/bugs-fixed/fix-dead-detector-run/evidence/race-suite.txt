@@ -1,0 +1,10 @@
+?   	github.com/aniruddha/npm-ebpf-monitor	[no test files]
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/exporter	1.013s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/labeler	1.022s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/dataset/validator	1.010s
+ok  	github.com/aniruddha/npm-ebpf-monitor/cmd/monitor	1.022s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/collector	1.012s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/dataset	1.012s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/features	1.013s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/output	1.075s
+ok  	github.com/aniruddha/npm-ebpf-monitor/internal/session	1.695s
