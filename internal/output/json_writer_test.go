@@ -17,6 +17,7 @@ import (
 	"github.com/aniruddha/npm-ebpf-monitor/internal/collector"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/features"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/session"
+	"github.com/aniruddha/npm-ebpf-monitor/internal/verdict"
 )
 
 func TestJSONWriter_WriteSuccess(t *testing.T) {
@@ -161,7 +162,7 @@ func TestBuildRecord_NilSafety(t *testing.T) {
 		defer func() {
 			panicked = recover()
 		}()
-		record = BuildRecord(sess, features.InstallFeatures{})
+		record = BuildRecord(sess, features.InstallFeatures{}, verdict.DefaultThresholds)
 	}()
 
 	if panicked != nil {
@@ -456,7 +457,7 @@ func TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo(t *testing.T) {
 	go func() {
 		defer wg.Done()
 		for i := 0; i < iterations; i++ {
-			last = BuildRecord(sess, features.InstallFeatures{})
+			last = BuildRecord(sess, features.InstallFeatures{}, verdict.DefaultThresholds)
 		}
 	}()
 
@@ -468,7 +469,7 @@ func TestBuildRecordIsSafeWhileSessionIsStillBeingWrittenTo(t *testing.T) {
 	if last.SessionID != sess.ID {
 		t.Errorf("BuildRecord produced SessionID %q, want %q", last.SessionID, sess.ID)
 	}
-	final := BuildRecord(sess, features.InstallFeatures{})
+	final := BuildRecord(sess, features.InstallFeatures{}, verdict.DefaultThresholds)
 	if final.Syscalls.FileOps+final.Syscalls.IoOps+final.Syscalls.NetworkOps+
 		final.Syscalls.ProcessOps+final.Syscalls.TimeOps+final.Syscalls.SecurityOps+
 		final.Syscalls.UnknownOps == 0 {
@@ -611,7 +612,7 @@ func TestBuildRecordOnCompletedSessionWhileCollectorsStillWrite(t *testing.T) {
 			t.Fatal("completed channel yielded a nil session")
 		}
 		// The output worker's exact call, while collectors are still writing.
-		record = BuildRecord(completed, features.InstallFeatures{})
+		record = BuildRecord(completed, features.InstallFeatures{}, verdict.DefaultThresholds)
 	case <-time.After(10 * time.Second):
 		close(stop)
 		writers.Wait()
