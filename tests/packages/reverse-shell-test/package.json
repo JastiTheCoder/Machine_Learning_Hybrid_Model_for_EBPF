@@ -1,0 +1,8 @@
+{
+  "name": "reverse-shell-test",
+  "version": "1.0.0",
+  "description": "Test package simulating a reverse shell attempt (supply chain attack pattern)",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  }
+}
