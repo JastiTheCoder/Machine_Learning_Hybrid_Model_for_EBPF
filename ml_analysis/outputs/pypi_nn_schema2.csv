@@ -1,0 +1,4 @@
+package,nn_distance,std_above_median,percentile,label
+./pypi-benign-test,217.20877588800676,201.98863385479385,100.0,0
+./pypi-cred-reader-test,217.2101342254167,201.98990321354998,100.0,1
+./pypi-persistence-test,217.31372377421962,202.0867070708629,100.0,1

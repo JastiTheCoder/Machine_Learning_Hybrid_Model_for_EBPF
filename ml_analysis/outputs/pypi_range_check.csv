@@ -1,0 +1,109 @@
+package,feature,value,qut_p1,qut_p99,qut_mean,qut_std,in_range,deviation_std,bound
+./pypi-benign-test,read_processes,9,5.0,5.0,4.9571158293041835,0.45249095570949266,False,8.839955693099139,above 99th percentile
+./pypi-cred-reader-test,read_processes,9,5.0,5.0,4.9571158293041835,0.45249095570949266,False,8.839955693099139,above 99th percentile
+./pypi-persistence-test,read_processes,9,5.0,5.0,4.9571158293041835,0.45249095570949266,False,8.839955693099139,above 99th percentile
+./pypi-benign-test,write_processes,5,5.0,5.0,4.9571158293041835,0.45249095570949266,True,0.0,in range
+./pypi-cred-reader-test,write_processes,5,5.0,5.0,4.9571158293041835,0.45249095570949266,True,0.0,in range
+./pypi-persistence-test,write_processes,5,5.0,5.0,4.9571158293041835,0.45249095570949266,True,0.0,in range
+./pypi-benign-test,read_data_transfer_kb,44,4281.50634765625,655420.7687499998,181470.32969067513,150451.00878614583,False,0.02816535682841136,below 1st percentile
+./pypi-cred-reader-test,read_data_transfer_kb,44,4281.50634765625,655420.7687499998,181470.32969067513,150451.00878614583,False,0.02816535682841136,below 1st percentile
+./pypi-persistence-test,read_data_transfer_kb,44,4281.50634765625,655420.7687499998,181470.32969067513,150451.00878614583,False,0.02816535682841136,below 1st percentile
+./pypi-benign-test,write_data_transfer_kb,2,0.1529296875000023,7436.636523437488,1089.830837217412,1944.223998915369,True,0.0,in range
+./pypi-cred-reader-test,write_data_transfer_kb,2,0.1529296875000023,7436.636523437488,1089.830837217412,1944.223998915369,True,0.0,in range
+./pypi-persistence-test,write_data_transfer_kb,2,0.1529296875000023,7436.636523437488,1089.830837217412,1944.223998915369,True,0.0,in range
+./pypi-benign-test,file_access_processes,9,5.0,5.0,4.9571158293041835,0.45249095570949266,False,8.839955693099139,above 99th percentile
+./pypi-cred-reader-test,file_access_processes,9,5.0,5.0,4.9571158293041835,0.45249095570949266,False,8.839955693099139,above 99th percentile
+./pypi-persistence-test,file_access_processes,9,5.0,5.0,4.9571158293041835,0.45249095570949266,False,8.839955693099139,above 99th percentile
+./pypi-benign-test,total_dependencies,1,0.0,0.0,0.0,1.0,False,1.0,above 99th percentile
+./pypi-cred-reader-test,total_dependencies,1,0.0,0.0,0.0,1.0,False,1.0,above 99th percentile
+./pypi-persistence-test,total_dependencies,1,0.0,0.0,0.0,1.0,False,1.0,above 99th percentile
+./pypi-benign-test,direct_dependencies,1,0.0,0.0,0.0,1.0,False,1.0,above 99th percentile
+./pypi-cred-reader-test,direct_dependencies,1,0.0,0.0,0.0,1.0,False,1.0,above 99th percentile
+./pypi-persistence-test,direct_dependencies,1,0.0,0.0,0.0,1.0,False,1.0,above 99th percentile
+./pypi-benign-test,indirect_dependencies,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-cred-reader-test,indirect_dependencies,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-persistence-test,indirect_dependencies,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-benign-test,root_dir_access,0,0.0,2462.699999999986,262.39674865111067,425.9848758800787,True,0.0,in range
+./pypi-cred-reader-test,root_dir_access,0,0.0,2462.699999999986,262.39674865111067,425.9848758800787,True,0.0,in range
+./pypi-persistence-test,root_dir_access,0,0.0,2462.699999999986,262.39674865111067,425.9848758800787,True,0.0,in range
+./pypi-benign-test,temp_dir_access,2471,0.0,1030.5999999999985,124.53647256674374,209.58967099269833,False,6.872476077555282,above 99th percentile
+./pypi-cred-reader-test,temp_dir_access,2477,0.0,1030.5999999999985,124.53647256674374,209.58967099269833,False,6.901103442499278,above 99th percentile
+./pypi-persistence-test,temp_dir_access,2474,0.0,1030.5999999999985,124.53647256674374,209.58967099269833,False,6.88678976002728,above 99th percentile
+./pypi-benign-test,home_dir_access,56,0.0,9469.599999999984,1897.9131805759932,2231.236436027557,True,0.0,in range
+./pypi-cred-reader-test,home_dir_access,56,0.0,9469.599999999984,1897.9131805759932,2231.236436027557,True,0.0,in range
+./pypi-persistence-test,home_dir_access,56,0.0,9469.599999999984,1897.9131805759932,2231.236436027557,True,0.0,in range
+./pypi-benign-test,user_dir_access,1894,38.0,10185.599999999977,1726.1854109733024,2135.3765079048103,True,0.0,in range
+./pypi-cred-reader-test,user_dir_access,1894,38.0,10185.599999999977,1726.1854109733024,2135.3765079048103,True,0.0,in range
+./pypi-persistence-test,user_dir_access,1894,38.0,10185.599999999977,1726.1854109733024,2135.3765079048103,True,0.0,in range
+./pypi-benign-test,sys_dir_access,33,18.0,1329.2999999999993,732.8445098451405,485.67980705418717,True,0.0,in range
+./pypi-cred-reader-test,sys_dir_access,33,18.0,1329.2999999999993,732.8445098451405,485.67980705418717,True,0.0,in range
+./pypi-persistence-test,sys_dir_access,33,18.0,1329.2999999999993,732.8445098451405,485.67980705418717,True,0.0,in range
+./pypi-benign-test,etc_dir_access,33,19.0,5313.299999999977,580.3324924672413,1183.8316546865642,True,0.0,in range
+./pypi-cred-reader-test,etc_dir_access,33,19.0,5313.299999999977,580.3324924672413,1183.8316546865642,True,0.0,in range
+./pypi-persistence-test,etc_dir_access,33,19.0,5313.299999999977,580.3324924672413,1183.8316546865642,True,0.0,in range
+./pypi-benign-test,other_dir_access,192,146.0,117537.49999999993,26355.74647887324,28241.062784485468,True,0.0,in range
+./pypi-cred-reader-test,other_dir_access,192,146.0,117537.49999999993,26355.74647887324,28241.062784485468,True,0.0,in range
+./pypi-persistence-test,other_dir_access,201,146.0,117537.49999999993,26355.74647887324,28241.062784485468,True,0.0,in range
+./pypi-benign-test,state_transitions,0,0.0,4537.499999999996,785.1266204190316,1027.2506921178908,True,0.0,in range
+./pypi-cred-reader-test,state_transitions,0,0.0,4537.499999999996,785.1266204190316,1027.2506921178908,True,0.0,in range
+./pypi-persistence-test,state_transitions,0,0.0,4537.499999999996,785.1266204190316,1027.2506921178908,True,0.0,in range
+./pypi-benign-test,local_ips,0,0.0,7.0,2.2957045757129846,1.2016727039216917,True,0.0,in range
+./pypi-cred-reader-test,local_ips,0,0.0,7.0,2.2957045757129846,1.2016727039216917,True,0.0,in range
+./pypi-persistence-test,local_ips,0,0.0,7.0,2.2957045757129846,1.2016727039216917,True,0.0,in range
+./pypi-benign-test,remote_ips,0,0.0,952.8999999999978,71.51418961530376,174.94931989678548,True,0.0,in range
+./pypi-cred-reader-test,remote_ips,0,0.0,952.8999999999978,71.51418961530376,174.94931989678548,True,0.0,in range
+./pypi-persistence-test,remote_ips,0,0.0,952.8999999999978,71.51418961530376,174.94931989678548,True,0.0,in range
+./pypi-benign-test,local_ports,0,0.0,1061.5999999999985,173.2417490014715,232.69242475553136,True,0.0,in range
+./pypi-cred-reader-test,local_ports,0,0.0,1061.5999999999985,173.2417490014715,232.69242475553136,True,0.0,in range
+./pypi-persistence-test,local_ports,0,0.0,1061.5999999999985,173.2417490014715,232.69242475553136,True,0.0,in range
+./pypi-benign-test,remote_ports,0,0.0,101.0,17.600028028869737,22.956094347551335,True,0.0,in range
+./pypi-cred-reader-test,remote_ports,0,0.0,101.0,17.600028028869737,22.956094347551335,True,0.0,in range
+./pypi-persistence-test,remote_ports,0,0.0,101.0,17.600028028869737,22.956094347551335,True,0.0,in range
+./pypi-benign-test,io_ops,6745,0.0,43516.69999999995,3024.779412795179,20533.917100473293,True,0.0,in range
+./pypi-cred-reader-test,io_ops,6744,0.0,43516.69999999995,3024.779412795179,20533.917100473293,True,0.0,in range
+./pypi-persistence-test,io_ops,6728,0.0,43516.69999999995,3024.779412795179,20533.917100473293,True,0.0,in range
+./pypi-benign-test,file_ops,28937,0.0,240431.8999999999,20426.66428421274,78710.75289440602,True,0.0,in range
+./pypi-cred-reader-test,file_ops,28970,0.0,240431.8999999999,20426.66428421274,78710.75289440602,True,0.0,in range
+./pypi-persistence-test,file_ops,29030,0.0,240431.8999999999,20426.66428421274,78710.75289440602,True,0.0,in range
+./pypi-benign-test,network_ops,30,0.0,201.0,78.13769182257725,57.57930239383229,True,0.0,in range
+./pypi-cred-reader-test,network_ops,30,0.0,201.0,78.13769182257725,57.57930239383229,True,0.0,in range
+./pypi-persistence-test,network_ops,30,0.0,201.0,78.13769182257725,57.57930239383229,True,0.0,in range
+./pypi-benign-test,time_ops,0,0.0,53366.39999999971,2189.405717889426,12179.236081515326,True,0.0,in range
+./pypi-cred-reader-test,time_ops,0,0.0,53366.39999999971,2189.405717889426,12179.236081515326,True,0.0,in range
+./pypi-persistence-test,time_ops,0,0.0,53366.39999999971,2189.405717889426,12179.236081515326,True,0.0,in range
+./pypi-benign-test,security_ops,1,0.0,902.0999999999949,40.86644243570878,369.8561738148894,True,0.0,in range
+./pypi-cred-reader-test,security_ops,1,0.0,902.0999999999949,40.86644243570878,369.8561738148894,True,0.0,in range
+./pypi-persistence-test,security_ops,1,0.0,902.0999999999949,40.86644243570878,369.8561738148894,True,0.0,in range
+./pypi-benign-test,process_ops,68,0.0,359.0,64.528063905823,164.70754326386276,True,0.0,in range
+./pypi-cred-reader-test,process_ops,68,0.0,359.0,64.528063905823,164.70754326386276,True,0.0,in range
+./pypi-persistence-test,process_ops,56,0.0,359.0,64.528063905823,164.70754326386276,True,0.0,in range
+./pypi-benign-test,p1_file_metadata,2559,0.0,20.0,12.267955994674514,4.8488964224359945,False,523.6243010372356,above 99th percentile
+./pypi-cred-reader-test,p1_file_metadata,2564,0.0,20.0,12.267955994674514,4.8488964224359945,False,524.6554635048159,above 99th percentile
+./pypi-persistence-test,p1_file_metadata,2569,0.0,20.0,12.267955994674514,4.8488964224359945,False,525.6866259723961,above 99th percentile
+./pypi-benign-test,p2_read_data,0,0.0,19.0,5.548595052904492,5.248752975873285,True,0.0,in range
+./pypi-cred-reader-test,p2_read_data,0,0.0,19.0,5.548595052904492,5.248752975873285,True,0.0,in range
+./pypi-persistence-test,p2_read_data,0,0.0,19.0,5.548595052904492,5.248752975873285,True,0.0,in range
+./pypi-benign-test,p3_write_data,0,0.0,2.0,0.06481676126410202,0.6761034996541717,True,0.0,in range
+./pypi-cred-reader-test,p3_write_data,0,0.0,2.0,0.06481676126410202,0.6761034996541717,True,0.0,in range
+./pypi-persistence-test,p3_write_data,0,0.0,2.0,0.06481676126410202,0.6761034996541717,True,0.0,in range
+./pypi-benign-test,p4_socket_create,0,0.0,0.0,0.003153247845280639,0.12883448850077894,True,0.0,in range
+./pypi-cred-reader-test,p4_socket_create,0,0.0,0.0,0.003153247845280639,0.12883448850077894,True,0.0,in range
+./pypi-persistence-test,p4_socket_create,0,0.0,0.0,0.003153247845280639,0.12883448850077894,True,0.0,in range
+./pypi-benign-test,p5_process_create,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-cred-reader-test,p5_process_create,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-persistence-test,p5_process_create,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-benign-test,p6_memory_map,1,0.0,0.0,0.003994113937355476,0.14992928384595172,False,6.669811089256405,above 99th percentile
+./pypi-cred-reader-test,p6_memory_map,0,0.0,0.0,0.003994113937355476,0.14992928384595172,True,0.0,in range
+./pypi-persistence-test,p6_memory_map,1,0.0,0.0,0.003994113937355476,0.14992928384595172,False,6.669811089256405,above 99th percentile
+./pypi-benign-test,p7_fd_manage,0,0.0,4.0,0.1399341321561208,0.9067044346924613,True,0.0,in range
+./pypi-cred-reader-test,p7_fd_manage,0,0.0,4.0,0.1399341321561208,0.9067044346924613,True,0.0,in range
+./pypi-persistence-test,p7_fd_manage,0,0.0,4.0,0.1399341321561208,0.9067044346924613,True,0.0,in range
+./pypi-benign-test,p8_ipc,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-cred-reader-test,p8_ipc,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-persistence-test,p8_ipc,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-benign-test,p9_file_lock,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-cred-reader-test,p9_file_lock,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-persistence-test,p9_file_lock,0,0.0,0.0,0.0,1.0,True,0.0,in range
+./pypi-benign-test,p10_error_handle,0,0.0,5.0,4.811295634503539,0.950447802979769,True,0.0,in range
+./pypi-cred-reader-test,p10_error_handle,0,0.0,5.0,4.811295634503539,0.950447802979769,True,0.0,in range
+./pypi-persistence-test,p10_error_handle,0,0.0,5.0,4.811295634503539,0.950447802979769,True,0.0,in range

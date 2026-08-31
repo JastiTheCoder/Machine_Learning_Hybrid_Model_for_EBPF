@@ -1,0 +1,4 @@
+﻿package_name,label,read_processes,write_processes,read_data_transfer_kb,write_data_transfer_kb,file_access_processes,total_dependencies,direct_dependencies,indirect_dependencies,root_dir_access,temp_dir_access,home_dir_access,user_dir_access,sys_dir_access,etc_dir_access,other_dir_access,state_transitions,local_ips,remote_ips,local_ports,remote_ports,io_ops,file_ops,network_ops,time_ops,security_ops,process_ops,p1_file_metadata,p2_read_data,p3_write_data,p4_socket_create,p5_process_create,p6_memory_map,p7_fd_manage,p8_ipc,p9_file_lock,p10_error_handle,severity_score
+./pypi-benign-test,0,9,5,44,2,9,1,1,0,0,2471,56,1894,33,33,192,0,0,0,0,0,6745,28937,30,0,1,68,2559,0,0,0,0,1,0,0,0,0,0
+./pypi-cred-reader-test,1,9,5,44,2,9,1,1,0,0,2477,56,1894,33,33,192,0,0,0,0,0,6744,28970,30,0,1,68,2564,0,0,0,0,0,0,0,0,0,1
+./pypi-persistence-test,1,9,5,44,2,9,1,1,0,0,2474,56,1894,33,33,201,0,0,0,0,0,6728,29030,30,0,1,56,2569,0,0,0,0,1,0,0,0,0,1
