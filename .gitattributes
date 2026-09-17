@@ -1,0 +1,14 @@
+# Files that must have LF endings regardless of who commits them.
+#
+# The repo currently relies on each contributor having core.autocrlf=true to
+# normalise CRLF on commit. That works until someone clones with a different
+# config, at which point a shell script committed with CRLF fails on Linux with
+# "bad interpreter: /usr/bin/env bash^M" -- an error that gives no hint about
+# line endings. These rules make the guarantee explicit instead of incidental.
+
+*.sh      text eol=lf
+*.bash    text eol=lf
+*.py      text eol=lf
+Dockerfile text eol=lf
+Makefile  text eol=lf
+*.bpf.c   text eol=lf

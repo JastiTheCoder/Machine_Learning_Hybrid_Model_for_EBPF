@@ -1,0 +1,319 @@
+# Benign npm capture list -- widely used, actively maintained packages.
+#
+#   sudo bash scripts/capture/capture.sh \
+#     --list scripts/capture/packages-benign.txt --label 0 --out captures/benign
+#
+# Why this list exists
+# --------------------
+# The current benign class is 14 real libraries plus 2 synthetic fixtures,
+# while the malicious class is 6 synthetic fixtures built from one template.
+# Any feature that separates "written from Aniruddha's template" from "real
+# library" therefore reads as a malware signal. os_user_dir demonstrates the
+# problem: Cohen's d = 2.70 off a 3% difference, because every benign session
+# reads 865 or 879 user-dir paths and every malicious one reads 904-913. The
+# model is learning which template produced the package.
+#
+# Replacing the benign class with a few hundred real, varied packages removes
+# that confound. Variety is the point -- a corpus of 200 tiny utility libraries
+# would just trade one narrow template for another -- so this list deliberately
+# spans dependency-free one-liners, mid-size libraries, and packages that pull
+# large dependency trees.
+#
+# Selection notes
+# ---------------
+# Packages whose install step downloads a prebuilt binary from somewhere other
+# than the npm registry are excluded: puppeteer, playwright, electron, cypress,
+# node-sass, canvas, sharp. Under the capture firewall those downloads hit the
+# sinkhole and the install fails, producing a session that measures a failed
+# download rather than a real install.
+#
+# Lines beginning with # are ignored, as is anything after a # on a line.
+
+# --- Utility and functional -------------------------------------------------
+lodash
+underscore
+ramda
+immutable
+async
+bluebird
+p-limit
+p-map
+p-queue
+just-extend
+deepmerge
+clone-deep
+fast-deep-equal
+dot-prop
+object-path
+
+# --- Strings, text, formatting ----------------------------------------------
+chalk
+colors
+picocolors
+kleur
+ansi-styles
+strip-ansi
+string-width
+wrap-ansi
+cli-truncate
+slugify
+camelcase
+kebab-case
+pluralize
+he
+escape-string-regexp
+
+# --- Identifiers and hashing ------------------------------------------------
+uuid
+nanoid
+shortid
+cuid
+hash-sum
+object-hash
+murmurhash
+crc-32
+md5
+bcryptjs
+
+# --- Dates and numbers ------------------------------------------------------
+moment
+dayjs
+date-fns
+luxon
+ms
+pretty-ms
+humanize-duration
+numeral
+big.js
+decimal.js
+bignumber.js
+mathjs
+
+# --- Validation and schemas -------------------------------------------------
+validator
+joi
+yup
+ajv
+zod
+superstruct
+is-plain-object
+kind-of
+type-fest
+semver
+
+# --- Filesystem and paths ---------------------------------------------------
+fs-extra
+graceful-fs
+glob
+fast-glob
+globby
+rimraf
+mkdirp
+del
+chokidar
+find-up
+pkg-dir
+resolve
+readdirp
+write-file-atomic
+tempy
+
+# --- Archives and encoding --------------------------------------------------
+tar
+tar-stream
+adm-zip
+archiver
+unzipper
+iconv-lite
+js-base64
+base64-js
+buffer-from
+bl
+
+# --- Parsing and serialisation ----------------------------------------------
+js-yaml
+toml
+ini
+dotenv
+xml2js
+fast-xml-parser
+cheerio
+papaparse
+csv-parser
+csv-parse
+fast-csv
+json5
+jsonfile
+flatted
+strip-json-comments
+
+# --- HTTP and networking ----------------------------------------------------
+axios
+node-fetch
+got
+superagent
+undici
+form-data
+ws
+socket.io-client
+http-errors
+agentkeepalive
+
+# --- Server frameworks and middleware ---------------------------------------
+express
+koa
+fastify
+body-parser
+cors
+helmet
+morgan
+compression
+cookie-parser
+express-session
+multer
+serve-static
+http-proxy-middleware
+connect
+finalhandler
+
+# --- Auth and crypto --------------------------------------------------------
+jsonwebtoken
+jose
+passport
+passport-local
+oauth
+crypto-js
+node-forge
+tweetnacl
+uuid-random
+otplib
+
+# --- Databases and caching --------------------------------------------------
+mongoose
+sequelize
+knex
+pg
+mysql2
+redis
+ioredis
+lowdb
+nedb
+level
+
+# --- CLI tooling ------------------------------------------------------------
+commander
+yargs
+minimist
+meow
+inquirer
+prompts
+ora
+cli-progress
+boxen
+update-notifier
+cosmiconfig
+env-paths
+which
+execa
+cross-spawn
+
+# --- Logging ----------------------------------------------------------------
+winston
+pino
+bunyan
+debug
+loglevel
+signale
+consola
+log-symbols
+figures
+chalk-template
+
+# --- Build and transform ----------------------------------------------------
+typescript
+esbuild
+rollup
+terser
+postcss
+autoprefixer
+cssnano
+browserslist
+core-js
+regenerator-runtime
+tslib
+source-map
+magic-string
+acorn
+escodegen
+
+# --- Testing ----------------------------------------------------------------
+mocha
+chai
+sinon
+tape
+ava
+supertest
+nock
+c8
+expect
+jsdom
+
+# --- React and view layers --------------------------------------------------
+react
+react-dom
+prop-types
+classnames
+clsx
+scheduler
+react-is
+preact
+vue
+lit
+
+# --- State and reactivity ---------------------------------------------------
+redux
+redux-thunk
+reselect
+rxjs
+mobx
+zustand
+immer
+nanostores
+xstate
+eventemitter3
+
+# --- Data and visualisation -------------------------------------------------
+d3-array
+d3-scale
+d3-shape
+chart.js
+echarts
+plotly.js-dist-min
+victory-core
+recharts
+topojson-client
+geojson
+
+# --- Process and system -----------------------------------------------------
+nodemon
+concurrently
+npm-run-all
+cross-env
+dotenv-cli
+node-cron
+pidusage
+systeminformation
+os-tmpdir
+is-docker
+
+# --- Small, dependency-free primitives --------------------------------------
+is-odd
+is-number
+is-even
+left-pad
+once
+inherits
+util-deprecate
+safe-buffer
+isarray
+inflight

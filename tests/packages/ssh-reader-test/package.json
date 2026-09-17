@@ -1,0 +1,8 @@
+{
+  "name": "ssh-reader-test",
+  "version": "1.0.0",
+  "description": "TEST PACKAGE - Simulates SSH key reading for ML training",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  }
+}
