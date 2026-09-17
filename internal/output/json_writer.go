@@ -15,12 +15,22 @@ import (
 	"github.com/aniruddha/npm-ebpf-monitor/internal/verdict"
 )
 
-// CurrentSchemaVersion bumped 1.0.0 -> 1.1.0 for the addition of the
-// "verdict" block. The 36 QUT-DV25 feature fields it sits alongside are
-// unchanged -- see TestBuildRecordFeatureFieldsUnaffectedByVerdict -- so a
-// 1.0.0 reader that simply ignores an unknown JSON key still works, and a
-// 1.0.0 file with no "verdict" key still unmarshals (Verdict stays nil).
-const CurrentSchemaVersion = "1.1.0"
+// CurrentSchemaVersion history:
+//
+//	1.0.0 -> 1.1.0  added the "verdict" block
+//	1.1.0 -> 1.2.0  added the "sensitive" block
+//
+// Both additions are new top-level keys, so a reader of an older version that
+// ignores unknown keys still works, and an older file missing the key still
+// unmarshals (the field stays zero-valued).
+//
+// 1.2.0 is the first version whose feature set is not constrained to
+// QUT-DV25's 36 columns. That dataset was retired as a training source after
+// it was shown to transfer with the wrong sign -- see
+// ml_analysis/QUT_RETIREMENT.md -- so matching its schema no longer buys
+// anything, and the credential evidence the monitor already gathers can
+// finally reach the model.
+const CurrentSchemaVersion = "1.2.0"
 
 // SessionRecord is the persisted JSON representation of one monitored session.
 type SessionRecord struct {
@@ -35,6 +45,7 @@ type SessionRecord struct {
 	TCP           features.TCPCounts       `json:"tcp"`
 	Syscalls      features.SyscallFeatures `json:"syscalls"`
 	Patterns      features.PatternCounts   `json:"patterns"`
+	Sensitive     features.SensitiveAccess `json:"sensitive"`
 	ProcessTree   string                   `json:"process_tree"`
 	TimedOut      bool                     `json:"timed_out"`
 	Verdict       *verdict.Verdict         `json:"verdict"`
@@ -42,7 +53,8 @@ type SessionRecord struct {
 
 // ToCSVRow returns a slice of strings representing this record as a CSV row.
 //
-// Column order (39 total = 3 metadata + 36 QUT-DV25 features):
+// Column order (59 total = 2 metadata + 36 legacy features + 20 sensitive +
+// 1 trailing metadata):
 //
 //	package_name, label,
 //	read_processes, write_processes, read_data_transfer_kb, write_data_transfer_kb, file_access_processes,
@@ -52,7 +64,11 @@ type SessionRecord struct {
 //	io_ops, file_ops, network_ops, time_ops, security_ops, process_ops,
 //	p1_file_metadata, p2_read_data, p3_write_data, p4_socket_create, p5_process_create,
 //	p6_memory_map, p7_fd_manage, p8_ipc, p9_file_lock, p10_error_handle,
+//	<20 columns from features.SensitiveAccessColumns()>,
 //	severity_score
+//
+// The first 36 feature columns are retained unchanged so previously exported
+// datasets stay comparable, not because QUT-DV25 still requires them.
 func (s *SessionRecord) ToCSVRow() ([]string, error) {
 	// An unassigned label is refused rather than defaulted. Defaulting it to
 	// "0" is what let genuinely malicious sessions reach the training set
@@ -73,7 +89,7 @@ func (s *SessionRecord) ToCSVRow() ([]string, error) {
 	// severity_score: mirrors label for ML team baseline (0 = benign, 1 = malicious)
 	severityScore := labelStr
 
-	return []string{
+	row := []string{
 		// metadata
 		s.PackageName,
 		labelStr,
@@ -119,9 +135,16 @@ func (s *SessionRecord) ToCSVRow() ([]string, error) {
 		strconv.Itoa(s.Patterns.P8),
 		strconv.Itoa(s.Patterns.P9),
 		strconv.Itoa(s.Patterns.P10),
-		// severity metadata
-		severityScore,
-	}, nil
+	}
+
+	// sensitive (20) -- order guaranteed to match SensitiveAccessColumns()
+	for _, v := range s.Sensitive.Values() {
+		row = append(row, strconv.Itoa(v))
+	}
+
+	row = append(row, severityScore)
+
+	return row, nil
 }
 
 // BuildRecord converts a collected session into the JSON output format,
@@ -158,6 +181,7 @@ func BuildRecord(sess *session.Session, installFeatures features.InstallFeatures
 	record.Filetop = snap.Filetop
 	record.TCP = snap.TCP
 	record.Patterns = snap.Patterns
+	record.Sensitive = features.BuildSensitiveAccess(snap.Evidence)
 
 	if snap.Opensnoop != nil {
 		record.Opensnoop = snap.Opensnoop

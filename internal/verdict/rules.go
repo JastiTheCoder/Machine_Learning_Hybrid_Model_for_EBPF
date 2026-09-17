@@ -46,29 +46,13 @@ var RuleNET003 = Rule{
 	},
 }
 
-// credentialClasses are the PathClasses RuleCRED001 treats as a credential
-// read -- narrower than every class evidence.go tracks, since e.g.
-// PathClassDotEnv and PathClassCronDir are covered by other rules.
-//
-// PathClassNpmrc is deliberately excluded (Stage 8 calibration): npm itself
-// reads .npmrc as part of ordinary registry-config resolution on every
-// single install, with or without a postinstall script. Live captures of
-// four unmodified real-world packages (lodash, express, chalk, debug --
-// none of which run any install-time script at all) all triggered this
-// rule solely on their own .npmrc read, a 100% false-positive rate with
-// zero discriminative power. A real credential-harvesting .npmrc read
-// (e.g. for a scoped-registry auth token) is still caught by CRED-001
-// via the SSH/AWS/Docker/Kube classes it retains, and by RECON-001/
-// EXFIL-001 when it's part of a broader read-then-exfiltrate pattern.
-var credentialClasses = map[features.PathClass]bool{
-	features.PathClassSSHPrivateKey:  true,
-	features.PathClassAWSCredentials: true,
-	features.PathClassDockerConfig:   true,
-	features.PathClassKubeConfig:     true,
-}
-
 // RuleCRED001 fires when the session read a known credential file --
 // SSH private keys, cloud/registry/container credentials.
+//
+// The credential set lives in features.IsCredentialClass rather than here,
+// so this rule and EvidenceCollector.AddPath's IndicatorCredentialRead
+// cannot drift apart. Notably it excludes PathClassNpmrc, which npm reads on
+// every ordinary install.
 var RuleCRED001 = Rule{
 	ID:        "CRED-001",
 	Weight:    25,
@@ -76,7 +60,7 @@ var RuleCRED001 = Rule{
 	Technique: "T1552.004",
 	Eval: func(in Input) (bool, string) {
 		for _, class := range in.Evidence.Paths {
-			if credentialClasses[class] {
+			if features.IsCredentialClass(class) {
 				return true, fmt.Sprintf("read credential-class path (%d)", class)
 			}
 		}
@@ -276,13 +260,21 @@ var RulePERSIST001 = Rule{
 // exfiltration, as opposed to either fact occurring alone or in the
 // opposite order. Decisive: this ordering has no benign explanation for an
 // npm install script.
+//
+// It reads IndicatorCredentialRead, not IndicatorSensitiveRead. The broad
+// indicator is marked for all thirteen PathClasses including PathClassNpmrc,
+// which npm reads on every install before contacting the registry -- so
+// consuming it here banded ordinary unmodified installs malicious on nothing
+// but their own config read (NEW_AUDIT.md NC1). Stage 8 had already narrowed
+// CRED-001 for exactly this reason; the narrowing simply never reached the
+// indicator its sibling rule depends on.
 var RuleEXFIL001 = Rule{
 	ID:        "EXFIL-001",
 	Weight:    50,
 	Decisive:  true,
 	Technique: "T1552.004",
 	Eval: func(in Input) (bool, string) {
-		readAt, readOK := in.Evidence.FirstSeen[features.IndicatorSensitiveRead]
+		readAt, readOK := in.Evidence.FirstSeen[features.IndicatorCredentialRead]
 		connectAt, connectOK := in.Evidence.FirstSeen[features.IndicatorOutboundConnect]
 		if !readOK || !connectOK {
 			return false, ""
@@ -290,6 +282,6 @@ var RuleEXFIL001 = Rule{
 		if readAt >= connectAt {
 			return false, ""
 		}
-		return true, fmt.Sprintf("sensitive read at t=%d preceded outbound connect at t=%d", readAt, connectAt)
+		return true, fmt.Sprintf("credential read at t=%d preceded outbound connect at t=%d", readAt, connectAt)
 	},
 }

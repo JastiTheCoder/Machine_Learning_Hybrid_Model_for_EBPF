@@ -66,6 +66,32 @@ var pathContainsClasses = []struct {
 	{"/.electrum/", PathClassCryptoWallet},
 }
 
+// credentialClasses are the PathClasses that identify a secret an attacker
+// can directly reuse -- as opposed to a merely sensitive file.
+//
+// PathClassNpmrc is deliberately excluded. npm reads .npmrc as part of
+// ordinary registry-config resolution on every single install, with or
+// without a postinstall script: live captures of four unmodified real-world
+// packages (lodash, express, chalk, debug -- none of which run any
+// install-time script) all read it, so treating it as a credential is a 100%
+// false-positive rate with zero discriminative power.
+//
+// This is the single definition of the set. verdict.RuleCRED001 and
+// EvidenceCollector.AddPath both consult it, so narrowing or widening a
+// credential rule happens in exactly one place.
+var credentialClasses = map[PathClass]bool{
+	PathClassSSHPrivateKey:  true,
+	PathClassAWSCredentials: true,
+	PathClassDockerConfig:   true,
+	PathClassKubeConfig:     true,
+}
+
+// IsCredentialClass reports whether class identifies a directly reusable
+// secret.
+func IsCredentialClass(class PathClass) bool {
+	return credentialClasses[class]
+}
+
 // ClassifyPath reports why path is treated as security-relevant evidence, or
 // PathClassNone if it is not.
 func ClassifyPath(path string) PathClass {

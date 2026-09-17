@@ -179,32 +179,81 @@ func TestRuleEXFIL001(t *testing.T) {
 	}
 
 	readThenConnect := Input{Evidence: features.Evidence{FirstSeen: map[features.Indicator]uint64{
-		features.IndicatorSensitiveRead:   100,
+		features.IndicatorCredentialRead:  100,
 		features.IndicatorOutboundConnect: 200,
 	}}}
 	if got, _ := fire(t, RuleEXFIL001, readThenConnect); !got {
-		t.Error("RuleEXFIL001 did not fire when a sensitive read preceded an outbound connect")
+		t.Error("RuleEXFIL001 did not fire when a credential read preceded an outbound connect")
 	}
 
 	connectThenRead := Input{Evidence: features.Evidence{FirstSeen: map[features.Indicator]uint64{
 		features.IndicatorOutboundConnect: 100,
-		features.IndicatorSensitiveRead:   200,
+		features.IndicatorCredentialRead:  200,
 	}}}
 	if got, _ := fire(t, RuleEXFIL001, connectThenRead); got {
 		t.Error("RuleEXFIL001 fired when the connection preceded the read (wrong order)")
 	}
 
 	readOnly := Input{Evidence: features.Evidence{FirstSeen: map[features.Indicator]uint64{
-		features.IndicatorSensitiveRead: 100,
+		features.IndicatorCredentialRead: 100,
 	}}}
 	if got, _ := fire(t, RuleEXFIL001, readOnly); got {
-		t.Error("RuleEXFIL001 fired with a sensitive read but no outbound connect at all")
+		t.Error("RuleEXFIL001 fired with a credential read but no outbound connect at all")
 	}
 
 	connectOnly := Input{Evidence: features.Evidence{FirstSeen: map[features.Indicator]uint64{
 		features.IndicatorOutboundConnect: 100,
 	}}}
 	if got, _ := fire(t, RuleEXFIL001, connectOnly); got {
-		t.Error("RuleEXFIL001 fired with an outbound connect but no sensitive read at all")
+		t.Error("RuleEXFIL001 fired with an outbound connect but no credential read at all")
+	}
+}
+
+// TestRuleEXFIL001IgnoresNonCredentialSensitiveRead is the NC1 regression
+// (NEW_AUDIT.md). EXFIL-001 is decisive, so firing it forces
+// Level = LevelMalicious regardless of score. It used to consume
+// IndicatorSensitiveRead, which AddPath marks for all thirteen PathClasses
+// including PathClassNpmrc -- and npm reads .npmrc on every install before
+// contacting the registry. Every ordinary unmodified install therefore
+// matched the decisive read-then-connect shape.
+//
+// Stage 8 had already narrowed CRED-001's own path check for exactly this
+// reason; the narrowing never reached the indicator EXFIL-001 depends on.
+func TestRuleEXFIL001IgnoresNonCredentialSensitiveRead(t *testing.T) {
+	ordinaryInstall := Input{Evidence: features.Evidence{FirstSeen: map[features.Indicator]uint64{
+		features.IndicatorSensitiveRead:   100, // e.g. npm reading its own .npmrc
+		features.IndicatorOutboundConnect: 200, // ...then reaching the registry
+	}}}
+
+	if got, evidence := fire(t, RuleEXFIL001, ordinaryInstall); got {
+		t.Errorf("RuleEXFIL001 fired on a broad sensitive read with no credential read: %q.\n"+
+			"This is NC1: a decisive rule banding an ordinary npm install malicious "+
+			"on nothing but its own .npmrc read plus a registry connect.", evidence)
+	}
+}
+
+// TestEXFIL001AndCRED001ShareOneCredentialDefinition guards against the two
+// drifting apart again. NC1 existed because a narrowing applied to one was
+// not applied to the other; both now resolve through
+// features.IsCredentialClass, and a path that CRED-001 refuses to treat as a
+// credential must not be able to satisfy EXFIL-001 either.
+func TestEXFIL001AndCRED001ShareOneCredentialDefinition(t *testing.T) {
+	nonCredentialClasses := []features.PathClass{
+		features.PathClassNpmrc,
+		features.PathClassGitConfig,
+		features.PathClassDotEnv,
+		features.PathClassShellRC,
+	}
+
+	for _, class := range nonCredentialClasses {
+		if features.IsCredentialClass(class) {
+			t.Errorf("features.IsCredentialClass(%d) = true, want false: this class is "+
+				"read by ordinary installs and must not satisfy a decisive rule", class)
+		}
+
+		in := Input{Evidence: features.Evidence{Paths: []features.PathClass{class}}}
+		if got, _ := fire(t, RuleCRED001, in); got {
+			t.Errorf("RuleCRED001 fired on PathClass %d, which is not a credential", class)
+		}
 	}
 }

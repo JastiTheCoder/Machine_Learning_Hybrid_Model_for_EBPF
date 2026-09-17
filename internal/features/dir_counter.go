@@ -52,11 +52,18 @@ func (dc *DirCounts) Add(category uint8) {
 	}
 }
 
-// ToMap returns a map keyed by QUT-DV25 feature names.
+// ToMap returns a map of the 7 directory-access counts.
 //
-// There are exactly 7 directory-access features.  .ssh/.aws paths are
-// classified as DIR_OTHER by the BPF layer so that the ML model sees
-// exactly the 36 features required by QUT-DV25.
+// .ssh/.aws paths are classified as DIR_OTHER by the BPF layer, so they are
+// counted here only as other_dir_access. That was originally done to hold the
+// exported vector at the 36 features QUT-DV25 defines; that constraint is
+// gone (ml_analysis/QUT_RETIREMENT.md), but the BPF-side categorisation is
+// deliberately left alone.
+//
+// Credential-path signal is no longer lost as a result: SensitiveAccess
+// surfaces it per-class from the userspace path classifier, which is both
+// more granular than a directory bucket and does not require a BPF change.
+// Widening the BPF categories would only duplicate it.
 func (dc *DirCounts) ToMap() map[string]int {
 	return map[string]int{
 		"root_dir_access":  dc.Root,

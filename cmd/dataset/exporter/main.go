@@ -5,7 +5,7 @@
 //	go run ./cmd/dataset/exporter --dir ./sessions/dataset/ --out ./sessions/sessions.csv
 //
 // It reads every JSON file in --dir, unmarshals each into a SessionRecord,
-// calls ToCSVRow() for the 39-column feature vector, and writes the result to
+// calls ToCSVRow() for the 59-column feature vector, and writes the result to
 // the CSV file specified by --out.  A header row is written first.
 //
 // Exit codes:
@@ -24,59 +24,74 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/aniruddha/npm-ebpf-monitor/internal/features"
 	"github.com/aniruddha/npm-ebpf-monitor/internal/output"
 )
 
-// csvHeader lists the 39 column names in the same order as ToCSVRow().
-// Layout: 2 metadata + 36 QUT-DV25 features + 1 trailing metadata.
-var csvHeader = []string{
-	// metadata
-	"package_name",
-	"label",
-	// filetop (5)
-	"read_processes",
-	"write_processes",
-	"read_data_transfer_kb",
-	"write_data_transfer_kb",
-	"file_access_processes",
-	// install (3)
-	"total_dependencies",
-	"direct_dependencies",
-	"indirect_dependencies",
-	// opensnoop / dir counts (7)
-	"root_dir_access",
-	"temp_dir_access",
-	"home_dir_access",
-	"user_dir_access",
-	"sys_dir_access",
-	"etc_dir_access",
-	"other_dir_access",
-	// tcp (5)
-	"state_transitions",
-	"local_ips",
-	"remote_ips",
-	"local_ports",
-	"remote_ports",
-	// syscalls (6)
-	"io_ops",
-	"file_ops",
-	"network_ops",
-	"time_ops",
-	"security_ops",
-	"process_ops",
-	// patterns (10)
-	"p1_file_metadata",
-	"p2_read_data",
-	"p3_write_data",
-	"p4_socket_create",
-	"p5_process_create",
-	"p6_memory_map",
-	"p7_fd_manage",
-	"p8_ipc",
-	"p9_file_lock",
-	"p10_error_handle",
-	// severity metadata
-	"severity_score",
+// csvHeader lists the column names in the same order as ToCSVRow().
+// Layout: 2 metadata + 36 legacy features + 20 sensitive + 1 trailing
+// metadata = 59 columns.
+//
+// The sensitive block is spliced in from features.SensitiveAccessColumns()
+// rather than written out here, so it cannot drift from the values
+// SensitiveAccess.Values() emits. The 36 legacy names above it remain
+// duplicated between this file and ToCSVRow(); exportDirectory's width check
+// is what catches a mismatch there.
+var csvHeader = buildCSVHeader()
+
+func buildCSVHeader() []string {
+	header := []string{
+		// metadata
+		"package_name",
+		"label",
+		// filetop (5)
+		"read_processes",
+		"write_processes",
+		"read_data_transfer_kb",
+		"write_data_transfer_kb",
+		"file_access_processes",
+		// install (3)
+		"total_dependencies",
+		"direct_dependencies",
+		"indirect_dependencies",
+		// opensnoop / dir counts (7)
+		"root_dir_access",
+		"temp_dir_access",
+		"home_dir_access",
+		"user_dir_access",
+		"sys_dir_access",
+		"etc_dir_access",
+		"other_dir_access",
+		// tcp (5)
+		"state_transitions",
+		"local_ips",
+		"remote_ips",
+		"local_ports",
+		"remote_ports",
+		// syscalls (6)
+		"io_ops",
+		"file_ops",
+		"network_ops",
+		"time_ops",
+		"security_ops",
+		"process_ops",
+		// patterns (10)
+		"p1_file_metadata",
+		"p2_read_data",
+		"p3_write_data",
+		"p4_socket_create",
+		"p5_process_create",
+		"p6_memory_map",
+		"p7_fd_manage",
+		"p8_ipc",
+		"p9_file_lock",
+		"p10_error_handle",
+	}
+
+	header = append(header, features.SensitiveAccessColumns()...)
+	header = append(header, "severity_score")
+
+	return header
 }
 
 // exportSummary counts the outcome of an export run.
@@ -163,6 +178,18 @@ func exportDirectory(dir, outPath string) (exportSummary, error) {
 			log.Printf("EXCLUDED %s: %v", entry.Name(), err)
 			sum.skipped++
 			continue
+		}
+
+		// A width mismatch is a code defect, not a bad input: the header and
+		// the row are built in two different packages. Skipping the row would
+		// silently ship a misaligned dataset, which is the same class of
+		// failure as the defaulted label in AUDIT.md C4 -- once written, the
+		// mistake leaves no trail. Fail the whole export instead.
+		if len(row) != len(csvHeader) {
+			return sum, fmt.Errorf(
+				"column count mismatch: %s produced %d columns, header declares %d "+
+					"(ToCSVRow and buildCSVHeader are out of sync)",
+				entry.Name(), len(row), len(csvHeader))
 		}
 
 		if err := w.Write(row); err != nil {

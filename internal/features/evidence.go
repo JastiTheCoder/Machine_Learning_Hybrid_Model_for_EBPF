@@ -18,6 +18,18 @@ const (
 	IndicatorNonRootOutbound
 	IndicatorProcessSpawn
 	IndicatorPersistenceWrite
+	// IndicatorCredentialRead is the narrow counterpart to
+	// IndicatorSensitiveRead: it is marked only for a directly reusable
+	// secret (see IsCredentialClass), never for a merely sensitive file.
+	//
+	// The two are kept separate rather than one being narrowed, because
+	// they answer different questions. EXFIL-001 needs the narrow one --
+	// marking the broad one meant an ordinary install reading its own
+	// .npmrc before contacting the registry satisfied a decisive rule
+	// (NEW_AUDIT.md NC1). The broad one remains exported as an ML feature,
+	// where "read anything sensitive, then connected" is weak evidence
+	// rather than a false positive.
+	IndicatorCredentialRead
 )
 
 // evidenceCap bounds how many distinct raw facts of each unbounded kind
@@ -83,7 +95,8 @@ func isWriteOpen(flags uint32) bool {
 }
 
 // AddPath classifies path and, if it matches a known PathClass, records it
-// and marks IndicatorSensitiveRead at timestampNs. If the match is a
+// and marks IndicatorSensitiveRead at timestampNs. A credential-class match
+// additionally marks IndicatorCredentialRead. If the match is a
 // persistence-location class and flags indicates a write, it is also
 // recorded as a PersistenceWrite and marks IndicatorPersistenceWrite.
 //
@@ -96,6 +109,10 @@ func (e *EvidenceCollector) AddPath(path string, flags uint32, timestampNs uint6
 	}
 	e.paths[class] = true
 	e.markFirstSeen(IndicatorSensitiveRead, timestampNs)
+
+	if IsCredentialClass(class) {
+		e.markFirstSeen(IndicatorCredentialRead, timestampNs)
+	}
 
 	if isPersistenceClass(class) && isWriteOpen(flags) {
 		e.persistenceWrites[class] = true

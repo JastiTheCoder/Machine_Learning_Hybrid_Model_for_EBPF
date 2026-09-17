@@ -130,12 +130,14 @@ func TestSessionRecord_ToCSVRow_LegacyUserlibAlias(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ToCSVRow() = %v, want nil error", err)
 	}
-	if len(row) != 39 {
-		t.Fatalf("len(ToCSVRow()) = %d, want 39", len(row))
+	if len(row) != 59 {
+		t.Fatalf("len(ToCSVRow()) = %d, want 59", len(row))
 	}
 
 	// Column index: 2 metadata + 5 filetop + 3 install +
 	// opensnoop offsets (root=10, temp=11, home=12, user=13).
+	// Unaffected by the sensitive block, which is appended at the end --
+	// see TestToCSVRowWidthAndLegacyColumnPositions.
 	if row[13] != "9" {
 		t.Fatalf("user_dir_access column = %q, want %q", row[13], "9")
 	}

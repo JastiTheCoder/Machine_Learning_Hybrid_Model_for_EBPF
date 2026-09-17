@@ -10,9 +10,13 @@ import (
 	"github.com/aniruddha/npm-ebpf-monitor/internal/verdict"
 )
 
+// TestCurrentSchemaVersionIsBumpedForVerdict pins the schema version so that
+// adding a top-level block to SessionRecord cannot happen silently: a
+// consumer keying off the version has to be told. 1.1.0 added "verdict",
+// 1.2.0 added "sensitive".
 func TestCurrentSchemaVersionIsBumpedForVerdict(t *testing.T) {
-	if CurrentSchemaVersion != "1.1.0" {
-		t.Fatalf("CurrentSchemaVersion = %q, want %q", CurrentSchemaVersion, "1.1.0")
+	if CurrentSchemaVersion != "1.2.0" {
+		t.Fatalf("CurrentSchemaVersion = %q, want %q", CurrentSchemaVersion, "1.2.0")
 	}
 }
 
@@ -175,9 +179,22 @@ func TestSessionRecordUnmarshalsLegacyRecordWithoutVerdictKey(t *testing.T) {
 	}
 }
 
-// TestToCSVRowStillHas39ColumnsWithVerdictAttached pins that CSV export is
-// unchanged: the verdict block is a JSON-only addition.
-func TestToCSVRowStillHas39ColumnsWithVerdictAttached(t *testing.T) {
+// TestToCSVRowWidthAndLegacyColumnPositions pins the export layout.
+//
+// The verdict block remains a JSON-only addition and contributes no columns.
+// The sensitive block does contribute 20, appended after the legacy features
+// and before severity_score specifically so that every pre-existing column
+// keeps its index -- CSVs exported before this change stay comparable with
+// ones exported after, and the column offsets hard-coded in
+// TestSessionRecord_ToCSVRow_LegacyUserlibAlias stay correct.
+func TestToCSVRowWidthAndLegacyColumnPositions(t *testing.T) {
+	const (
+		legacyColumns    = 38 // 2 metadata + 36 features
+		sensitiveColumns = 20
+		severityColumns  = 1
+		wantWidth        = legacyColumns + sensitiveColumns + severityColumns
+	)
+
 	sess := session.NewSession(1010, "debug")
 	record := BuildRecord(sess, features.InstallFeatures{}, verdict.DefaultThresholds)
 	label := 0
@@ -187,7 +204,19 @@ func TestToCSVRowStillHas39ColumnsWithVerdictAttached(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ToCSVRow() error = %v", err)
 	}
-	if len(row) != 39 {
-		t.Fatalf("len(row) = %d, want 39", len(row))
+	if len(row) != wantWidth {
+		t.Fatalf("len(row) = %d, want %d", len(row), wantWidth)
+	}
+
+	if got := len(features.SensitiveAccessColumns()); got != sensitiveColumns {
+		t.Errorf("SensitiveAccessColumns() has %d entries, want %d; "+
+			"update wantWidth here and the header comment on ToCSVRow together",
+			got, sensitiveColumns)
+	}
+
+	// severity_score stays last, so row[len(row)-1] remains a valid way to
+	// reach it -- several tests and downstream scripts rely on that.
+	if got := row[len(row)-1]; got != "0" {
+		t.Errorf("last column = %q, want the severity score %q", got, "0")
 	}
 }

@@ -13,9 +13,11 @@ import (
 //   - a /sys probe (rare but present)
 //   - an unknown category (must land in Other)
 //
-// Note: .ssh / .aws paths are now classified as DIR_OTHER by the BPF
-// layer and therefore contribute to other_dir_access, not a separate
-// ssh_aws_wallet_access field.
+// Note: .ssh / .aws paths are classified as DIR_OTHER by the BPF layer and
+// therefore contribute to other_dir_access, not a separate
+// ssh_aws_wallet_access field. That signal reaches the model through
+// SensitiveAccess instead (see sensitive_test.go), per-class rather than as
+// one merged directory bucket.
 //
 // Key invariants verified:
 //  1. home_dir_access == Home (1-to-1 mapping; no merging needed).
@@ -82,9 +84,14 @@ func TestDirCounterToMap(t *testing.T) {
 		}
 	}
 
-	// Confirm no ssh_aws_wallet_access key is emitted (would break QUT-DV25).
+	// DirCounts mirrors the BPF layer's DIR_* categories one-for-one. An
+	// ssh_aws_wallet_access key here would mean the two had diverged --
+	// nothing in BPF emits such a category, so nothing could populate it.
+	// Credential paths are surfaced by SensitiveAccess, not by this map.
 	if _, has := got["ssh_aws_wallet_access"]; has {
-		t.Error("ToMap() must NOT emit ssh_aws_wallet_access (breaks 36-feature schema)")
+		t.Error("ToMap() must not emit ssh_aws_wallet_access: no BPF DIR_* category " +
+			"produces it, so it could only ever be zero. Credential-path signal " +
+			"belongs in SensitiveAccess.")
 	}
 }
 
