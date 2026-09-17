@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.1.0",
+  "session_id": "npm-1787577301",
+  "package_name": "unknown",
+  "timestamp": "2026-08-24T18:45:02.64396461+05:30",
+  "label": null,
+  "filetop": {
+    "read_processes": 2,
+    "write_processes": 2,
+    "read_data_transfer_kb": 3,
+    "write_data_transfer_kb": 2,
+    "file_access_processes": 2
+  },
+  "install": {
+    "total_dependencies": 1,
+    "direct_dependencies": 1,
+    "indirect_dependencies": 0
+  },
+  "opensnoop": {
+    "etc_dir_access": 16,
+    "home_dir_access": 5,
+    "other_dir_access": 11,
+    "root_dir_access": 0,
+    "sys_dir_access": 29,
+    "temp_dir_access": 604,
+    "user_dir_access": 904
+  },
+  "tcp": {
+    "state_transitions": 0,
+    "local_ips": 0,
+    "remote_ips": 0,
+    "local_ports": 0,
+    "remote_ports": 0
+  },
+  "syscalls": {
+    "io_ops": 3921,
+    "file_ops": 3222,
+    "network_ops": 40,
+    "time_ops": 0,
+    "security_ops": 165,
+    "process_ops": 19,
+    "unknown_ops": 9162
+  },
+  "patterns": {
+    "p1_file_metadata": 6,
+    "p2_read_data": 0,
+    "p3_write_data": 0,
+    "p4_socket_create": 0,
+    "p5_process_create": 0,
+    "p6_memory_map": 0,
+    "p7_fd_manage": 0,
+    "p8_ipc": 0,
+    "p9_file_lock": 0,
+    "p10_error_handle": 15
+  },
+  "process_tree": "npm(178520)-\u003enpm install(178533)",
+  "timed_out": false,
+  "verdict": {
+    "score": 85,
+    "level": "malicious",
+    "thresholds": {
+      "suspicious": 25,
+      "malicious": 60
+    },
+    "findings": [
+      {
+        "rule_id": "PERSIST-001",
+        "weight": 50,
+        "technique": "T1053",
+        "evidence": "wrote into a persistence-class location (12)"
+      },
+      {
+        "rule_id": "PROC-001",
+        "weight": 20,
+        "technique": "T1059.004",
+        "evidence": "install script spawned a shell"
+      },
+      {
+        "rule_id": "DROP-001",
+        "weight": 15,
+        "technique": "T1105",
+        "evidence": "wrote into a temp directory (604 accesses, 2 writers)"
+      }
+    ]
+  }
+}

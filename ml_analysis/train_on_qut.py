@@ -1,11 +1,22 @@
 """
 Cross-Domain Malware Detection: Train on QUT-DV25 (PyPI), Test on npm
 ======================================================================
+
+SUPERSEDED - see QUT_RETIREMENT.md. Retained as reproducible evidence for the
+failed transfer; do not extend or train new models with it.
+
 This script trains an ML model on the QUT-DV25 PyPI dataset and evaluates
 its ability to detect malicious npm packages.
 
-Research Question: Can malware detection patterns learned from PyPI 
+Research Question: Can malware detection patterns learned from PyPI
 transfer to npm package detection?
+
+Answer: No. Both models scored 0% recall on malicious npm packages, with an
+approximate ROC AUC of 0.08 (below the 0.50 random-guessing baseline). QUT's
+malicious class is characterised by reduced process activity (median 5,171
+syscalls vs 10,415 benign) while ours is characterised by increased activity,
+so 9 of 37 features transfer with the wrong sign. Feature selection cannot
+repair a sign inversion.
 """
 
 import pandas as pd

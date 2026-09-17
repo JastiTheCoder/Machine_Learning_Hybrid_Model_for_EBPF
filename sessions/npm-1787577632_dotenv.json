@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.1.0",
+  "session_id": "npm-1787577632",
+  "package_name": "dotenv",
+  "timestamp": "2026-08-24T18:50:33.930808444+05:30",
+  "label": null,
+  "filetop": {
+    "read_processes": 1,
+    "write_processes": 1,
+    "read_data_transfer_kb": 101,
+    "write_data_transfer_kb": 4,
+    "file_access_processes": 1
+  },
+  "install": {
+    "total_dependencies": 1,
+    "direct_dependencies": 1,
+    "indirect_dependencies": 0
+  },
+  "opensnoop": {
+    "etc_dir_access": 13,
+    "home_dir_access": 14,
+    "other_dir_access": 3,
+    "root_dir_access": 0,
+    "sys_dir_access": 19,
+    "temp_dir_access": 612,
+    "user_dir_access": 879
+  },
+  "tcp": {
+    "state_transitions": 0,
+    "local_ips": 0,
+    "remote_ips": 0,
+    "local_ports": 0,
+    "remote_ports": 0
+  },
+  "syscalls": {
+    "io_ops": 4179,
+    "file_ops": 3028,
+    "network_ops": 42,
+    "time_ops": 0,
+    "security_ops": 77,
+    "process_ops": 5,
+    "unknown_ops": 9227
+  },
+  "patterns": {
+    "p1_file_metadata": 4,
+    "p2_read_data": 0,
+    "p3_write_data": 0,
+    "p4_socket_create": 0,
+    "p5_process_create": 0,
+    "p6_memory_map": 0,
+    "p7_fd_manage": 0,
+    "p8_ipc": 0,
+    "p9_file_lock": 0,
+    "p10_error_handle": 13
+  },
+  "process_tree": "npm(180228)",
+  "timed_out": false,
+  "verdict": {
+    "score": 0,
+    "level": "benign",
+    "thresholds": {
+      "suspicious": 25,
+      "malicious": 60
+    },
+    "findings": null
+  }
+}

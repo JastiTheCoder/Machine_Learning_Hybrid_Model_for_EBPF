@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.1.0",
+  "session_id": "npm-1787577556",
+  "package_name": "unknown",
+  "timestamp": "2026-08-24T18:49:17.819030145+05:30",
+  "label": null,
+  "filetop": {
+    "read_processes": 5,
+    "write_processes": 2,
+    "read_data_transfer_kb": 3,
+    "write_data_transfer_kb": 2,
+    "file_access_processes": 5
+  },
+  "install": {
+    "total_dependencies": 1,
+    "direct_dependencies": 1,
+    "indirect_dependencies": 0
+  },
+  "opensnoop": {
+    "etc_dir_access": 29,
+    "home_dir_access": 5,
+    "other_dir_access": 31,
+    "root_dir_access": 0,
+    "sys_dir_access": 34,
+    "temp_dir_access": 603,
+    "user_dir_access": 913
+  },
+  "tcp": {
+    "state_transitions": 4,
+    "local_ips": 1,
+    "remote_ips": 1,
+    "local_ports": 1,
+    "remote_ports": 2
+  },
+  "syscalls": {
+    "io_ops": 4014,
+    "file_ops": 3475,
+    "network_ops": 104,
+    "time_ops": 0,
+    "security_ops": 170,
+    "process_ops": 60,
+    "unknown_ops": 9826
+  },
+  "patterns": {
+    "p1_file_metadata": 15,
+    "p2_read_data": 0,
+    "p3_write_data": 0,
+    "p4_socket_create": 0,
+    "p5_process_create": 0,
+    "p6_memory_map": 0,
+    "p7_fd_manage": 0,
+    "p8_ipc": 0,
+    "p9_file_lock": 0,
+    "p10_error_handle": 18
+  },
+  "process_tree": "npm(179683)-\u003enpm install(179696)-\u003enode-MainThread(179703)-\u003enode-MainThread(179704)-\u003enode-MainThread(179705)-\u003enode-MainThread(179706)",
+  "timed_out": false,
+  "verdict": {
+    "score": 120,
+    "level": "malicious",
+    "thresholds": {
+      "suspicious": 25,
+      "malicious": 60
+    },
+    "findings": [
+      {
+        "rule_id": "EXFIL-001",
+        "weight": 50,
+        "technique": "T1552.004",
+        "evidence": "sensitive read at t=51247691442009 preceded outbound connect at t=51248300789140"
+      },
+      {
+        "rule_id": "PROC-001",
+        "weight": 20,
+        "technique": "T1059.004",
+        "evidence": "install script spawned a shell"
+      },
+      {
+        "rule_id": "DROP-001",
+        "weight": 15,
+        "technique": "T1105",
+        "evidence": "wrote into a temp directory (603 accesses, 2 writers)"
+      },
+      {
+        "rule_id": "NET-001",
+        "weight": 15,
+        "technique": "T1071",
+        "evidence": "outbound connection from a non-root PID to 127.0.0.1:4444"
+      },
+      {
+        "rule_id": "NET-002",
+        "weight": 10,
+        "technique": "T1571",
+        "evidence": "connection to non-standard port (127.0.0.1:4444)"
+      },
+      {
+        "rule_id": "RECON-001",
+        "weight": 10,
+        "technique": "T1082",
+        "evidence": "read host-recon path (5)"
+      }
+    ]
+  }
+}

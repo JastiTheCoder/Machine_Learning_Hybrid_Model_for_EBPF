@@ -1,0 +1,98 @@
+{
+  "schema_version": "1.1.0",
+  "session_id": "npm-1787578205",
+  "package_name": "unknown",
+  "timestamp": "2026-08-24T19:00:06.208695326+05:30",
+  "label": null,
+  "filetop": {
+    "read_processes": 2,
+    "write_processes": 2,
+    "read_data_transfer_kb": 4,
+    "write_data_transfer_kb": 2,
+    "file_access_processes": 2
+  },
+  "install": {
+    "total_dependencies": 1,
+    "direct_dependencies": 1,
+    "indirect_dependencies": 0
+  },
+  "opensnoop": {
+    "etc_dir_access": 24,
+    "home_dir_access": 11,
+    "other_dir_access": 12,
+    "root_dir_access": 0,
+    "sys_dir_access": 32,
+    "temp_dir_access": 602,
+    "user_dir_access": 906
+  },
+  "tcp": {
+    "state_transitions": 3,
+    "local_ips": 1,
+    "remote_ips": 1,
+    "local_ports": 2,
+    "remote_ports": 1
+  },
+  "syscalls": {
+    "io_ops": 4018,
+    "file_ops": 3264,
+    "network_ops": 66,
+    "time_ops": 0,
+    "security_ops": 153,
+    "process_ops": 20,
+    "unknown_ops": 9461
+  },
+  "patterns": {
+    "p1_file_metadata": 7,
+    "p2_read_data": 0,
+    "p3_write_data": 0,
+    "p4_socket_create": 0,
+    "p5_process_create": 0,
+    "p6_memory_map": 0,
+    "p7_fd_manage": 0,
+    "p8_ipc": 0,
+    "p9_file_lock": 0,
+    "p10_error_handle": 18
+  },
+  "process_tree": "npm(182545)-\u003enpm install(182557)",
+  "timed_out": false,
+  "verdict": {
+    "score": 125,
+    "level": "malicious",
+    "thresholds": {
+      "suspicious": 25,
+      "malicious": 60
+    },
+    "findings": [
+      {
+        "rule_id": "EXFIL-001",
+        "weight": 50,
+        "technique": "T1552.004",
+        "evidence": "sensitive read at t=51896030492429 preceded outbound connect at t=51896235245852"
+      },
+      {
+        "rule_id": "CRED-001",
+        "weight": 25,
+        "technique": "T1552.004",
+        "evidence": "read credential-class path (1)"
+      },
+      {
+        "rule_id": "PROC-001",
+        "weight": 20,
+        "technique": "T1059.004",
+        "evidence": "install script spawned a shell"
+      },
+      {
+        "rule_id": "DROP-001",
+        "weight": 15,
+        "technique": "T1105",
+        "evidence": "wrote into a temp directory (602 accesses, 2 writers)"
+      },
+      {
+        "rule_id": "NET-001",
+        "weight": 15,
+        "technique": "T1071",
+        "evidence": "outbound connection from a non-root PID to 34.195.135.204:80"
+      }
+    ]
+  }
+}

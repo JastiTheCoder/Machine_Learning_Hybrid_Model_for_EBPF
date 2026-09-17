@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.1.0",
+  "session_id": "npm-1787578187",
+  "package_name": "unknown",
+  "timestamp": "2026-08-24T18:59:49.820655445+05:30",
+  "label": null,
+  "filetop": {
+    "read_processes": 2,
+    "write_processes": 2,
+    "read_data_transfer_kb": 12,
+    "write_data_transfer_kb": 5,
+    "file_access_processes": 2
+  },
+  "install": {
+    "total_dependencies": 1,
+    "direct_dependencies": 1,
+    "indirect_dependencies": 0
+  },
+  "opensnoop": {
+    "etc_dir_access": 25,
+    "home_dir_access": 5,
+    "other_dir_access": 13,
+    "root_dir_access": 0,
+    "sys_dir_access": 34,
+    "temp_dir_access": 602,
+    "user_dir_access": 906
+  },
+  "tcp": {
+    "state_transitions": 6,
+    "local_ips": 1,
+    "remote_ips": 1,
+    "local_ports": 3,
+    "remote_ports": 2
+  },
+  "syscalls": {
+    "io_ops": 4061,
+    "file_ops": 3278,
+    "network_ops": 97,
+    "time_ops": 0,
+    "security_ops": 153,
+    "process_ops": 19,
+    "unknown_ops": 9667
+  },
+  "patterns": {
+    "p1_file_metadata": 7,
+    "p2_read_data": 0,
+    "p3_write_data": 0,
+    "p4_socket_create": 0,
+    "p5_process_create": 0,
+    "p6_memory_map": 0,
+    "p7_fd_manage": 0,
+    "p8_ipc": 0,
+    "p9_file_lock": 0,
+    "p10_error_handle": 18
+  },
+  "process_tree": "npm(182345)-\u003enpm install(182357)",
+  "timed_out": false,
+  "verdict": {
+    "score": 100,
+    "level": "malicious",
+    "thresholds": {
+      "suspicious": 25,
+      "malicious": 60
+    },
+    "findings": [
+      {
+        "rule_id": "EXFIL-001",
+        "weight": 50,
+        "technique": "T1552.004",
+        "evidence": "sensitive read at t=51878349923316 preceded outbound connect at t=51878573859713"
+      },
+      {
+        "rule_id": "PROC-001",
+        "weight": 20,
+        "technique": "T1059.004",
+        "evidence": "install script spawned a shell"
+      },
+      {
+        "rule_id": "DROP-001",
+        "weight": 15,
+        "technique": "T1105",
+        "evidence": "wrote into a temp directory (602 accesses, 2 writers)"
+      },
+      {
+        "rule_id": "NET-001",
+        "weight": 15,
+        "technique": "T1071",
+        "evidence": "outbound connection from a non-root PID to 44.223.250.126:443"
+      }
+    ]
+  }
+}

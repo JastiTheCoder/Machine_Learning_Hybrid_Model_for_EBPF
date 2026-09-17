@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.1.0",
+  "session_id": "npm-1787577634",
+  "package_name": "debug",
+  "timestamp": "2026-08-24T18:50:35.527932829+05:30",
+  "label": null,
+  "filetop": {
+    "read_processes": 1,
+    "write_processes": 1,
+    "read_data_transfer_kb": 3,
+    "write_data_transfer_kb": 2,
+    "file_access_processes": 1
+  },
+  "install": {
+    "total_dependencies": 2,
+    "direct_dependencies": 1,
+    "indirect_dependencies": 1
+  },
+  "opensnoop": {
+    "etc_dir_access": 13,
+    "home_dir_access": 14,
+    "other_dir_access": 3,
+    "root_dir_access": 0,
+    "sys_dir_access": 20,
+    "temp_dir_access": 611,
+    "user_dir_access": 879
+  },
+  "tcp": {
+    "state_transitions": 0,
+    "local_ips": 0,
+    "remote_ips": 0,
+    "local_ports": 0,
+    "remote_ports": 0
+  },
+  "syscalls": {
+    "io_ops": 3934,
+    "file_ops": 3030,
+    "network_ops": 40,
+    "time_ops": 0,
+    "security_ops": 77,
+    "process_ops": 6,
+    "unknown_ops": 8906
+  },
+  "patterns": {
+    "p1_file_metadata": 4,
+    "p2_read_data": 0,
+    "p3_write_data": 0,
+    "p4_socket_create": 0,
+    "p5_process_create": 0,
+    "p6_memory_map": 0,
+    "p7_fd_manage": 0,
+    "p8_ipc": 0,
+    "p9_file_lock": 0,
+    "p10_error_handle": 11
+  },
+  "process_tree": "npm(180254)",
+  "timed_out": false,
+  "verdict": {
+    "score": 0,
+    "level": "benign",
+    "thresholds": {
+      "suspicious": 25,
+      "malicious": 60
+    },
+    "findings": null
+  }
+}
