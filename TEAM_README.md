@@ -5,15 +5,369 @@ Installation using eBPF and ML
 **Project ID:** PW26_PB04 | **Guide:** Prof. Priya Badrinath
 **Team:** Aniruddha (CS076), Manikandan (CS277), Karthik (CS285), Komal (CS308)
 
-This document assumes you know nothing about the project. Read it top to
-bottom once and you will be able to explain the whole thing to the panel.
+---
 
-> Looking for build/run instructions instead? See [`README.md`](README.md).
->
-> **Manikandan and Komal:** your slide assignments are in
-> [section 12](#12-who-does-what-for-the-phase-3-deck) at the bottom. Read
-> sections 1–6 first, then jump there — section 12 tells you which parts you
-> personally need to know in depth.
+# START HERE: What You Need To Do Right Now
+
+**If you're Manikandan or Komal, read this section first. It tells you exactly
+what to do, step by step, assuming you know nothing about the project.**
+
+---
+
+## What Is This Project? (30-Second Version)
+
+When you type `npm install some-package`, that package can secretly run code
+on your computer. Hackers use this to steal passwords, SSH keys, and secrets.
+
+**Our solution:** We built a system that watches what packages do when they
+install (using Linux kernel technology called eBPF) and uses machine learning
+to decide if the package is safe or dangerous.
+
+**The problem we're solving now:** Our ML model needs more training data.
+We need to capture behavior from real packages (both safe and dangerous ones).
+
+---
+
+## Who Does What Right Now
+
+| Person | Task | Needs Cloud VM? |
+|--------|------|-----------------|
+| **Manikandan** | Capture package behavior data on Google Cloud VM | YES |
+| **Komal** | Scan packages with GuardDog tool (for comparison) | NO (runs on your laptop) |
+| **Karthik** | Train the ML model on captured data | NO |
+
+---
+
+## MANIKANDAN: Your Step-by-Step Instructions
+
+**Goal:** Run npm packages on a cloud VM and record what they do.
+
+**Time needed:** ~4-5 hours total
+
+### Prerequisites
+
+- Google Cloud account with free trial ($300 credits)
+- MacBook with internet connection
+
+### Step 1: Create a Google Cloud VM (30 minutes)
+
+1. Go to [console.cloud.google.com](https://console.cloud.google.com)
+2. Create a new project (call it "capstone")
+3. Go to **Compute Engine** → **VM instances** → **Create Instance**
+4. Settings:
+   - Name: `capture-vm`
+   - Region: Any (pick one close to you)
+   - Machine type: `e2-medium` (2 CPU, 4 GB RAM)
+   - Boot disk: Click "Change" → Ubuntu 22.04 LTS, 40 GB
+5. Click **Create**
+6. **IMPORTANT:** Go to **Billing** → **Budgets & alerts** → Create a $20 budget
+
+### Step 2: Connect to the VM (5 minutes)
+
+1. In Google Cloud Console, find your VM
+2. Click the **SSH** button next to it (opens terminal in browser)
+3. You're now inside the VM
+
+### Step 3: Install Required Software (15 minutes)
+
+Copy and paste these commands one by one:
+
+```bash
+sudo apt-get update
+```
+
+```bash
+sudo apt-get install -y docker.io golang-go clang llvm libbpf-dev linux-headers-$(uname -r) make jq curl python3 iproute2 git
+```
+
+```bash
+sudo systemctl enable --now docker
+```
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+**Log out and log back in** (close the SSH window, click SSH again).
+
+### Step 4: Get the Code (5 minutes)
+
+```bash
+git clone https://github.com/JastiTheCoder/Machine_Learning_Hybrid_Model_for_EBPF.git
+```
+
+```bash
+cd Machine_Learning_Hybrid_Model_for_EBPF
+```
+
+```bash
+git checkout feat/schema-unlock-and-capture-harness
+```
+
+### Step 5: Build the Monitor (10 minutes)
+
+```bash
+make build
+```
+
+Test that it works:
+
+```bash
+sudo ./npm-ebpf-monitor -dry-run
+```
+
+If you see no errors, you're good.
+
+### Step 6: Set Up Safety (CRITICAL) (10 minutes)
+
+This blocks the malware from stealing your cloud credentials:
+
+```bash
+sudo bash scripts/capture/harden-vm.sh
+```
+
+Open a **second SSH window** and start the sinkhole:
+
+```bash
+cd Machine_Learning_Hybrid_Model_for_EBPF
+sudo python3 scripts/capture/sinkhole.py --port 9999 --log /var/log/capture/sinkhole.jsonl
+```
+
+Leave this running. Go back to your first SSH window.
+
+### Step 7: Verify Everything Works (5 minutes)
+
+```bash
+sudo bash scripts/capture/verify-harness.sh
+```
+
+**ALL checks must pass.** If any fail, stop and ask Karthik for help.
+
+### Step 8: Capture Safe Packages (~2 hours)
+
+This is completely safe. It installs normal packages like lodash, express, etc.
+
+```bash
+sudo bash scripts/capture/capture.sh --list scripts/capture/packages-benign.txt --label 0 --out /root/captures/benign
+```
+
+This takes about 2 hours. You can leave it running and do other things.
+
+### Step 9: Download the Results (10 minutes)
+
+When Step 8 finishes, download the JSON files to your MacBook.
+
+**Option A: Using Google Cloud Console**
+1. In the SSH window, run: `ls /root/captures/benign/`
+2. Click the gear icon → Download file
+3. Enter path: `/root/captures/benign/`
+4. Download all `.json` files
+
+**Option B: Using Terminal on Mac**
+```bash
+gcloud compute scp capture-vm:/root/captures/benign/* ./captures/benign/ --recurse
+```
+
+### Step 10: Send Files to Karthik
+
+Zip the `benign` folder and send it to Karthik (Google Drive, WhatsApp, etc.)
+
+### Step 11: DELETE THE VM (Important!)
+
+After downloading the files:
+1. Go to Google Cloud Console → Compute Engine → VM instances
+2. Select `capture-vm`
+3. Click **Delete**
+
+**Do NOT keep the VM running — it costs money and is a security risk.**
+
+---
+
+## KOMAL: Your Step-by-Step Instructions
+
+**Goal:** Scan npm packages with GuardDog (an industry tool) and record what
+it finds. We'll compare this to our ML model's predictions.
+
+**Time needed:** ~3-4 hours total
+
+### What is GuardDog?
+
+GuardDog is a tool made by Datadog (a big security company). It looks at
+package SOURCE CODE and checks for suspicious patterns. It does NOT run the
+package — it just reads the code.
+
+This is called "static analysis" (looking at code without running it).
+
+Our project does "dynamic analysis" (watching what code DOES when it runs).
+
+We're comparing both approaches to show our method catches things GuardDog misses.
+
+### Prerequisites
+
+- Windows laptop with Python installed
+- If you don't have Python: Download from [python.org](https://python.org)
+
+### Step 1: Install GuardDog (5 minutes)
+
+Open PowerShell or Command Prompt:
+
+```
+pip install guarddog
+```
+
+Verify it works:
+
+```
+guarddog --help
+```
+
+You should see a help message.
+
+### Step 2: Get the Package List (5 minutes)
+
+Clone our repo:
+
+```
+git clone https://github.com/JastiTheCoder/Machine_Learning_Hybrid_Model_for_EBPF.git
+```
+
+Open this file in Notepad or any text editor:
+`Machine_Learning_Hybrid_Model_for_EBPF/scripts/capture/packages-benign.txt`
+
+This file has ~200 package names, one per line.
+
+### Step 3: Create a Spreadsheet (5 minutes)
+
+Create a Google Sheet or Excel file with these columns:
+
+| Package Name | GuardDog Result | Findings | Notes |
+|--------------|-----------------|----------|-------|
+| (fill this in) | PASS or FAIL | (what it found) | (any notes) |
+
+### Step 4: Scan Packages (2-3 hours)
+
+For each package in the list, run:
+
+```
+guarddog npm scan lodash
+```
+
+Replace `lodash` with each package name.
+
+**What to record:**
+
+- If GuardDog says the package is clean → write "PASS"
+- If GuardDog flags something → write "FAIL" and copy what it found
+
+**Example output:**
+
+```
+guarddog npm scan lodash
+Scanning lodash...
+No issues found.
+```
+→ Record: PASS, None
+
+```
+guarddog npm scan some-bad-package
+Scanning some-bad-package...
+Found: obfuscation detected
+Found: suspicious network call
+```
+→ Record: FAIL, "obfuscation detected, suspicious network call"
+
+### Step 5: Scan Multiple Packages at Once (Faster)
+
+You can scan several packages in one command:
+
+```
+guarddog npm scan lodash express axios chalk debug moment uuid dotenv
+```
+
+### Step 6: Save Your Spreadsheet
+
+When you've scanned all packages, save your spreadsheet and share it with Karthik.
+
+**What we'll do with it:**
+After Karthik trains the ML model, he'll add a column showing what our model
+predicted. Then we'll compare:
+- Did GuardDog catch it?
+- Did our ML catch it?
+- Which is better at finding malware?
+
+---
+
+## After Data Collection: What Happens Next
+
+1. **Manikandan** sends JSON files to **Karthik**
+2. **Komal** sends GuardDog spreadsheet to **Karthik**
+3. **Karthik** trains the ML model on the captured data
+4. **Karthik** adds ML predictions to Komal's spreadsheet
+5. **Everyone** uses the comparison for the presentation
+
+---
+
+## If Something Goes Wrong
+
+| Problem | Solution |
+|---------|----------|
+| VM won't create | Check billing is enabled, try a different region |
+| `make build` fails | Run `sudo apt-get install -y build-essential` first |
+| `verify-harness.sh` fails | Screenshot the error and send to Karthik |
+| GuardDog won't install | Make sure Python is installed: `python --version` |
+| GuardDog command not found | Try `python -m guarddog npm scan lodash` |
+
+---
+
+## Quick Reference: Commands to Copy-Paste
+
+### Manikandan (on the VM):
+
+```bash
+# Install dependencies
+sudo apt-get update && sudo apt-get install -y docker.io golang-go clang llvm libbpf-dev linux-headers-$(uname -r) make jq curl python3 iproute2 git
+
+# Get code
+git clone https://github.com/JastiTheCoder/Machine_Learning_Hybrid_Model_for_EBPF.git
+cd Machine_Learning_Hybrid_Model_for_EBPF
+git checkout feat/schema-unlock-and-capture-harness
+
+# Build
+make build
+
+# Safety setup
+sudo bash scripts/capture/harden-vm.sh
+
+# Start sinkhole (in second terminal)
+sudo python3 scripts/capture/sinkhole.py --port 9999 --log /var/log/capture/sinkhole.jsonl
+
+# Verify (back in first terminal)
+sudo bash scripts/capture/verify-harness.sh
+
+# Capture benign packages
+sudo bash scripts/capture/capture.sh --list scripts/capture/packages-benign.txt --label 0 --out /root/captures/benign
+```
+
+### Komal (on your laptop):
+
+```bash
+# Install
+pip install guarddog
+
+# Scan one package
+guarddog npm scan lodash
+
+# Scan multiple packages
+guarddog npm scan lodash express axios chalk debug moment uuid dotenv
+```
+
+---
+
+# The Rest of This Document
+
+Everything below this line explains the project in depth — for understanding
+the technical details and preparing for the presentation. Read it after you
+finish your data collection tasks.
 
 ---
 
