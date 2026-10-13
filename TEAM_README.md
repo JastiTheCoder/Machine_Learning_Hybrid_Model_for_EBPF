@@ -30,184 +30,477 @@ We need to capture behavior from real packages (both safe and dangerous ones).
 
 ## Who Does What Right Now
 
-| Person | Task | Needs Cloud VM? |
-|--------|------|-----------------|
-| **Manikandan** | Capture package behavior data on Google Cloud VM | YES |
-| **Komal** | Scan packages with GuardDog tool (for comparison) | NO (runs on your laptop) |
-| **Karthik** | Train the ML model on captured data | NO |
+**We're capturing packages in parallel to go 3× faster!**
+
+| Person | Task | Needs AWS VM? |
+|--------|------|---------------|
+| **Karthik** | Capture packages 1-90 + ALL malware samples, then train ML | YES |
+| **Komal** | Capture packages 91-180 + scan packages 1-100 with GuardDog | YES |
+| **Mani** | Capture packages 181-270 + scan packages 101-200 with GuardDog | YES |
+
+**Important:** Each person captures DIFFERENT packages. This way we get all ~270 benign packages captured in parallel instead of one person doing all of them.
 
 ---
 
-## MANIKANDAN: Your Step-by-Step Instructions
+# AWS VM SETUP INSTRUCTIONS (FOR EVERYONE)
 
-**Goal:** Run npm packages on a cloud VM and record what they do.
+**Read this section COMPLETELY before doing anything. Follow EXACTLY.**
 
-**Time needed:** ~4-5 hours total
+These instructions work for Karthik, Komal, AND Mani. Each of you will create your own VM on your own AWS account.
 
-### Prerequisites
+---
 
-- Google Cloud account with free trial ($300 credits)
-- MacBook with internet connection
+## What is AWS? (If You Don't Know)
 
-### Step 1: Create a Google Cloud VM (30 minutes)
+AWS (Amazon Web Services) is Amazon's cloud computing platform. We're using it to run a virtual Linux computer in the cloud. This VM (Virtual Machine) will run our eBPF monitor to capture what npm packages do when they install.
 
-1. Go to [console.cloud.google.com](https://console.cloud.google.com)
-2. Create a new project (call it "capstone")
-3. Go to **Compute Engine** → **VM instances** → **Create Instance**
-4. Settings:
-   - Name: `capture-vm`
-   - Region: Any (pick one close to you)
-   - Machine type: `e2-medium` (2 CPU, 4 GB RAM)
-   - Boot disk: Click "Change" → Ubuntu 22.04 LTS, 40 GB
-5. Click **Create**
-6. **IMPORTANT:** Go to **Billing** → **Budgets & alerts** → Create a $20 budget
+**Why a VM?** Because some packages we're testing might be malicious. We don't want to run them on our real computers. The VM is isolated - when we're done, we delete it and the malware is gone.
 
-### Step 2: Connect to the VM (5 minutes)
+---
 
-1. In Google Cloud Console, find your VM
-2. Click the **SSH** button next to it (opens terminal in browser)
-3. You're now inside the VM
+## PART A: Creating Your AWS Account (Skip if you already have one)
 
-### Step 3: Install Required Software (15 minutes)
+### Step A1: Go to AWS
 
-Copy and paste these commands one by one:
+1. Open your web browser (Chrome or Edge recommended - NOT Brave)
+2. Go to: https://aws.amazon.com
+3. Click "Create an AWS Account" (orange button, top right)
+
+### Step A2: Fill in your details
+
+1. Email: Use your personal email
+2. AWS account name: Use something like "capstone-yourname"
+3. Click "Verify email address"
+4. Check your email for a verification code
+5. Enter the code
+
+### Step A3: Set a password
+
+1. Create a strong password
+2. Write it down somewhere safe
+
+### Step A4: Contact information
+
+1. Select "Personal" account type
+2. Fill in your name, phone, address
+3. Click "Continue"
+
+### Step A5: Payment method
+
+1. Enter a credit/debit card
+2. **DON'T WORRY:** AWS Free Tier gives you 750 hours/month of t2.micro or t3.micro for FREE
+3. We won't be charged if we follow these instructions
+
+### Step A6: Identity verification
+
+1. AWS will send a code to your phone
+2. Enter the code
+
+### Step A7: Select a support plan
+
+1. Choose "Basic support - Free"
+2. Click "Complete sign up"
+
+**Wait 1-2 minutes for your account to be ready.**
+
+---
+
+## PART B: Creating Your VM Instance
+
+### Step B1: Sign in to AWS Console
+
+1. Go to: https://console.aws.amazon.com
+2. Sign in with your email and password
+3. You'll see the AWS Management Console
+
+### Step B2: Go to EC2
+
+1. In the search bar at the top, type: **EC2**
+2. Click on "EC2" in the results (it says "Virtual Servers in the Cloud")
+
+### Step B3: Pick your region
+
+1. Look at the TOP RIGHT corner of the screen
+2. You'll see a region name (like "N. Virginia" or "Ohio")
+3. Click it and select: **EU (Stockholm)** or any region you prefer
+4. **REMEMBER your region** - you'll need it later
+
+### Step B4: Launch Instance
+
+1. Click the orange "Launch instance" button
+2. You'll see the instance creation page
+
+### Step B5: Name your instance
+
+1. In the "Name" field, type: **capstone-vm-capture**
+
+### Step B6: Choose the operating system
+
+1. Under "Application and OS Images (Amazon Machine Image)"
+2. Make sure "Ubuntu" is selected (click on it if not)
+3. In the dropdown below, select: **Ubuntu Server 24.04 LTS (HVM), SSD Volume Type**
+   - **IMPORTANT:** Do NOT select "Ubuntu with SQL Server" or any other variant
+   - It should say "Free tier eligible"
+
+### Step B7: Choose instance type
+
+1. Under "Instance type"
+2. Select: **t3.micro** (it says "Free tier eligible")
+   - If t3.micro isn't available, select **t2.micro**
+
+### Step B8: Create a key pair (IMPORTANT!)
+
+1. Under "Key pair (login)", click "Create new key pair"
+2. Name: **capstone-key**
+3. Key pair type: **RSA**
+4. Private key file format: **PEM** (for Mac/Linux) or **PPK** (for Windows with PuTTY)
+5. Click "Create key pair"
+6. **A file will download - SAVE THIS FILE!** You need it to connect later
+7. Put it somewhere safe like your Documents folder
+
+### Step B9: Network settings (VERY IMPORTANT!)
+
+1. Click "Edit" next to "Network settings"
+2. Under "Firewall (security groups)", select "Create security group"
+3. Security group name: **capstone-sg**
+4. Description: **Security group for capstone VM**
+
+5. You'll see a rule for SSH already there. Modify it:
+   - Type: SSH
+   - Port range: 22
+   - Source type: Select **Custom**
+   - Source: Enter **13.48.4.200/30**
+   - Description: EC2 Instance Connect Stockholm
+
+   **Why this specific IP?** This is AWS's own IP range for EC2 Instance Connect in Stockholm. It lets you connect through the browser.
+
+6. Click "Add security group rule" to add HTTP:
+   - Type: HTTP
+   - Port range: 80
+   - Source type: **Anywhere** (0.0.0.0/0)
+
+7. Click "Add security group rule" to add HTTPS:
+   - Type: HTTPS
+   - Port range: 443
+   - Source type: **Anywhere** (0.0.0.0/0)
+
+### Step B10: Storage
+
+1. Under "Configure storage"
+2. Change "8" to **30** (GiB)
+3. Keep "gp3" selected
+
+### Step B11: Launch!
+
+1. On the right side, click the orange "Launch instance" button
+2. Wait for the green "Success" message
+3. Click "View all instances"
+
+### Step B12: Wait for your instance to start
+
+1. You'll see your instance in the list
+2. Wait until "Instance state" shows **Running** (green dot)
+3. Wait until "Status check" shows **2/2 checks passed**
+4. This takes 1-2 minutes
+
+---
+
+## PART C: Connecting to Your VM
+
+### Step C1: Connect through the browser
+
+1. In the EC2 instances list, click on your instance (the checkbox or the name)
+2. Click the "Connect" button at the top
+3. Select the "EC2 Instance Connect" tab
+4. Leave username as **ubuntu**
+5. Click the orange "Connect" button
+
+**If you get an error "Failed to connect":**
+- Go back to Step B9 and make sure your SSH security rule has source **13.48.4.200/30**
+- If you're using a different region than Stockholm, you need a different IP range (ask Karthik)
+
+### Step C2: You're in!
+
+You should now see a black terminal with a prompt like:
+```
+ubuntu@ip-xxx-xxx-xxx-xxx:~$
+```
+
+**Congratulations! You're now inside your cloud VM.**
+
+---
+
+## PART D: Installing Everything We Need
+
+**Copy and paste these commands ONE BY ONE.** After each command, wait for it to finish before running the next one.
+
+### Step D1: Update the system
 
 ```bash
 sudo apt-get update
 ```
 
+Wait until you see the prompt again.
+
+### Step D2: Install all required software
+
 ```bash
-sudo apt-get install -y docker.io golang-go clang llvm libbpf-dev linux-headers-$(uname -r) make jq curl python3 iproute2 git
+sudo apt-get install -y docker.io golang-go clang llvm libbpf-dev linux-headers-$(uname -r) make jq curl python3 iproute2 git build-essential
 ```
+
+This takes 2-3 minutes. Wait for it to finish.
+
+### Step D3: Enable Docker
 
 ```bash
 sudo systemctl enable --now docker
 ```
 
+### Step D4: Add yourself to the Docker group
+
 ```bash
 sudo usermod -aG docker $USER
 ```
 
-**Log out and log back in** (close the SSH window, click SSH again).
+### Step D5: LOG OUT AND LOG BACK IN
 
-### Step 4: Get the Code (5 minutes)
+**This is important!** The Docker group change only takes effect after you log out.
+
+1. Type: `exit`
+2. The browser window will say "Connection closed"
+3. Go back to EC2 Console → Instances
+4. Select your instance → Click "Connect" → Click "Connect" again
+
+### Step D6: Verify Docker works
+
+```bash
+docker --version
+```
+
+You should see something like: `Docker version 24.x.x`
+
+---
+
+## PART E: Getting Our Code
+
+### Step E1: Clone the repository
 
 ```bash
 git clone https://github.com/JastiTheCoder/Machine_Learning_Hybrid_Model_for_EBPF.git
 ```
 
+### Step E2: Go into the folder
+
 ```bash
 cd Machine_Learning_Hybrid_Model_for_EBPF
 ```
+
+### Step E3: Switch to the capture branch
 
 ```bash
 git checkout feat/schema-unlock-and-capture-harness
 ```
 
-### Step 5: Build the Monitor (10 minutes)
+---
+
+## PART F: Building the Monitor
+
+### Step F1: Build
 
 ```bash
 make build
 ```
 
-Test that it works:
+This takes 2-3 minutes. Wait for "Build complete" message.
+
+### Step F2: Test that it works
 
 ```bash
 sudo ./npm-ebpf-monitor -dry-run
 ```
 
-If you see no errors, you're good.
+You should see output about probes loading. If you see errors, STOP and ask Karthik.
 
-### Step 6: Set Up Safety (CRITICAL) (10 minutes)
+---
 
-This blocks the malware from stealing your cloud credentials:
+## PART G: Safety Setup (CRITICAL!)
+
+These commands block malware from stealing your cloud credentials.
+
+### Step G1: Run the hardening script
 
 ```bash
 sudo bash scripts/capture/harden-vm.sh
 ```
 
-Open a **second SSH window** and start the sinkhole:
+You might see a warning about iptables - that's OK, ignore it.
+
+### Step G2: Open a SECOND terminal window
+
+1. Go back to AWS Console in your browser
+2. Keep your first terminal open
+3. Select your instance → Click "Connect" → "EC2 Instance Connect" → "Connect"
+4. You now have TWO terminal windows
+
+### Step G3: Start the sinkhole (in the SECOND window)
 
 ```bash
 cd Machine_Learning_Hybrid_Model_for_EBPF
 sudo python3 scripts/capture/sinkhole.py --port 9999 --log /var/log/capture/sinkhole.jsonl
 ```
 
-Leave this running. Go back to your first SSH window.
+**Leave this running. Don't close this window.**
 
-### Step 7: Verify Everything Works (5 minutes)
-
-```bash
-sudo bash scripts/capture/verify-harness.sh
-```
-
-**ALL checks must pass.** If any fail, stop and ask Karthik for help.
-
-### Step 8: Capture Safe Packages (~2 hours)
-
-This is completely safe. It installs normal packages like lodash, express, etc.
-
-```bash
-sudo bash scripts/capture/capture.sh --list scripts/capture/packages-benign.txt --label 0 --out /root/captures/benign
-```
-
-This takes about 2 hours. You can leave it running and do other things.
-
-### Step 9: Download the Results (10 minutes)
-
-When Step 8 finishes, download the JSON files to your MacBook.
-
-**Option A: Using Google Cloud Console**
-1. In the SSH window, run: `ls /root/captures/benign/`
-2. Click the gear icon → Download file
-3. Enter path: `/root/captures/benign/`
-4. Download all `.json` files
-
-**Option B: Using Terminal on Mac**
-```bash
-gcloud compute scp capture-vm:/root/captures/benign/* ./captures/benign/ --recurse
-```
-
-### Step 10: Send Files to Karthik
-
-Zip the `benign` folder and send it to Karthik (Google Drive, WhatsApp, etc.)
-
-### Step 11: DELETE THE VM (Important!)
-
-After downloading the files:
-1. Go to Google Cloud Console → Compute Engine → VM instances
-2. Select `capture-vm`
-3. Click **Delete**
-
-**Do NOT keep the VM running — it costs money and is a security risk.**
+### Step G4: Go back to your FIRST terminal window
 
 ---
 
-## KOMAL: Your Step-by-Step Instructions
+## PART H: Create Your Package List
 
-**Goal:** Scan npm packages with GuardDog (an industry tool) and record what
-it finds. We'll compare this to our ML model's predictions.
+**This is where each person does something DIFFERENT.**
 
-**Time needed:** ~3-4 hours total
+### If you are KARTHIK:
+
+```bash
+head -n 90 scripts/capture/packages-benign.txt > ~/my-packages.txt
+```
+
+### If you are KOMAL:
+
+```bash
+sed -n '91,180p' scripts/capture/packages-benign.txt > ~/my-packages.txt
+```
+
+### If you are MANI:
+
+```bash
+tail -n 90 scripts/capture/packages-benign.txt > ~/my-packages.txt
+```
+
+### Verify your list:
+
+```bash
+wc -l ~/my-packages.txt
+```
+
+Should show approximately 90 packages.
+
+```bash
+head -5 ~/my-packages.txt
+```
+
+Shows first 5 packages (should be different for each person).
+
+---
+
+## PART I: Start Capturing!
+
+### Step I1: Start the capture
+
+```bash
+sudo bash scripts/capture/capture.sh --list ~/my-packages.txt --label 0 --out /root/captures/benign
+```
+
+**What this does:**
+- `--list ~/my-packages.txt` = use your personal package list
+- `--label 0` = these are benign (safe) packages
+- `--out /root/captures/benign` = save results here
+
+**This takes 1-2 hours.** You can leave it running.
+
+### Step I2: Check progress (optional)
+
+Open a third terminal if you want to check progress:
+
+```bash
+ls /root/captures/benign/ | wc -l
+```
+
+This shows how many packages have been captured.
+
+---
+
+## PART J: When Capture Finishes
+
+### Step J1: Check results
+
+```bash
+ls -la /root/captures/benign/
+```
+
+You should see many `.json` files.
+
+### Step J2: Create a zip file
+
+```bash
+cd /root/captures
+zip -r benign-YOURNAME.zip benign/
+```
+
+Replace YOURNAME with your actual name (e.g., benign-komal.zip).
+
+### Step J3: Download the zip file
+
+1. In your SSH terminal, run:
+   ```bash
+   ls -la /root/captures/benign-YOURNAME.zip
+   ```
+   Note the full path
+
+2. In the EC2 Instance Connect window, click the gear icon (⚙️) in the top right
+3. Click "Download file"
+4. Enter the path: `/root/captures/benign-YOURNAME.zip`
+5. Click "Download"
+
+### Step J4: Send to Karthik
+
+Send the zip file to Karthik via:
+- Google Drive
+- WhatsApp
+- Email
+- Whatever works
+
+---
+
+## PART K: STOP Your Instance (Important!)
+
+**When you're done for the day or taking a break:**
+
+1. Go to AWS Console → EC2 → Instances
+2. Select your instance (checkbox)
+3. Click "Instance state" dropdown
+4. Click "Stop instance"
+5. Confirm
+
+**STOP vs TERMINATE:**
+- **STOP** = Like putting your computer to sleep. You can start it again later. Your data is saved.
+- **TERMINATE** = Like throwing your computer away. Everything is deleted forever.
+
+**For now, use STOP. Only TERMINATE when you're 100% done with all captures.**
+
+### To start it again later:
+
+1. Go to AWS Console → EC2 → Instances
+2. Select your instance
+3. Click "Instance state" → "Start instance"
+4. Wait for it to say "Running"
+5. Connect again using EC2 Instance Connect
+
+---
+
+## KOMAL: Additional GuardDog Work
+
+**After you finish your VM capture work, also do this on your laptop:**
 
 ### What is GuardDog?
 
-GuardDog is a tool made by Datadog (a big security company). It looks at
-package SOURCE CODE and checks for suspicious patterns. It does NOT run the
-package — it just reads the code.
-
-This is called "static analysis" (looking at code without running it).
+GuardDog is a security tool that scans package SOURCE CODE for suspicious patterns. It doesn't run the code - it just reads it. This is called "static analysis."
 
 Our project does "dynamic analysis" (watching what code DOES when it runs).
 
-We're comparing both approaches to show our method catches things GuardDog misses.
+We're comparing both to show our method catches things GuardDog misses.
 
-### Prerequisites
-
-- Windows laptop with Python installed
-- If you don't have Python: Download from [python.org](https://python.org)
-
-### Step 1: Install GuardDog (5 minutes)
+### Step 1: Install GuardDog on your laptop
 
 Open PowerShell or Command Prompt:
 
@@ -215,95 +508,41 @@ Open PowerShell or Command Prompt:
 pip install guarddog
 ```
 
-Verify it works:
+### Step 2: Scan packages 1-100
+
+For each package, run:
 
 ```
-guarddog --help
+guarddog npm scan PACKAGE_NAME
 ```
 
-You should see a help message.
+The packages are listed in `scripts/capture/packages-benign.txt` (lines 1-100).
 
-### Step 2: Get the Package List (5 minutes)
+### Step 3: Record results in a spreadsheet
 
-Clone our repo:
-
-```
-git clone https://github.com/JastiTheCoder/Machine_Learning_Hybrid_Model_for_EBPF.git
-```
-
-Open this file in Notepad or any text editor:
-`Machine_Learning_Hybrid_Model_for_EBPF/scripts/capture/packages-benign.txt`
-
-This file has ~200 package names, one per line.
-
-### Step 3: Create a Spreadsheet (5 minutes)
-
-Create a Google Sheet or Excel file with these columns:
-
-| Package Name | GuardDog Result | Findings | Notes |
-|--------------|-----------------|----------|-------|
-| (fill this in) | PASS or FAIL | (what it found) | (any notes) |
-
-### Step 4: Scan Packages (2-3 hours)
-
-For each package in the list, run:
-
-```
-guarddog npm scan lodash
-```
-
-Replace `lodash` with each package name.
-
-**What to record:**
-
-- If GuardDog says the package is clean → write "PASS"
-- If GuardDog flags something → write "FAIL" and copy what it found
-
-**Example output:**
-
-```
-guarddog npm scan lodash
-Scanning lodash...
-No issues found.
-```
-→ Record: PASS, None
-
-```
-guarddog npm scan some-bad-package
-Scanning some-bad-package...
-Found: obfuscation detected
-Found: suspicious network call
-```
-→ Record: FAIL, "obfuscation detected, suspicious network call"
-
-### Step 5: Scan Multiple Packages at Once (Faster)
-
-You can scan several packages in one command:
-
-```
-guarddog npm scan lodash express axios chalk debug moment uuid dotenv
-```
-
-### Step 6: Save Your Spreadsheet
-
-When you've scanned all packages, save your spreadsheet and share it with Karthik.
-
-**What we'll do with it:**
-After Karthik trains the ML model, he'll add a column showing what our model
-predicted. Then we'll compare:
-- Did GuardDog catch it?
-- Did our ML catch it?
-- Which is better at finding malware?
+| Package Name | GuardDog Result | Findings |
+|--------------|-----------------|----------|
+| lodash | PASS | None |
+| some-package | FAIL | obfuscation detected |
 
 ---
 
-## After Data Collection: What Happens Next
+## MANI: Additional GuardDog Work
 
-1. **Manikandan** sends JSON files to **Karthik**
-2. **Komal** sends GuardDog spreadsheet to **Karthik**
-3. **Karthik** trains the ML model on the captured data
-4. **Karthik** adds ML predictions to Komal's spreadsheet
-5. **Everyone** uses the comparison for the presentation
+**After you finish your VM capture work, also do this on your laptop:**
+
+Same as Komal, but scan packages 101-200 from the list.
+
+---
+
+## KARTHIK: Additional Tasks
+
+After capturing your benign packages, you also need to:
+
+1. **Capture malware samples** (only Karthik does this - requires special handling)
+2. **Collect all JSON files from everyone**
+3. **Train the ML model**
+4. **Create comparison report**
 
 ---
 
@@ -311,21 +550,82 @@ predicted. Then we'll compare:
 
 | Problem | Solution |
 |---------|----------|
-| VM won't create | Check billing is enabled, try a different region |
-| `make build` fails | Run `sudo apt-get install -y build-essential` first |
+| "Failed to connect" when clicking Connect | Check security group SSH rule is set to 13.48.4.200/30 |
+| "Permission denied" errors | Make sure to use `sudo` before commands |
+| `make build` fails | Run `sudo apt-get install -y build-essential` then try again |
+| Docker commands fail | Did you log out and log back in after Step D5? |
+| Instance won't start | Check your AWS Free Tier limits |
+| Capture seems stuck | Check the sinkhole terminal - is it still running? |
+
+---
+
+## Quick Summary: What Each Person Does
+
+### KARTHIK
+1. ✅ VM already set up
+2. Capture packages 1-90 (benign)
+3. Capture malware samples
+4. Collect files from Komal and Mani
+5. Train ML model
+
+### KOMAL
+1. Create AWS VM (Part A-B)
+2. Connect and set up (Part C-G)
+3. Capture packages 91-180 (Part H-I with your command)
+4. Download and send to Karthik (Part J)
+5. STOP instance when done (Part K)
+6. Scan packages 1-100 with GuardDog on laptop
+
+### MANI
+1. Create AWS VM (Part A-B)
+2. Connect and set up (Part C-G)
+3. Capture packages 181-270 (Part H-I with your command)
+4. Download and send to Karthik (Part J)
+5. STOP instance when done (Part K)
+6. Scan packages 101-200 with GuardDog on laptop
+
+---
+
+## After Data Collection: What Happens Next
+
+1. **Komal** sends her capture ZIP file + GuardDog spreadsheet (packages 1-100) to **Karthik**
+2. **Mani** sends his capture ZIP file + GuardDog spreadsheet (packages 101-200) to **Karthik**
+3. **Karthik** combines all capture files into one training dataset
+4. **Karthik** trains the ML model on the combined data
+5. **Karthik** merges both GuardDog spreadsheets and adds ML predictions
+6. **Everyone** uses the comparison for the presentation
+
+---
+
+## If Something Goes Wrong
+
+| Problem | Solution |
+|---------|----------|
+| "Failed to connect" in EC2 Instance Connect | Check security group SSH rule source is 13.48.4.200/30 (for Stockholm region) |
+| VM won't create | Check Free Tier limits, try a different region, make sure you selected t3.micro or t2.micro |
+| `make build` fails | Run `sudo apt-get install -y build-essential` first, then try again |
+| Docker permission denied | Log out (`exit`) and log back in after adding yourself to docker group |
 | `verify-harness.sh` fails | Screenshot the error and send to Karthik |
+| Instance says "stopped" | Go to Instance state → Start instance, wait for "Running" |
 | GuardDog won't install | Make sure Python is installed: `python --version` |
 | GuardDog command not found | Try `python -m guarddog npm scan lodash` |
+| "No space left on device" | You may have selected only 8GB storage - terminate and recreate with 30GB |
 
 ---
 
 ## Quick Reference: Commands to Copy-Paste
 
-### Manikandan (on the VM):
+### For EVERYONE (on the VM) - Initial Setup:
 
 ```bash
 # Install dependencies
-sudo apt-get update && sudo apt-get install -y docker.io golang-go clang llvm libbpf-dev linux-headers-$(uname -r) make jq curl python3 iproute2 git
+sudo apt-get update && sudo apt-get install -y docker.io golang-go clang llvm libbpf-dev linux-headers-$(uname -r) make jq curl python3 iproute2 git build-essential
+
+# Enable Docker
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+
+# LOG OUT AND BACK IN, then:
 
 # Get code
 git clone https://github.com/JastiTheCoder/Machine_Learning_Hybrid_Model_for_EBPF.git
@@ -335,20 +635,58 @@ git checkout feat/schema-unlock-and-capture-harness
 # Build
 make build
 
+# Test
+sudo ./npm-ebpf-monitor -dry-run
+
 # Safety setup
 sudo bash scripts/capture/harden-vm.sh
 
-# Start sinkhole (in second terminal)
+# Start sinkhole (in SECOND terminal)
+cd Machine_Learning_Hybrid_Model_for_EBPF
 sudo python3 scripts/capture/sinkhole.py --port 9999 --log /var/log/capture/sinkhole.jsonl
-
-# Verify (back in first terminal)
-sudo bash scripts/capture/verify-harness.sh
-
-# Capture benign packages
-sudo bash scripts/capture/capture.sh --list scripts/capture/packages-benign.txt --label 0 --out /root/captures/benign
 ```
 
-### Komal (on your laptop):
+### KARTHIK - Create Package List & Capture:
+
+```bash
+# Create your package list (packages 1-90)
+head -n 90 scripts/capture/packages-benign.txt > ~/my-packages.txt
+
+# Capture
+sudo bash scripts/capture/capture.sh --list ~/my-packages.txt --label 0 --out /root/captures/benign
+```
+
+### KOMAL - Create Package List & Capture:
+
+```bash
+# Create your package list (packages 91-180)
+sed -n '91,180p' scripts/capture/packages-benign.txt > ~/my-packages.txt
+
+# Capture
+sudo bash scripts/capture/capture.sh --list ~/my-packages.txt --label 0 --out /root/captures/benign
+```
+
+### MANI - Create Package List & Capture:
+
+```bash
+# Create your package list (packages 181-270)
+tail -n 90 scripts/capture/packages-benign.txt > ~/my-packages.txt
+
+# Capture
+sudo bash scripts/capture/capture.sh --list ~/my-packages.txt --label 0 --out /root/captures/benign
+```
+
+### Download Results (everyone):
+
+```bash
+# Zip your results
+cd /root/captures
+zip -r benign-YOURNAME.zip benign/
+
+# Then use the gear icon in EC2 Instance Connect to download
+```
+
+### GuardDog (Komal & Mani - on your laptop):
 
 ```bash
 # Install
@@ -679,7 +1017,7 @@ story than a number nobody checked.
 
 | Person | Must read in depth | Can skim |
 |---|---|---|
-| **Manikandan** | Sections 1, 2, 3, 4, 5 | 6, 7, 8 |
+| **Mani** | Sections 1, 2, 3, 4, 5 | 6, 7, 8 |
 | **Komal** | Sections 6, 7, 8, 10, 11 | 1, 2, 3 |
 
 Both of you must read **section 6**. It is the longest section and the most
@@ -689,7 +1027,7 @@ overturns.
 
 ---
 
-### Manikandan — Narrative & context (slides 1–10)
+### Mani — Narrative & context (slides 1–10)
 
 You own everything up to the architecture. You do **not** need to understand
 the ML investigation to do your part.
@@ -756,7 +1094,7 @@ the PyPI work. No additional slide-writing needed from him.
 
 ### Suggested two-day schedule
 
-| When | Manikandan | Komal |
+| When | Mani | Komal |
 |---|---|---|
 | **Day 1 morning** | Read sections 1–6 | Read sections 6–11 |
 | **Day 1 afternoon** | Slides 1–5 drafted | Slides 1–4 drafted (arch diagram + comparison table first) |
