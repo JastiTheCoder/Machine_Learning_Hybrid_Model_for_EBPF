@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.2.0",
+  "session_id": "npm-1791993166",
+  "package_name": "c8",
+  "timestamp": "2026-10-14T15:52:49.908312902Z",
+  "label": 0,
+  "filetop": {
+    "read_processes": 4,
+    "write_processes": 3,
+    "read_data_transfer_kb": 3322,
+    "write_data_transfer_kb": 55,
+    "file_access_processes": 4
+  },
+  "install": {
+    "total_dependencies": 0,
+    "direct_dependencies": 0,
+    "indirect_dependencies": 0
+  },
+  "opensnoop": {
+    "etc_dir_access": 21,
+    "home_dir_access": 0,
+    "other_dir_access": 1017,
+    "root_dir_access": 343,
+    "sys_dir_access": 11,
+    "temp_dir_access": 0,
+    "user_dir_access": 867
+  },
+  "tcp": {
+    "state_transitions": 30,
+    "local_ips": 1,
+    "remote_ips": 1,
+    "local_ports": 16,
+    "remote_ports": 1
+  },
+  "syscalls": {
+    "io_ops": 12864,
+    "file_ops": 4526,
+    "network_ops": 45,
+    "time_ops": 0,
+    "security_ops": 93,
+    "process_ops": 30,
+    "unknown_ops": 45802
+  },
+  "patterns": {
+    "p1_file_metadata": 0,
+    "p2_read_data": 0,
+    "p3_write_data": 0,
+    "p4_socket_create": 0,
+    "p5_process_create": 0,
+    "p6_memory_map": 83,
+    "p7_fd_manage": 0,
+    "p8_ipc": 0,
+    "p9_file_lock": 0,
+    "p10_error_handle": 652
+  },
+  "sensitive": {
+    "ssh_private_key_read": 0,
+    "aws_credentials_read": 0,
+    "docker_config_read": 0,
+    "kube_config_read": 0,
+    "crypto_wallet_read": 0,
+    "dotenv_read": 0,
+    "npmrc_read": 1,
+    "gitconfig_read": 0,
+    "etc_passwd_read": 1,
+    "etc_shadow_read": 0,
+    "shellrc_read": 1,
+    "crondir_read": 0,
+    "systemd_unit_read": 0,
+    "persistence_writes": 0,
+    "credential_class_read": 0,
+    "distinct_endpoints": 1,
+    "non_root_endpoints": 1,
+    "credential_read_before_connect": 0,
+    "sensitive_read_before_connect": 1,
+    "spawn_before_connect": 1
+  },
+  "process_tree": "npm(17663)->bash(17697)->bash(17698)->bash(17700)",
+  "timed_out": false,
+  "verdict": {
+    "score": 45,
+    "level": "suspicious",
+    "thresholds": {
+      "suspicious": 25,
+      "malicious": 60
+    },
+    "findings": [
+      {
+        "rule_id": "PROC-001",
+        "weight": 20,
+        "technique": "T1059.004",
+        "evidence": "install script spawned a shell"
+      },
+      {
+        "rule_id": "NET-001",
+        "weight": 15,
+        "technique": "T1071",
+        "evidence": "outbound connection from a non-root PID to 104.16.0.34:443"
+      },
+      {
+        "rule_id": "RECON-001",
+        "weight": 10,
+        "technique": "T1082",
+        "evidence": "read host-recon path (5)"
+      }
+    ]
+  },
+  "capture_source": "c8"
+}

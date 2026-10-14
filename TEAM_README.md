@@ -30,15 +30,363 @@ We need to capture behavior from real packages (both safe and dangerous ones).
 
 ## Who Does What Right Now
 
-**We're capturing packages in parallel to go 3× faster!**
+**UPDATE: Karthik has completed ALL the package captures!** 🎉
 
-| Person | Benign Packages | Malware Packages | Other Tasks |
-|--------|-----------------|------------------|-------------|
-| **Karthik** | 1-90 | 1-20 | Train ML model |
-| **Komal** | 91-180 | 21-40 | GuardDog scan 1-100 |
-| **Mani** | 181-270 | 41-60 | GuardDog scan 101-200 |
+Komal and Mani now have different tasks: **GuardDog scanning** and **Presentation slides**.
 
-**Important:** Each person captures DIFFERENT packages. This way we get all ~270 benign packages AND ~60 malware packages captured in parallel.
+| Person | Main Task | Secondary Task |
+|--------|-----------|----------------|
+| **Karthik** | ✅ Captures done, now training ML | Combine results, final analysis |
+| **Komal** | GuardDog scan (packages 1-135) | Presentation slides 11-22 |
+| **Mani** | GuardDog scan (packages 136-270) | Presentation slides 1-10 |
+
+---
+
+# KOMAL AND MANI: YOUR NEW TASKS
+
+## What is GuardDog? (Simple Explanation)
+
+GuardDog is like an **X-ray machine** for code:
+
+```
+📦 Package Code
+      ↓
+🔍 GuardDog LOOKS at the code (reads it)
+      ↓
+📋 "This looks suspicious" or "This looks clean"
+
+❌ GuardDog does NOT run the code
+✅ Completely SAFE on your laptop
+```
+
+**Think of it this way:**
+- **GuardDog** = X-ray at airport security (looks inside, doesn't open)
+- **Our eBPF** = Bomb squad test chamber (actually opens and tests)
+
+GuardDog is safe because it only READS the code. It never RUNS it. So no malware can harm your laptop.
+
+**Why are we using GuardDog?**
+
+We want to COMPARE our ML model with an industry tool:
+- GuardDog catches: obvious patterns, known bad code
+- Our ML catches: hidden behavior that GuardDog misses
+
+This comparison makes our project stronger!
+
+---
+
+# KOMAL: Your Step-by-Step Instructions (Windows)
+
+**You have 2 tasks:**
+1. Scan packages 1-135 with GuardDog (~45 minutes)
+2. Create presentation slides 11-22
+
+## Task 1: GuardDog Scanning
+
+### Step 1: Open PowerShell
+
+1. Press **Windows key** on your keyboard
+2. Type **PowerShell**
+3. Click on **Windows PowerShell** (the blue icon)
+
+### Step 2: Install GuardDog
+
+Type this and press Enter:
+```
+pip install guarddog
+```
+
+**What this does:** Downloads and installs the GuardDog tool.
+
+Wait until you see the prompt again (might take 1-2 minutes).
+
+### Step 3: Test GuardDog Works
+
+```
+guarddog npm scan lodash
+```
+
+You should see output about the "lodash" package. If you see an error, try:
+```
+python -m guarddog npm scan lodash
+```
+
+### Step 4: Get the Package List
+
+1. Go to our GitHub repo: https://github.com/JastiTheCoder/Machine_Learning_Hybrid_Model_for_EBPF
+2. Find the file: `scripts/capture/packages-benign.txt`
+3. Download it or copy its contents
+
+### Step 5: Run the Automated Script (EASY WAY)
+
+Instead of scanning 135 packages one by one, use this script:
+
+1. Open **Notepad**
+2. Copy this entire script:
+
+```powershell
+# GuardDog Batch Scanner for Komal (Windows)
+# This scans packages 1-135 automatically
+
+$packages = @(
+    "lodash", "underscore", "ramda", "immutable", "async", "bluebird", 
+    "p-limit", "p-map", "p-queue", "just-extend", "deepmerge", "clone-deep",
+    "fast-deep-equal", "dot-prop", "object-path", "chalk", "colors", 
+    "picocolors", "kleur", "ansi-styles", "strip-ansi", "string-width",
+    "wrap-ansi", "cli-truncate", "slugify", "camelcase", "kebab-case",
+    "pluralize", "he", "escape-string-regexp", "uuid", "nanoid", "shortid",
+    "cuid", "hash-sum", "object-hash", "murmurhash", "crc-32", "md5",
+    "bcryptjs", "moment", "dayjs", "date-fns", "luxon", "ms", "pretty-ms",
+    "humanize-duration", "numeral", "big.js", "decimal.js", "bignumber.js",
+    "mathjs", "validator", "joi", "yup", "ajv", "zod", "superstruct",
+    "is-plain-object", "kind-of", "type-fest", "semver", "fs-extra",
+    "graceful-fs", "glob", "fast-glob", "globby", "rimraf", "mkdirp",
+    "del", "chokidar", "find-up", "pkg-dir", "resolve", "readdirp",
+    "write-file-atomic", "tempy", "tar", "tar-stream", "adm-zip",
+    "archiver", "unzipper", "iconv-lite", "js-base64", "base64-js",
+    "buffer-from", "bl", "js-yaml", "toml", "ini", "dotenv", "xml2js",
+    "cheerio", "htmlparser2", "marked", "markdown-it", "showdown",
+    "highlight.js", "prismjs", "commander", "yargs", "meow", "minimist",
+    "arg", "cac", "ora", "cli-progress", "progress", "listr2", "inquirer",
+    "prompts", "enquirer", "boxen", "terminal-link", "log-symbols", "figures",
+    "gradient-string", "pino", "winston", "bunyan", "loglevel", "signale",
+    "consola", "debug", "axios", "node-fetch", "got", "superagent",
+    "request-promise", "ky", "needle", "form-data", "qs", "query-string",
+    "url-parse"
+)
+
+$outputFile = "guarddog-results-komal.txt"
+$csvFile = "guarddog-results-komal.csv"
+
+# Create CSV header
+"Package,Result,Details" | Out-File -FilePath $csvFile -Encoding UTF8
+
+Write-Host "Starting GuardDog scan of $($packages.Count) packages..." -ForegroundColor Green
+Write-Host "This will take about 30-45 minutes. You can minimize this window." -ForegroundColor Yellow
+Write-Host ""
+
+$count = 0
+foreach ($pkg in $packages) {
+    $count++
+    Write-Host "[$count/$($packages.Count)] Scanning $pkg..." -ForegroundColor Cyan
+    
+    # Run guarddog and capture output
+    $result = & guarddog npm scan $pkg 2>&1 | Out-String
+    
+    # Save full output
+    "=== $pkg ===" | Out-File -FilePath $outputFile -Append -Encoding UTF8
+    $result | Out-File -FilePath $outputFile -Append -Encoding UTF8
+    "" | Out-File -FilePath $outputFile -Append -Encoding UTF8
+    
+    # Determine if PASS or FAIL
+    if ($result -match "No issues found" -or $result -match "0 issues") {
+        "$pkg,PASS,No issues found" | Out-File -FilePath $csvFile -Append -Encoding UTF8
+        Write-Host "  Result: PASS" -ForegroundColor Green
+    } else {
+        $details = ($result -replace "`n", " " -replace "`r", "").Substring(0, [Math]::Min(100, $result.Length))
+        "$pkg,FAIL,$details" | Out-File -FilePath $csvFile -Append -Encoding UTF8
+        Write-Host "  Result: FAIL (see details in output file)" -ForegroundColor Red
+    }
+}
+
+Write-Host ""
+Write-Host "DONE! Results saved to:" -ForegroundColor Green
+Write-Host "  - $outputFile (full details)" -ForegroundColor White
+Write-Host "  - $csvFile (summary spreadsheet)" -ForegroundColor White
+Write-Host ""
+Write-Host "Send both files to Karthik!" -ForegroundColor Yellow
+```
+
+3. Save as: `guarddog-scan.ps1` on your Desktop
+4. In PowerShell, run:
+   ```
+   cd Desktop
+   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+   .\guarddog-scan.ps1
+   ```
+
+5. **Wait 30-45 minutes** - you can minimize the window and do other things!
+
+### Step 6: Send Results to Karthik
+
+When done, you'll have two files on your Desktop:
+- `guarddog-results-komal.txt` (detailed results)
+- `guarddog-results-komal.csv` (spreadsheet format)
+
+Send BOTH to Karthik via WhatsApp/Google Drive/Email.
+
+---
+
+## Task 2: Presentation Slides (Slides 11-22)
+
+Create these slides using Google Slides or PowerPoint:
+
+| Slide # | Title | Content |
+|---------|-------|---------|
+| 11 | Updated Architecture | Diagram showing eBPF → Features → ML + Verdict Engine |
+| 12-13 | Phase 2 vs Phase 3 | Table comparing what changed |
+| 14 | Benchmark Results | We reproduced QUT paper at 97.3% accuracy |
+| 15-16 | The Investigation | How we found the 0% recall bug |
+| 17 | OOD Analysis Results | Both ecosystems are in-distribution |
+| 18 | The Provenance Gap | Why recall was 0% (malware behavior difference) |
+| 19 | Verdict Engine | 12 rules with MITRE ATT&CK tags |
+| 20 | Performance | Under 4% CPU overhead |
+| 21 | Limitations | Honest about what doesn't work yet |
+| 22 | Future Work | What comes next |
+
+**Read sections 6-11 of this document for the content!**
+
+---
+
+# MANI: Your Step-by-Step Instructions (Mac)
+
+**You have 2 tasks:**
+1. Scan packages 136-270 with GuardDog (~45 minutes)
+2. Create presentation slides 1-10
+
+## Task 1: GuardDog Scanning
+
+### Step 1: Open Terminal
+
+1. Press **Command + Space** (opens Spotlight)
+2. Type **Terminal**
+3. Press **Enter**
+
+### Step 2: Install GuardDog
+
+Type this and press Enter:
+```bash
+pip3 install guarddog
+```
+
+**What this does:** Downloads and installs the GuardDog tool.
+
+Wait until you see the prompt again (might take 1-2 minutes).
+
+### Step 3: Test GuardDog Works
+
+```bash
+guarddog npm scan lodash
+```
+
+You should see output about the "lodash" package. If you see an error, try:
+```bash
+python3 -m guarddog npm scan lodash
+```
+
+### Step 4: Run the Automated Script (EASY WAY)
+
+1. Open **TextEdit** (or any text editor)
+2. Copy this entire script:
+
+```bash
+#!/bin/bash
+# GuardDog Batch Scanner for Mani (Mac)
+# This scans packages 136-270 automatically
+
+packages=(
+    "rxjs" "mobx" "zustand" "immer" "nanostores" "xstate" "eventemitter3"
+    "d3-array" "d3-scale" "d3-shape" "chart.js" "echarts" "plotly.js-dist-min"
+    "victory-core" "recharts" "topojson-client" "geojson" "nodemon"
+    "concurrently" "npm-run-all" "cross-env" "dotenv-cli" "node-cron"
+    "pidusage" "systeminformation" "os-tmpdir" "is-docker" "is-odd"
+    "is-number" "is-even" "left-pad" "once" "inherits" "util-deprecate"
+    "safe-buffer" "isarray" "inflight" "path-to-regexp" "path-parse"
+    "resolve-from" "resolve-cwd" "import-fresh" "parent-module" "callsites"
+    "picomatch" "micromatch" "braces" "fill-range" "to-regex-range"
+    "is-number" "anymatch" "normalize-path" "binary-extensions" "is-binary-path"
+    "set-blocking" "which-module" "require-directory" "cliui" "escalade"
+    "get-caller-file" "require-main-filename" "y18n" "yargs-parser"
+    "wrap-ansi" "emoji-regex" "is-fullwidth-code-point" "ansi-regex"
+    "color-convert" "color-name" "has-flag" "supports-color" "safe-buffer"
+    "safer-buffer" "iconv-lite" "encoding" "lru-cache" "yallist" "minipass"
+    "minizlib" "mkdirp" "readable-stream" "string_decoder" "process-nextick-args"
+    "core-util-is" "isarray" "inherits" "buffer-from" "concat-stream"
+    "typedarray" "through2" "xtend" "pumpify" "stream-shift" "pump"
+    "end-of-stream" "duplexify" "flush-write-stream" "from2" "parallel-transform"
+    "cyclist" "stream-each" "fs-constants" "ieee754" "base64-js"
+    "buffer" "events" "readable-stream" "process" "util" "assert" "tty"
+    "path-browserify" "url" "punycode" "querystring-es3" "stream-browserify"
+    "string_decoder" "timers-browserify" "vm-browserify" "os-browserify"
+    "console-browserify" "constants-browserify" "crypto-browserify"
+    "domain-browser" "https-browserify" "stream-http"
+)
+
+output_file="guarddog-results-mani.txt"
+csv_file="guarddog-results-mani.csv"
+
+# Create CSV header
+echo "Package,Result,Details" > "$csv_file"
+
+echo "Starting GuardDog scan of ${#packages[@]} packages..."
+echo "This will take about 30-45 minutes. You can minimize this window."
+echo ""
+
+count=0
+for pkg in "${packages[@]}"; do
+    count=$((count + 1))
+    echo "[$count/${#packages[@]}] Scanning $pkg..."
+    
+    # Run guarddog and capture output
+    echo "=== $pkg ===" >> "$output_file"
+    result=$(guarddog npm scan "$pkg" 2>&1)
+    echo "$result" >> "$output_file"
+    echo "" >> "$output_file"
+    
+    # Determine if PASS or FAIL
+    if echo "$result" | grep -q -i "no issues\|0 issues"; then
+        echo "$pkg,PASS,No issues found" >> "$csv_file"
+        echo "  Result: PASS"
+    else
+        details=$(echo "$result" | head -c 100 | tr '\n' ' ')
+        echo "$pkg,FAIL,$details" >> "$csv_file"
+        echo "  Result: FAIL (see details in output file)"
+    fi
+done
+
+echo ""
+echo "DONE! Results saved to:"
+echo "  - $output_file (full details)"
+echo "  - $csv_file (summary spreadsheet)"
+echo ""
+echo "Send both files to Karthik!"
+```
+
+3. Save as: `guarddog-scan.sh` on your Desktop
+4. In Terminal, run:
+   ```bash
+   cd ~/Desktop
+   chmod +x guarddog-scan.sh
+   ./guarddog-scan.sh
+   ```
+
+5. **Wait 30-45 minutes** - you can minimize the window and do other things!
+
+### Step 5: Send Results to Karthik
+
+When done, you'll have two files on your Desktop:
+- `guarddog-results-mani.txt` (detailed results)
+- `guarddog-results-mani.csv` (spreadsheet format)
+
+Send BOTH to Karthik via WhatsApp/Google Drive/Email.
+
+---
+
+## Task 2: Presentation Slides (Slides 1-10)
+
+Create these slides using Google Slides or PowerPoint:
+
+| Slide # | Title | Content |
+|---------|-------|---------|
+| 1 | Title Slide | Project name, team names, guide name |
+| 2-3 | Problem Statement | What's the security problem with npm? |
+| 4 | Motivation | Real incidents (event-stream, ua-parser-js) |
+| 5-6 | Literature Survey | What other researchers have done |
+| 7 | Our Objectives | What we set out to do in Phase 3 |
+| 8 | Phase 2 Recap | What we built before (quick summary) |
+| 9-10 | Architecture | The 6-layer pipeline diagram |
+
+**Read sections 1-5 of this document for the content!**
 
 ---
 
