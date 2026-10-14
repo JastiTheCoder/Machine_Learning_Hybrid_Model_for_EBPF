@@ -32,13 +32,13 @@ We need to capture behavior from real packages (both safe and dangerous ones).
 
 **We're capturing packages in parallel to go 3× faster!**
 
-| Person | Task | Needs AWS VM? |
-|--------|------|---------------|
-| **Karthik** | Capture packages 1-90 + ALL malware samples, then train ML | YES |
-| **Komal** | Capture packages 91-180 + scan packages 1-100 with GuardDog | YES |
-| **Mani** | Capture packages 181-270 + scan packages 101-200 with GuardDog | YES |
+| Person | Benign Packages | Malware Packages | Other Tasks |
+|--------|-----------------|------------------|-------------|
+| **Karthik** | 1-90 | 1-20 | Train ML model |
+| **Komal** | 91-180 | 21-40 | GuardDog scan 1-100 |
+| **Mani** | 181-270 | 41-60 | GuardDog scan 101-200 |
 
-**Important:** Each person captures DIFFERENT packages. This way we get all ~270 benign packages captured in parallel instead of one person doing all of them.
+**Important:** Each person captures DIFFERENT packages. This way we get all ~270 benign packages AND ~60 malware packages captured in parallel.
 
 ---
 
@@ -420,6 +420,78 @@ This shows how many packages have been captured.
 
 ---
 
+## PART I-2: Capture MALWARE Packages (After Benign is Done)
+
+**⚠️ IMPORTANT: Only do this AFTER your benign capture completes!**
+
+### Why We Need Malware Samples
+
+Our ML model needs to learn what malicious packages look like. We're capturing known malicious packages so the model can learn the difference between safe and dangerous behavior.
+
+### Safety Checklist (Before Capturing Malware)
+
+- [ ] Hardening script was run (`sudo bash scripts/capture/harden-vm.sh`)
+- [ ] Sinkhole is running in second terminal
+- [ ] You've already captured your benign packages
+- [ ] You understand: TERMINATE the VM after malware capture (don't reuse it)
+
+### Step 1: Create Your Malware Package List
+
+**If you are KARTHIK (malware packages 1-20):**
+```bash
+grep -v "^#" scripts/capture/packages-malware.txt | grep -v "^$" | head -n 20 > ~/my-malware.txt
+```
+
+**If you are KOMAL (malware packages 21-40):**
+```bash
+grep -v "^#" scripts/capture/packages-malware.txt | grep -v "^$" | sed -n '21,40p' > ~/my-malware.txt
+```
+
+**If you are MANI (malware packages 41-60):**
+```bash
+grep -v "^#" scripts/capture/packages-malware.txt | grep -v "^$" | tail -n 20 > ~/my-malware.txt
+```
+
+### Step 2: Verify Your List
+
+```bash
+wc -l ~/my-malware.txt
+cat ~/my-malware.txt
+```
+
+Should show ~20 package names.
+
+### Step 3: Capture Malware (Uses --label 1)
+
+```bash
+sudo bash scripts/capture/capture.sh --list ~/my-malware.txt --label 1 --out /root/captures/malware
+```
+
+**Note the differences from benign capture:**
+- `--label 1` (not 0) — marks these as MALICIOUS
+- `--out /root/captures/malware` (not benign)
+
+### Step 4: Check Progress
+
+```bash
+ls /root/captures/malware/ | wc -l
+```
+
+### How Long Does Malware Capture Take?
+
+**Much faster than benign!** Malware packages typically:
+- Don't have many dependencies
+- Do their malicious action quickly (steal and exit)
+- Take 5-30 seconds each instead of 30-90 seconds
+
+**Estimated time: 20 packages × 20 seconds = ~7-10 minutes**
+
+### What If a Package Fails?
+
+Some malicious packages may have been removed from npm. That's fine — the capture script will skip them and continue. You might get 15-18 successful captures out of 20, which is normal.
+
+---
+
 ## PART J: When Capture Finishes
 
 ### Step J1: Check results
@@ -563,26 +635,40 @@ After capturing your benign packages, you also need to:
 
 ### KARTHIK
 1. ✅ VM already set up
-2. Capture packages 1-90 (benign)
-3. Capture malware samples
-4. Collect files from Komal and Mani
-5. Train ML model
+2. ✅ Capture benign packages 1-90 (in progress)
+3. Capture malware packages 1-20 (Part I-2)
+4. Download your captures (Part J)
+5. **TERMINATE** your VM after malware capture (Part K)
+6. Collect files from Komal and Mani
+7. Train ML model on combined dataset
 
 ### KOMAL
 1. Create AWS VM (Part A-B)
 2. Connect and set up (Part C-G)
-3. Capture packages 91-180 (Part H-I with your command)
-4. Download and send to Karthik (Part J)
-5. STOP instance when done (Part K)
-6. Scan packages 1-100 with GuardDog on laptop
+3. Capture benign packages 91-180 (Part H-I)
+4. Capture malware packages 21-40 (Part I-2)
+5. Download and send to Karthik (Part J)
+6. **TERMINATE** your VM after malware capture (Part K)
+7. Scan packages 1-100 with GuardDog on laptop
 
 ### MANI
 1. Create AWS VM (Part A-B)
 2. Connect and set up (Part C-G)
-3. Capture packages 181-270 (Part H-I with your command)
-4. Download and send to Karthik (Part J)
-5. STOP instance when done (Part K)
-6. Scan packages 101-200 with GuardDog on laptop
+3. Capture benign packages 181-270 (Part H-I)
+4. Capture malware packages 41-60 (Part I-2)
+5. Download and send to Karthik (Part J)
+6. **TERMINATE** your VM after malware capture (Part K)
+7. Scan packages 101-200 with GuardDog on laptop
+
+### ⚠️ IMPORTANT: TERMINATE After Malware!
+
+After capturing malware, **TERMINATE** (delete) your VM — don't just stop it:
+1. AWS Console → EC2 → Instances
+2. Select your instance
+3. Instance state → **Terminate instance**
+4. Confirm deletion
+
+This destroys the VM completely. The malware touched the filesystem, so we don't want to reuse it.
 
 ---
 
@@ -646,42 +732,60 @@ cd Machine_Learning_Hybrid_Model_for_EBPF
 sudo python3 scripts/capture/sinkhole.py --port 9999 --log /var/log/capture/sinkhole.jsonl
 ```
 
-### KARTHIK - Create Package List & Capture:
+### KARTHIK - Benign & Malware Capture:
 
 ```bash
-# Create your package list (packages 1-90)
-head -n 90 scripts/capture/packages-benign.txt > ~/my-packages.txt
+# BENIGN: Create package list (packages 1-90)
+grep -v "^#" scripts/capture/packages-benign.txt | grep -v "^$" | head -n 90 > ~/my-packages.txt
 
-# Capture
+# BENIGN: Capture
 sudo bash scripts/capture/capture.sh --list ~/my-packages.txt --label 0 --out /root/captures/benign
+
+# MALWARE: Create package list (packages 1-20)
+grep -v "^#" scripts/capture/packages-malware.txt | grep -v "^$" | head -n 20 > ~/my-malware.txt
+
+# MALWARE: Capture (note: --label 1)
+sudo bash scripts/capture/capture.sh --list ~/my-malware.txt --label 1 --out /root/captures/malware
 ```
 
-### KOMAL - Create Package List & Capture:
+### KOMAL - Benign & Malware Capture:
 
 ```bash
-# Create your package list (packages 91-180)
-sed -n '91,180p' scripts/capture/packages-benign.txt > ~/my-packages.txt
+# BENIGN: Create package list (packages 91-180)
+grep -v "^#" scripts/capture/packages-benign.txt | grep -v "^$" | sed -n '91,180p' > ~/my-packages.txt
 
-# Capture
+# BENIGN: Capture
 sudo bash scripts/capture/capture.sh --list ~/my-packages.txt --label 0 --out /root/captures/benign
+
+# MALWARE: Create package list (packages 21-40)
+grep -v "^#" scripts/capture/packages-malware.txt | grep -v "^$" | sed -n '21,40p' > ~/my-malware.txt
+
+# MALWARE: Capture (note: --label 1)
+sudo bash scripts/capture/capture.sh --list ~/my-malware.txt --label 1 --out /root/captures/malware
 ```
 
-### MANI - Create Package List & Capture:
+### MANI - Benign & Malware Capture:
 
 ```bash
-# Create your package list (packages 181-270)
-tail -n 90 scripts/capture/packages-benign.txt > ~/my-packages.txt
+# BENIGN: Create package list (packages 181-270)
+grep -v "^#" scripts/capture/packages-benign.txt | grep -v "^$" | tail -n 90 > ~/my-packages.txt
 
-# Capture
+# BENIGN: Capture
 sudo bash scripts/capture/capture.sh --list ~/my-packages.txt --label 0 --out /root/captures/benign
+
+# MALWARE: Create package list (packages 41-60)
+grep -v "^#" scripts/capture/packages-malware.txt | grep -v "^$" | tail -n 20 > ~/my-malware.txt
+
+# MALWARE: Capture (note: --label 1)
+sudo bash scripts/capture/capture.sh --list ~/my-malware.txt --label 1 --out /root/captures/malware
 ```
 
 ### Download Results (everyone):
 
 ```bash
-# Zip your results
+# Zip BOTH benign and malware results
 cd /root/captures
-zip -r benign-YOURNAME.zip benign/
+zip -r all-captures-YOURNAME.zip benign/ malware/
 
 # Then use the gear icon in EC2 Instance Connect to download
 ```
