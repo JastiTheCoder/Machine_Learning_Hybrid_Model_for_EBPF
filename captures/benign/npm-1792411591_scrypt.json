@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.2.0",
+  "session_id": "npm-1792411591",
+  "package_name": "scrypt",
+  "timestamp": "2026-10-19T12:06:33.817930405Z",
+  "label": 0,
+  "filetop": {
+    "read_processes": 88,
+    "write_processes": 64,
+    "read_data_transfer_kb": 302,
+    "write_data_transfer_kb": 2,
+    "file_access_processes": 113
+  },
+  "install": {
+    "total_dependencies": 0,
+    "direct_dependencies": 0,
+    "indirect_dependencies": 0
+  },
+  "opensnoop": {
+    "etc_dir_access": 115,
+    "home_dir_access": 0,
+    "other_dir_access": 443,
+    "root_dir_access": 19,
+    "sys_dir_access": 94,
+    "temp_dir_access": 0,
+    "user_dir_access": 1036
+  },
+  "tcp": {
+    "state_transitions": 4,
+    "local_ips": 1,
+    "remote_ips": 1,
+    "local_ports": 3,
+    "remote_ports": 1
+  },
+  "syscalls": {
+    "io_ops": 7481,
+    "file_ops": 5606,
+    "network_ops": 39,
+    "time_ops": 0,
+    "security_ops": 783,
+    "process_ops": 691,
+    "unknown_ops": 24736
+  },
+  "patterns": {
+    "p1_file_metadata": 0,
+    "p2_read_data": 0,
+    "p3_write_data": 0,
+    "p4_socket_create": 0,
+    "p5_process_create": 0,
+    "p6_memory_map": 126,
+    "p7_fd_manage": 0,
+    "p8_ipc": 0,
+    "p9_file_lock": 0,
+    "p10_error_handle": 889
+  },
+  "sensitive": {
+    "ssh_private_key_read": 0,
+    "aws_credentials_read": 0,
+    "docker_config_read": 0,
+    "kube_config_read": 0,
+    "crypto_wallet_read": 0,
+    "dotenv_read": 0,
+    "npmrc_read": 1,
+    "gitconfig_read": 0,
+    "etc_passwd_read": 1,
+    "etc_shadow_read": 0,
+    "shellrc_read": 1,
+    "crondir_read": 0,
+    "systemd_unit_read": 0,
+    "persistence_writes": 0,
+    "credential_class_read": 0,
+    "distinct_endpoints": 1,
+    "non_root_endpoints": 1,
+    "credential_read_before_connect": 0,
+    "sensitive_read_before_connect": 1,
+    "spawn_before_connect": 1
+  },
+  "process_tree": "npm(59580)->bash(59619)->bash(59620)->bash(59621)->npm install scr(59632)->sh(59633)->node(59640)->node(59641)->sh(59642)->configure(59656)->configure(59662)->configure(59665)->configure(59672)->bash(59675)->bash(59692)->bash(59693)->bash(59694)->bash(59696)->bash(59698)->bash(59700)->bash(59701)->bash(59703)->bash(59704)->bash(59705)->bash(59707)->bash(59708)->bash(59709)->bash(59710)->bash(59711)->bash(59715)->bash(59714)->bash(59717)->bash(59718)->bash(59720)->bash(59723)->bash(59727)->bash(59728)->bash(59730)->bash(59732)->bash(59734)->bash(59736)->bash(59738)->bash(59740)->bash(59742)->bash(59744)->bash(59746)->bash(59748)->bash(59750)->bash(59752)->bash(59754)->bash(59724)->bash(59755)->bash(59756)->bash(59757)->bash(59758)->bash(59759)->bash(59760)->bash(59761)->bash(59762)->bash(59763)->bash(59764)->bash(59765)->bash(59766)->bash(59768)->bash(59769)->bash(59773)->bash(59774)->bash(59775)->bash(59776)->bash(59779)->bash(59781)->bash(59783)->bash(59786)->bash(59787)->bash(59790)->bash(59791)->bash(59792)->bash(59793)->bash(59799)->bash(59800)->bash(59801)->bash(59802)->bash(59803)->bash(59807)->bash(59810)->bash(59813)->bash(59815)->bash(59816)->bash(59817)->bash(59818)->npm install scr(59819)->sh(59820)->sh(59821)->node-gyp(59832)->node-gyp(59833)",
+  "timed_out": false,
+  "verdict": {
+    "score": 45,
+    "level": "suspicious",
+    "thresholds": {
+      "suspicious": 25,
+      "malicious": 60
+    },
+    "findings": [
+      {
+        "rule_id": "PROC-001",
+        "weight": 20,
+        "technique": "T1059.004",
+        "evidence": "install script spawned a shell"
+      },
+      {
+        "rule_id": "NET-001",
+        "weight": 15,
+        "technique": "T1071",
+        "evidence": "outbound connection from a non-root PID to 104.16.0.34:443"
+      },
+      {
+        "rule_id": "RECON-001",
+        "weight": 10,
+        "technique": "T1082",
+        "evidence": "read host-recon path (5)"
+      }
+    ]
+  },
+  "capture_source": "scrypt"
+}

@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.2.0",
+  "session_id": "npm-1792407217",
+  "package_name": "prisma",
+  "timestamp": "2026-10-19T10:54:08.913937246Z",
+  "label": 0,
+  "filetop": {
+    "read_processes": 15,
+    "write_processes": 4,
+    "read_data_transfer_kb": 96633,
+    "write_data_transfer_kb": 127,
+    "file_access_processes": 15
+  },
+  "install": {
+    "total_dependencies": 0,
+    "direct_dependencies": 0,
+    "indirect_dependencies": 0
+  },
+  "opensnoop": {
+    "etc_dir_access": 48,
+    "home_dir_access": 0,
+    "other_dir_access": 10575,
+    "root_dir_access": 866,
+    "sys_dir_access": 39,
+    "temp_dir_access": 0,
+    "user_dir_access": 868
+  },
+  "tcp": {
+    "state_transitions": 30,
+    "local_ips": 1,
+    "remote_ips": 1,
+    "local_ports": 16,
+    "remote_ports": 1
+  },
+  "syscalls": {
+    "io_ops": 150383,
+    "file_ops": 25146,
+    "network_ops": 163,
+    "time_ops": 0,
+    "security_ops": 221,
+    "process_ops": 102,
+    "unknown_ops": 428164
+  },
+  "patterns": {
+    "p1_file_metadata": 0,
+    "p2_read_data": 0,
+    "p3_write_data": 0,
+    "p4_socket_create": 0,
+    "p5_process_create": 0,
+    "p6_memory_map": 778,
+    "p7_fd_manage": 0,
+    "p8_ipc": 0,
+    "p9_file_lock": 0,
+    "p10_error_handle": 1416
+  },
+  "sensitive": {
+    "ssh_private_key_read": 0,
+    "aws_credentials_read": 0,
+    "docker_config_read": 0,
+    "kube_config_read": 0,
+    "crypto_wallet_read": 0,
+    "dotenv_read": 0,
+    "npmrc_read": 1,
+    "gitconfig_read": 0,
+    "etc_passwd_read": 1,
+    "etc_shadow_read": 0,
+    "shellrc_read": 1,
+    "crondir_read": 0,
+    "systemd_unit_read": 0,
+    "persistence_writes": 0,
+    "credential_class_read": 0,
+    "distinct_endpoints": 1,
+    "non_root_endpoints": 1,
+    "credential_read_before_connect": 0,
+    "sensitive_read_before_connect": 1,
+    "spawn_before_connect": 1
+  },
+  "process_tree": "npm(32871)->bash(32903)->bash(32905)->bash(32909)->npm install pri(32923)->sh(32924)->npm install pri(32931)->sh(32932)->node(32943)->sh(32944)->sh(32945)->sh(32946)->sh(32947)->sh(32948)->sh(32949)->node(32950)",
+  "timed_out": false,
+  "verdict": {
+    "score": 45,
+    "level": "suspicious",
+    "thresholds": {
+      "suspicious": 25,
+      "malicious": 60
+    },
+    "findings": [
+      {
+        "rule_id": "PROC-001",
+        "weight": 20,
+        "technique": "T1059.004",
+        "evidence": "install script spawned a shell"
+      },
+      {
+        "rule_id": "NET-001",
+        "weight": 15,
+        "technique": "T1071",
+        "evidence": "outbound connection from a non-root PID to 104.16.0.34:443"
+      },
+      {
+        "rule_id": "RECON-001",
+        "weight": 10,
+        "technique": "T1082",
+        "evidence": "read host-recon path (5)"
+      }
+    ]
+  },
+  "capture_source": "prisma"
+}
