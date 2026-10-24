@@ -1,4 +1,10 @@
 experiment,model,recall_malicious,roc_auc,tp,fn,fp,tn
-B_synthetic_only,LogisticRegression,0.6,0.9733333333333334,3,2,1,14
-B_synthetic_only,RandomForest,0.6,0.9733333333333334,3,2,0,15
-B_synthetic_only,XGBoost,0.8,0.9266666666666667,4,1,1,14
+A_generalisation,LogisticRegression,0.0,0.8868711716808936,0,767,1,264
+A_generalisation,RandomForest,0.0,0.9711298615040219,0,767,0,265
+A_generalisation,XGBoost,0.0,0.7298221445966889,0,767,0,265
+B_synthetic_only,LogisticRegression,0.6,0.9959229898074745,3,2,2,881
+B_synthetic_only,RandomForest,0.6,0.9997734994337486,3,2,0,883
+B_synthetic_only,XGBoost,0.6,0.9921857304643261,3,2,1,882
+C_pooled,LogisticRegression,0.7616580310880829,0.9630741096757555,147,46,4,217
+C_pooled,RandomForest,0.9844559585492227,0.996565306074602,190,3,0,221
+C_pooled,XGBoost,0.9792746113989638,0.9924038168475838,189,4,1,220
