@@ -49,9 +49,17 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     classification_report,
     confusion_matrix,
+    precision_recall_curve,
+    average_precision_score,
     roc_auc_score,
 )
-from sklearn.model_selection import StratifiedKFold, cross_val_predict, train_test_split
+from sklearn.model_selection import (
+    GroupShuffleSplit,
+    StratifiedKFold,
+    StratifiedGroupKFold,
+    cross_val_predict,
+    train_test_split,
+)
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
@@ -110,6 +118,22 @@ LEGACY_LABEL_RULES = {
 }
 
 SYNTHETIC_MARKERS = ("-test", "benign-test", "suspicious-test")
+
+
+def family_group_key(package_name: str) -> str:
+    """Use package identity as the smallest safe group key.
+
+    Repeated versions of the same package must not cross a train/test boundary.
+    This is intentionally conservative and is less precise than a confirmed
+    malware-family mapping, which should be added from capture provenance.
+    """
+    name = (package_name or "").strip()
+    if name.startswith("@") and "/" in name:
+        scope, remainder = name.split("/", 1)
+        return scope + "/" + remainder.rsplit("@", 1)[0]
+    if "@" in name and not name.startswith("@"):
+        return name.rsplit("@", 1)[0]
+    return name or "unknown"
 
 
 # ---------------------------------------------------------------------------
@@ -199,6 +223,7 @@ def load_directory(path: Path, origin_hint: str | None) -> list[dict]:
         row = flatten(session)
         name = resolve_package_name(row["package_name"], f.stem, row["session_id"] or "")
         row["package_name"] = name
+        row["family_group"] = family_group_key(name)
 
         if row["label"] is None:
             row["label"] = infer_legacy_label(name)
@@ -250,6 +275,23 @@ def select_features(df: pd.DataFrame) -> list[str]:
         print(f"  Dropped {len(dropped)} pattern column(s): corpus mixes schema "
               f"{sorted(schemas)} and p1-p10 are not comparable across 1.2.0")
 
+        # Sensitive columns and the legacy uppercase TCP aliases were not
+        # present in every capture. Mixing zero-filled legacy records with
+        # native 1.2.0 records would make "missing" look like a feature.
+        incompatible = [
+            c for c in candidates
+            if c.startswith("sens_") or c in {
+                "tcp_StateTransitions", "tcp_LocalIPs", "tcp_RemoteIPs",
+                "tcp_LocalPorts", "tcp_RemotePorts",
+                "os_ssh_aws_wallet_access",
+            }
+        ]
+        candidates = [c for c in candidates if c not in incompatible]
+        if incompatible:
+            print(f"  Dropped {len(incompatible)} schema-incompatible column(s): "
+                  + ", ".join(incompatible[:8])
+                  + (" ..." if len(incompatible) > 8 else ""))
+
     # A column that never varies cannot separate anything, and constant columns
     # mostly indicate a feature the monitor is not populating.
     constant = [c for c in candidates if df[c].nunique(dropna=False) <= 1]
@@ -273,6 +315,35 @@ def warn_about_missing_sensitive(df: pd.DataFrame) -> None:
         print(f"\n  WARNING: {missing} session(s) have no sensitive block and read as")
         print("  all-zero, which is indistinguishable from a genuinely clean session.")
         print("  Re-capture them rather than training on the mixture.")
+
+
+def audit_features(df: pd.DataFrame, features: list[str]) -> None:
+    """Fail loudly on identifiers and label-derived columns reaching features."""
+    prohibited = sorted(set(features).intersection(LEAKY_COLUMNS))
+    if prohibited:
+        raise RuntimeError(
+            "Leakage audit failed: prohibited columns are model features: "
+            + ", ".join(prohibited)
+        )
+
+    identifier_like = [c for c in features if any(
+        token in c.lower()
+        for token in ("session_id", "package_name", "capture_source", "source_file")
+    )]
+    if identifier_like:
+        raise RuntimeError(
+            "Leakage audit failed: identifier-like columns are model features: "
+            + ", ".join(identifier_like)
+        )
+
+    missing = df[features].isna().sum()
+    missing = missing[missing > 0].sort_values(ascending=False)
+    if not missing.empty:
+        print("\n  Missing-value audit:")
+        for column, count in missing.head(12).items():
+            print(f"    {column}: {int(count)} missing")
+
+    print("  Leakage audit: prohibited columns and identifiers absent")
 
 
 # ---------------------------------------------------------------------------
@@ -326,16 +397,58 @@ def evaluate(name: str, y_true, y_pred, y_score) -> dict:
           f"      malicious[{cm[1][0]:4d} {cm[1][1]:4d}]")
 
     auc = None
+    pr_auc = None
     if y_score is not None and len(set(y_true)) == 2:
         auc = roc_auc_score(y_true, y_score)
         print(f"  ROC AUC: {auc:.3f}"
               + ("   (below 0.5 means the ranking is inverted)" if auc < 0.5 else ""))
+        pr_auc = average_precision_score(y_true, y_score)
+        print(f"  PR-AUC (average precision): {pr_auc:.3f}")
+        precision, recall, thresholds = precision_recall_curve(y_true, y_score)
+        print(f"  PR operating points:")
+        for recall_target in (0.25, 0.50, 0.75):
+            eligible = [i for i, r in enumerate(recall)
+                        if r >= recall_target]
+            if eligible:
+                i = eligible[-1]
+                threshold = thresholds[i] if i < len(thresholds) else 0.0
+                print(f"    recall >= {recall_target:.2f}: "
+                      f"precision={precision[i]:.3f}, threshold={threshold:.3f}")
 
     tp = cm[1][1]
     fn = cm[1][0]
     recall = tp / (tp + fn) if (tp + fn) else float("nan")
     return {"model": name, "recall_malicious": recall, "roc_auc": auc,
-            "tp": tp, "fn": fn, "fp": cm[0][1], "tn": cm[0][0]}
+            "pr_auc": pr_auc, "tp": tp, "fn": fn,
+            "fp": cm[0][1], "tn": cm[0][0]}
+
+
+def select_validation_threshold(y_validation, y_score, target_fpr=0.01):
+    """Choose the lowest score threshold that does not exceed target FPR.
+
+    This function is used only on a validation partition. A caller must not
+    use it on the frozen final test partition.
+    """
+    candidates = sorted(set(float(v) for v in y_score), reverse=True)
+    best = (1.0, 0.0)
+    for threshold in candidates:
+        pred = (y_score >= threshold).astype(int)
+        cm = confusion_matrix(y_validation, pred, labels=[0, 1])
+        fp = cm[0][1]
+        tn = cm[0][0]
+        fpr = fp / (fp + tn) if (fp + tn) else 0.0
+        tp = cm[1][1]
+        fn = cm[1][0]
+        recall = tp / (tp + fn) if (tp + fn) else 0.0
+        if fpr <= target_fpr and recall >= best[1]:
+            best = (threshold, recall)
+    threshold, recall = best
+    pred = (y_score >= threshold).astype(int)
+    cm = confusion_matrix(y_validation, pred, labels=[0, 1])
+    fp = cm[0][1]
+    tn = cm[0][0]
+    fpr = fp / (fp + tn) if (fp + tn) else 0.0
+    return threshold, recall, fpr
 
 
 # ---------------------------------------------------------------------------
@@ -363,22 +476,78 @@ def experiment_generalisation(df: pd.DataFrame, features: list[str]) -> pd.DataF
         print("  Capture the corpus first: see scripts/capture/README.md")
         return None
 
-    # Hold out a slice of real benign so the test set has both classes and the
-    # false-positive rate is measured on the same kind of data as recall.
-    benign_train, benign_test = train_test_split(
-        real_benign, test_size=0.3, random_state=RANDOM_STATE
+    # Hold out real benign packages for validation and final testing. Package
+    # identities remain together so repeated captures cannot leak across them.
+    benign = real_benign.copy()
+    benign["family_group"] = benign["family_group"].fillna("unknown")
+    benign_groups = benign["family_group"].unique()
+    train_groups, heldout_groups = train_test_split(
+        benign_groups, test_size=0.40, random_state=RANDOM_STATE
     )
+    heldout = benign[benign["family_group"].isin(heldout_groups)]
+    benign_train = benign[benign["family_group"].isin(train_groups)]
 
-    train = pd.concat([benign_train, synth_mal])
+    heldout_groups = heldout["family_group"].unique()
+    if len(heldout_groups) < 2:
+        print("\n  Cannot create separate benign validation/test groups.")
+        return None
+    validation_groups, test_groups = train_test_split(
+        heldout_groups, test_size=0.50, random_state=RANDOM_STATE
+    )
+    benign_validation = heldout[heldout["family_group"].isin(validation_groups)]
+    benign_test = heldout[heldout["family_group"].isin(test_groups)]
+
+    # Synthetic malicious validation is used only to select an operating
+    # threshold. It is not used for threshold selection against real malware.
+    synth_mal = synth_mal.copy()
+    synth_mal["family_group"] = synth_mal["family_group"].fillna("unknown")
+    synth_groups = synth_mal["family_group"].unique()
+    if len(synth_groups) >= 2:
+        synth_train_groups, synth_validation_groups = train_test_split(
+            synth_groups, test_size=0.50, random_state=RANDOM_STATE
+        )
+        synth_train = synth_mal[synth_mal["family_group"].isin(synth_train_groups)]
+        synth_validation = synth_mal[
+            synth_mal["family_group"].isin(synth_validation_groups)
+        ]
+    else:
+        synth_train = synth_mal
+        synth_validation = synth_mal
+
+    train = pd.concat([benign_train, synth_train])
+    validation = pd.concat([benign_validation, synth_validation])
     test = pd.concat([benign_test, real_malware])
 
-    print(f"\n  Train: {len(benign_train)} real benign + {len(synth_mal)} synthetic malicious")
+    print(f"\n  Train: {len(benign_train)} real benign + {len(synth_train)} synthetic malicious")
+    print(f"  Validation: {len(benign_validation)} real benign + "
+          f"{len(synth_validation)} synthetic malicious")
     print(f"  Test:  {len(benign_test)} real benign + {len(real_malware)} REAL malware")
     print("\n  No real malware is in the training set, by design. Recall below is")
     print("  the generalisation number -- detection of attacks we did not author.")
 
     X_train, y_train = train[features].fillna(0), train["label"].astype(int)
+    X_validation, y_validation = (
+        validation[features].fillna(0),
+        validation["label"].astype(int),
+    )
     X_test, y_test = test[features].fillna(0), test["label"].astype(int)
+
+    partition_manifest = pd.concat([
+        train.assign(partition="train"),
+        validation.assign(partition="validation"),
+        test.assign(partition="test"),
+    ], ignore_index=True)
+    manifest_columns = [
+        c for c in (
+            "session_id", "package_name", "family_group", "origin",
+            "source_file", "label", "partition",
+        )
+        if c in partition_manifest.columns
+    ]
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    manifest_path = OUTPUT_DIR / "generalisation_partition_manifest.csv"
+    partition_manifest[manifest_columns].to_csv(manifest_path, index=False)
+    print(f"  Wrote frozen partition manifest: {manifest_path}")
 
     n_pos, n_neg = int(y_train.sum()), int(len(y_train) - y_train.sum())
 
@@ -387,10 +556,43 @@ def experiment_generalisation(df: pd.DataFrame, features: list[str]) -> pd.DataF
     for name, model in build_models(n_pos, n_neg).items():
         model.fit(X_train, y_train)
         fitted[name] = model
-        y_pred = model.predict(X_test)
-        y_score = (model.predict_proba(X_test)[:, 1]
+        y_validation_score = (model.predict_proba(X_validation)[:, 1]
+                              if hasattr(model, "predict_proba") else None)
+        y_test_score = (model.predict_proba(X_test)[:, 1]
                    if hasattr(model, "predict_proba") else None)
-        results.append(evaluate(name, y_test, y_pred, y_score))
+        y_pred = model.predict(X_test)
+        y_score = y_test_score
+
+        calibrated_result = {}
+        if y_validation_score is not None:
+            threshold, val_recall, val_fpr = select_validation_threshold(
+                y_validation, y_validation_score, target_fpr=0.01
+            )
+            y_calibrated_pred = (y_test_score >= threshold).astype(int)
+            print(f"\n  --- {name}: validation-calibrated threshold at <=1% FPR ---")
+            print(f"  Validation threshold: {threshold:.6f}")
+            print(f"  Validation recall/FPR: {val_recall:.3f}/{val_fpr:.3f}")
+            cm = confusion_matrix(y_test, y_calibrated_pred, labels=[0, 1])
+            tp = cm[1][1]
+            fn = cm[1][0]
+            fp = cm[0][1]
+            tn = cm[0][0]
+            recall = tp / (tp + fn) if (tp + fn) else float("nan")
+            print(f"  Frozen-test TP/FN/FP/TN: {tp}/{fn}/{fp}/{tn}")
+            print(f"  Frozen-test recall: {recall:.3f}")
+            calibrated_result = {
+                "calibrated_threshold": threshold,
+                "validation_recall": val_recall,
+                "validation_fpr": val_fpr,
+                "calibrated_recall": recall,
+                "calibrated_tp": tp,
+                "calibrated_fn": fn,
+                "calibrated_fp": fp,
+                "calibrated_tn": tn,
+            }
+        result = evaluate(name, y_test, y_pred, y_score)
+        result.update(calibrated_result)
+        results.append(result)
 
     report_importances(fitted.get("RandomForest"), features, "experiment_a")
     return pd.DataFrame(results)
@@ -417,13 +619,25 @@ def experiment_synthetic_only(df: pd.DataFrame, features: list[str]) -> pd.DataF
 
     X = subset[features].fillna(0)
     n_splits = min(5, int(y.sum()), int(len(y) - y.sum()))
-    cv = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=RANDOM_STATE)
+    groups = subset["family_group"].fillna("unknown")
+    try:
+        cv = StratifiedGroupKFold(
+            n_splits=n_splits, shuffle=True, random_state=RANDOM_STATE
+        )
+        cv_split = cv.split(X, y, groups=groups)
+    except (TypeError, ValueError):
+        cv = StratifiedKFold(
+            n_splits=n_splits, shuffle=True, random_state=RANDOM_STATE
+        )
+        cv_split = cv.split(X, y)
 
     results = []
     for name, model in build_models(int(y.sum()), int(len(y) - y.sum())).items():
-        y_pred = cross_val_predict(model, X, y, cv=cv)
+        cv_split = cv.split(X, y, groups=groups) if isinstance(cv, StratifiedGroupKFold) else cv.split(X, y)
+        y_pred = cross_val_predict(model, X, y, cv=cv_split)
+        cv_split = cv.split(X, y, groups=groups) if isinstance(cv, StratifiedGroupKFold) else cv.split(X, y)
         try:
-            y_score = cross_val_predict(model, X, y, cv=cv, method="predict_proba")[:, 1]
+            y_score = cross_val_predict(model, X, y, cv=cv_split, method="predict_proba")[:, 1]
         except (AttributeError, ValueError):
             y_score = None
         results.append(evaluate(name, y, y_pred, y_score))
@@ -446,11 +660,16 @@ def experiment_pooled(df: pd.DataFrame, features: list[str]) -> pd.DataFrame | N
 
     y = df["label"].astype(int)
     X = df[features].fillna(0)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=RANDOM_STATE, stratify=y
+    groups = df["family_group"].fillna("unknown")
+    split = GroupShuffleSplit(
+        n_splits=1, test_size=0.25, random_state=RANDOM_STATE
     )
+    train_index, test_index = next(split.split(X, y, groups=groups))
+    X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+    y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
-    print(f"\n  Train {len(X_train)} / Test {len(X_test)}, real malware on both sides.")
+    print(f"\n  Train {len(X_train)} / Test {len(X_test)}, "
+          f"package identities held together when possible.")
 
     n_pos, n_neg = int(y_train.sum()), int(len(y_train) - y_train.sum())
 
@@ -492,6 +711,8 @@ def main() -> int:
     parser.add_argument("--malware", type=Path, help="directory of real malware captures")
     parser.add_argument("--synthetic", type=Path,
                         help="directory of synthetic fixture sessions (e.g. ./sessions)")
+    parser.add_argument("--family-manifest", type=Path,
+                        help="optional CSV mapping session_id to family")
     args = parser.parse_args()
 
     if not any([args.benign, args.malware, args.synthetic]):
@@ -516,6 +737,30 @@ def main() -> int:
 
     df = pd.DataFrame(rows)
 
+    if args.family_manifest:
+        if not args.family_manifest.exists():
+            print(f"\nFamily manifest not found: {args.family_manifest}")
+            return 1
+        manifest = pd.read_csv(args.family_manifest)
+        required = {"session_id", "family"}
+        if not required.issubset(manifest.columns):
+            print("\nFamily manifest must contain session_id and family columns.")
+            return 1
+        family_map = (
+            manifest.drop_duplicates("session_id")
+            .set_index("session_id")["family"]
+            .to_dict()
+        )
+        df["family_group"] = [
+            str(family_map[session_id])
+            if str(origin) == "real_malware" and session_id in family_map
+            else str(family_group)
+            for session_id, origin, family_group in zip(
+                df["session_id"], df["origin"], df["family_group"]
+            )
+        ]
+        print(f"\nApplied family manifest: {args.family_manifest}")
+
     print("\nCorpus composition:")
     for origin, count in sorted(Counter(df["origin"]).items()):
         print(f"  {origin:22s} {count:4d}")
@@ -526,6 +771,7 @@ def main() -> int:
     warn_about_missing_sensitive(df)
     features = select_features(df)
     print(f"  Using {len(features)} features")
+    audit_features(df, features)
 
     sens_used = [f for f in features if f.startswith("sens_")]
     if sens_used:
