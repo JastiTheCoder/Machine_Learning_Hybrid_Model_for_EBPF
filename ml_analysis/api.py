@@ -99,9 +99,9 @@ class ModelInfoResponse(BaseModel):
     features_count: int
     feature_names: List[str]
     training_samples: int
-    accuracy: float
-    recall: float
-    precision: float
+    accuracy: Optional[float]
+    recall: Optional[float]
+    precision: Optional[float]
     version: str
 
 # ============================================================================
@@ -190,10 +190,10 @@ MODEL_INFO = {
     "model_type": "RandomForestClassifier",
     "features_count": 16,
     "feature_names": FEATURE_NAMES,
-    "training_samples": 307,
-    "accuracy": 0.951,
-    "recall": 0.768,
-    "precision": 0.956,
+    "training_samples": 0,
+    "accuracy": None,
+    "recall": None,
+    "precision": None,
     "version": "1.0.0"
 }
 
@@ -209,6 +209,18 @@ def load_model():
             MODEL = pickle.load(f)
         with open(scaler_path, 'rb') as f:
             SCALER = pickle.load(f)
+        metadata_path = os.path.join(os.path.dirname(__file__), 'model_metadata.json')
+        if os.path.exists(metadata_path):
+            try:
+                with open(metadata_path, 'r', encoding='utf-8') as f:
+                    metadata = json.load(f)
+                for key in ("model_type", "features_count", "feature_names",
+                            "training_samples", "accuracy", "recall",
+                            "precision", "version"):
+                    if key in metadata:
+                        MODEL_INFO[key] = metadata[key]
+            except (OSError, json.JSONDecodeError):
+                pass
         return True
     
     # If no saved model, train one from captures
@@ -281,6 +293,10 @@ def train_model_from_captures():
         pickle.dump(MODEL, f)
     with open(scaler_path, 'wb') as f:
         pickle.dump(SCALER, f)
+
+    metadata_path = os.path.join(os.path.dirname(__file__), 'model_metadata.json')
+    with open(metadata_path, 'w', encoding='utf-8') as f:
+        json.dump(MODEL_INFO, f, indent=2)
     
     return True
 

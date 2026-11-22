@@ -1,0 +1,27 @@
+{
+  "model_type": "RandomForestClassifier",
+  "features_count": 16,
+  "feature_names": [
+    "num_file_operations",
+    "num_network_connections",
+    "num_process_events",
+    "num_dns_queries",
+    "file_reads",
+    "file_writes",
+    "file_deletes",
+    "sensitive_file_access",
+    "outbound_connections",
+    "unique_domains",
+    "http_requests",
+    "child_processes",
+    "exec_calls",
+    "shell_invocations",
+    "curl_wget_calls",
+    "dns_query_count"
+  ],
+  "training_samples": 1635,
+  "accuracy": null,
+  "recall": null,
+  "precision": null,
+  "version": "1.0.0-native-captures"
+}
