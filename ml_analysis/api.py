@@ -64,6 +64,7 @@ class CaptureInput(BaseModel):
     network_connections: List[Dict[str, Any]] = []
     process_events: List[Dict[str, Any]] = []
     dns_queries: List[Dict[str, Any]] = []
+    native_capture: Optional[Dict[str, Any]] = None
 
 class FeatureInput(BaseModel):
     """Pre-extracted feature vector (16 features)"""
@@ -108,9 +109,9 @@ class ModelInfoResponse(BaseModel):
 # FEATURE EXTRACTION
 # ============================================================================
 
-FEATURE_NAMES = [
+LEGACY_FEATURE_NAMES = [
     "num_file_operations",
-    "num_network_connections", 
+    "num_network_connections",
     "num_process_events",
     "num_dns_queries",
     "file_reads",
@@ -127,6 +128,8 @@ FEATURE_NAMES = [
     "dns_query_count"
 ]
 
+FEATURE_NAMES = LEGACY_FEATURE_NAMES.copy()
+
 SENSITIVE_PATTERNS = [
     '/etc/passwd', '/etc/shadow', '.ssh', '.env', '.npmrc',
     'credentials', 'password', 'secret', 'token', 'api_key',
@@ -134,49 +137,67 @@ SENSITIVE_PATTERNS = [
 ]
 
 def extract_features(data: dict) -> dict:
-    """Extract 16 behavioral features from raw capture JSON"""
+    """Extract the model's exact native feature order from a capture."""
     features = {}
-    
-    # Basic counts
-    file_ops = data.get('file_operations', [])
-    net_conns = data.get('network_connections', [])
-    proc_events = data.get('process_events', [])
-    dns_queries = data.get('dns_queries', [])
-    
-    features['num_file_operations'] = len(file_ops)
-    features['num_network_connections'] = len(net_conns)
-    features['num_process_events'] = len(proc_events)
-    features['num_dns_queries'] = len(dns_queries)
-    
-    # File operation details
-    features['file_reads'] = sum(1 for op in file_ops if op.get('operation') == 'read')
-    features['file_writes'] = sum(1 for op in file_ops if op.get('operation') == 'write')
-    features['file_deletes'] = sum(1 for op in file_ops if op.get('operation') == 'delete')
-    
-    # Sensitive file access
-    sensitive_count = 0
-    for op in file_ops:
-        path = op.get('path', '').lower()
-        if any(p in path for p in SENSITIVE_PATTERNS):
-            sensitive_count += 1
-    features['sensitive_file_access'] = sensitive_count
-    
-    # Network details
-    features['outbound_connections'] = sum(1 for conn in net_conns if conn.get('direction') == 'outbound')
-    features['unique_domains'] = len(set(conn.get('domain', '') for conn in net_conns))
-    features['http_requests'] = sum(1 for conn in net_conns if conn.get('protocol', '').lower() in ['http', 'https'])
-    
-    # Process events
-    features['child_processes'] = sum(1 for e in proc_events if e.get('event_type') == 'fork')
-    features['exec_calls'] = sum(1 for e in proc_events if e.get('event_type') == 'exec')
-    
-    # Suspicious indicators
-    features['shell_invocations'] = sum(1 for e in proc_events if 'sh' in str(e.get('comm', '')).lower())
-    features['curl_wget_calls'] = sum(1 for e in proc_events if any(x in str(e.get('comm', '')).lower() for x in ['curl', 'wget']))
-    
-    # DNS
-    features['dns_query_count'] = len(dns_queries)
-    
+
+    for prefix, block in (
+        ("ft", data.get("filetop", {})),
+        ("inst", data.get("install", {})),
+        ("os", data.get("opensnoop", {})),
+        ("tcp", data.get("tcp", {})),
+        ("sc", data.get("syscalls", {})),
+        ("pat", data.get("patterns", {})),
+        ("sens", data.get("sensitive", {})),
+    ):
+        for key, value in (block or {}).items():
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                features[f"{prefix}_{key}"] = float(value)
+
+    # Backward compatibility for captures/requests using the old API shape.
+    file_ops = data.get("file_operations", [])
+    net_conns = data.get("network_connections", [])
+    proc_events = data.get("process_events", [])
+    dns_queries = data.get("dns_queries", [])
+
+    legacy = {
+        "num_file_operations": len(file_ops),
+        "num_network_connections": len(net_conns),
+        "num_process_events": len(proc_events),
+        "num_dns_queries": len(dns_queries),
+        "file_reads": sum(1 for op in file_ops if op.get("operation") == "read"),
+        "file_writes": sum(1 for op in file_ops if op.get("operation") == "write"),
+        "file_deletes": sum(1 for op in file_ops if op.get("operation") == "delete"),
+        "sensitive_file_access": sum(
+            1 for op in file_ops
+            if any(p in op.get("path", "").lower() for p in SENSITIVE_PATTERNS)
+        ),
+        "outbound_connections": sum(
+            1 for conn in net_conns if conn.get("direction") == "outbound"
+        ),
+        "unique_domains": len({conn.get("domain", "") for conn in net_conns}),
+        "http_requests": sum(
+            1 for conn in net_conns
+            if conn.get("protocol", "").lower() in ["http", "https"]
+        ),
+        "child_processes": sum(
+            1 for event in proc_events if event.get("event_type") == "fork"
+        ),
+        "exec_calls": sum(
+            1 for event in proc_events if event.get("event_type") == "exec"
+        ),
+        "shell_invocations": sum(
+            1 for event in proc_events
+            if "sh" in str(event.get("comm", "")).lower()
+        ),
+        "curl_wget_calls": sum(
+            1 for event in proc_events
+            if any(name in str(event.get("comm", "")).lower()
+                   for name in ["curl", "wget"])
+        ),
+        "dns_query_count": len(dns_queries),
+    }
+    for name, value in legacy.items():
+        features.setdefault(name, float(value))
     return features
 
 # ============================================================================
@@ -199,7 +220,7 @@ MODEL_INFO = {
 
 def load_model():
     """Load the trained model from disk or train a new one"""
-    global MODEL, SCALER
+    global MODEL, SCALER, FEATURE_NAMES
     
     model_path = os.path.join(os.path.dirname(__file__), 'model.pkl')
     scaler_path = os.path.join(os.path.dirname(__file__), 'scaler.pkl')
@@ -219,6 +240,9 @@ def load_model():
                             "precision", "version"):
                     if key in metadata:
                         MODEL_INFO[key] = metadata[key]
+                feature_names = metadata.get("feature_names")
+                if isinstance(feature_names, list) and feature_names:
+                    FEATURE_NAMES = feature_names
             except (OSError, json.JSONDecodeError):
                 pass
         return True
@@ -335,6 +359,8 @@ async def predict_from_json(capture: CaptureInput):
     
     # Convert to dict
     data = capture.dict()
+    if capture.native_capture:
+        data = capture.native_capture
     
     # Extract features
     features = extract_features(data)
@@ -368,8 +394,12 @@ async def predict_from_features(input: FeatureInput):
     if MODEL is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
     
-    if len(input.features) != 16:
-        raise HTTPException(status_code=400, detail=f"Expected 16 features, got {len(input.features)}")
+    expected = len(FEATURE_NAMES)
+    if len(input.features) != expected:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Expected {expected} features, got {len(input.features)}",
+        )
     
     feature_vector = np.array([input.features])
     feature_scaled = SCALER.transform(feature_vector)
